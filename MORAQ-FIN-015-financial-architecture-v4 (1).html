@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MORAQ · 05 · Cấu trúc Tài chính v4.0 · Ấn bản Nhà đầu tư</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1A1916;--teal:#0F6E56;--teal-dark:#085041;--teal-bg:#E1F5EE;--amber:#854F0B;--amber-dark:#633806;--amber-bg:#FAEEDA;--cream:#FAF9F6;--linen:#E8DFD0;--warm-50:#F5F0E8;--warm-400:#C4B49A;--warm-600:#8C7A62;--red-soft:#B44A3F}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased}
+.doc-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(250,249,246,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--linen);padding:12px 40px;display:flex;align-items:center;gap:24px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--warm-600);overflow-x:auto;white-space:nowrap}.doc-nav a{color:var(--warm-600);text-decoration:none}.doc-nav a:hover{color:var(--teal)}.doc-nav .brand{color:var(--teal);font-weight:500}
+.page{max-width:960px;margin:0 auto;padding:100px 40px 80px}
+.hero{padding:80px 0 60px;border-bottom:1px solid var(--linen);margin-bottom:60px}.hero .doc-label{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--warm-600);margin-bottom:20px}.hero h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(36px,5vw,56px);line-height:1.15;margin-bottom:20px}.hero h1 em{font-style:italic;color:var(--teal)}.hero .subtitle{font-size:16px;color:var(--warm-600);max-width:640px;line-height:1.7}
+.section{margin-bottom:80px;scroll-margin-top:80px}.section-label{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:8px}.section h2{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(28px,3.5vw,40px);line-height:1.2;margin-bottom:12px}.section h2 em{font-style:italic;color:var(--teal)}.section .section-desc{color:var(--warm-600);font-size:14px;max-width:600px;margin-bottom:40px}
+h3{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:22px;margin:40px 0 16px}h3 .num{color:var(--teal);font-weight:400}h4{font-family:'DM Sans',sans-serif;font-weight:600;font-size:14px;letter-spacing:.02em;color:var(--amber);margin:28px 0 12px;text-transform:uppercase}
+p{margin-bottom:16px;max-width:680px}p.note{font-size:13px;color:var(--warm-600);font-style:italic;border-left:2px solid var(--linen);padding-left:16px;margin:20px 0}strong{font-weight:600}.highlight{color:var(--teal);font-weight:600}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;margin:32px 0 40px}.metric-card{background:#fff;border:1px solid var(--linen);border-radius:8px;padding:24px}.metric-card .value{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:32px;color:var(--teal);line-height:1.1;margin-bottom:4px}.metric-card .value.amber{color:var(--amber)}.metric-card .label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--warm-600);line-height:1.5}
+table{width:100%;border-collapse:collapse;margin:24px 0 32px;font-size:14px}thead th{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--warm-600);text-align:left;padding:12px 16px;border-bottom:2px solid var(--linen);white-space:nowrap}thead th.r{text-align:right}td{padding:12px 16px;border-bottom:1px solid var(--warm-50);vertical-align:top}td.r{text-align:right;font-family:'DM Mono',monospace;font-size:13px}td.b{font-weight:600}td.t{color:var(--teal);font-weight:600}td.a{color:var(--amber);font-weight:600}td.rd{color:var(--red-soft);font-weight:600}td.m{color:var(--warm-600);font-size:13px}tr.sub td{border-top:2px solid var(--linen);border-bottom:2px solid var(--linen);font-weight:600;background:var(--warm-50)}tr.tot td{border-top:2px solid var(--ink);font-weight:700;font-size:15px;padding:16px}tr.sp td{padding:4px;border:none}tr.sec td{font-weight:600;color:var(--teal);padding-top:20px;border-bottom:none}
+.callout{background:#fff;border:1px solid var(--linen);border-left:3px solid var(--teal);border-radius:0 8px 8px 0;padding:24px 28px;margin:32px 0}.callout.ab{border-left-color:var(--amber)}.callout.rb{border-left-color:var(--red-soft)}.callout h4{margin-top:0}.callout p:last-child{margin-bottom:0}
+.phase-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:24px 0 32px}.phase-card{background:#fff;border:1px solid var(--linen);border-radius:8px;padding:20px}.phase-card .pn{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:8px}.phase-card .pt{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:18px;margin-bottom:4px}.phase-card .pd{font-size:13px;color:var(--warm-600);line-height:1.6}
+.mw{overflow-x:auto;margin:24px 0}.mx{border-collapse:collapse;font-size:12px;min-width:600px}.mx th,.mx td{padding:10px 14px;text-align:center;border:1px solid var(--linen);font-family:'DM Mono',monospace;font-size:12px}.mx th{background:var(--warm-50);font-size:10px;text-transform:uppercase;letter-spacing:.06em}.mx .pos{background:var(--teal-bg);color:var(--teal-dark)}.mx .neu{background:var(--amber-bg);color:var(--amber-dark)}.mx .neg{background:#FDE8E8;color:var(--red-soft)}.mx .hc{background:var(--warm-50);font-weight:500;text-align:left}.mx .cn{background:var(--ink);color:var(--cream)}
+.ri{display:grid;grid-template-columns:auto 1fr;gap:16px;padding:20px 0;border-bottom:1px solid var(--warm-50)}.ric{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex-shrink:0}.ric.h{background:#FDE8E8;color:var(--red-soft)}.ric.me{background:var(--amber-bg);color:var(--amber)}.ric.l{background:var(--teal-bg);color:var(--teal)}
+hr.div{border:none;border-top:1px solid var(--linen);margin:60px 0}
+.foot{text-align:center;padding:40px 0 60px;border-top:1px solid var(--linen);margin-top:60px}.foot .logo{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:24px;letter-spacing:.15em;margin-bottom:8px}.foot .mt{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--warm-600)}
+.vc{background:#fff;border:1px solid var(--linen);border-radius:12px;padding:32px;margin:32px 0}.vc .vc-title{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:16px}.vc.ab .vc-title{color:var(--amber)}.vc.rb .vc-title{color:var(--red-soft)}.vc .vc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px;margin-bottom:16px}.vc .vc-item{text-align:center;padding:16px 8px;border-radius:8px;background:var(--warm-50)}.vc .vc-item.accent{background:var(--teal-bg)}.vc .vc-item.warn{background:var(--amber-bg)}.vc .vc-item.neg{background:#FDE8E8}.vc .vc-num{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:28px;color:var(--teal);line-height:1.1}.vc .vc-item.warn .vc-num{color:var(--amber)}.vc .vc-item.neg .vc-num{color:var(--red-soft)}.vc .vc-sub{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--warm-600);margin-top:4px;line-height:1.4}.vc .vc-note{font-size:14px;color:var(--warm-600);max-width:640px;line-height:1.7}
+@media(max-width:640px){.page{padding:80px 20px 60px}.doc-nav{padding:12px 20px}.metrics{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<nav class="doc-nav"><span class="brand">MORAQ</span><a href="#exec">01·Tổng quan</a><a href="#unit">02·Đơn vị</a><a href="#pricing">03·Định giá</a><a href="#capacity">04·Công suất</a><a href="#people">05·Con người</a><a href="#compensation">06·Đãi ngộ</a><a href="#pnl">07·P&L</a><a href="#marketing">08·Tiếp thị</a><a href="#refill">09·Vòng đời</a><a href="#startup">10·Vốn</a><a href="#dự phòng khẩn">11·Dự phòng</a><a href="#breakeven">12·Hoà vốn</a><a href="#cashflow">13·Dòng tiền</a><a href="#ecom">14·Trực tuyến</a><a href="#risk">15·Rủi ro</a><a href="#investor">16·NĐT</a><a href="#kpi">17·Chỉ số</a></nav>
+<div class="page">
+<header class="hero">
+<div class="doc-label">MORAQ · Hồ sơ Kinh doanh · Document 05 · v4.0-IE</div>
+<h1>Financial<br/><em>Architecture</em></h1>
+<p class="subtitle">Cấu hình tài chính toàn diện — từ unit economics đến investor returns. Bao gồm CIT 20%, seasonality, rủi ro tỷ giá, biến động nhân sự, mô hình giá trị vòng đời Refill, và quỹ tu sửa. Mọi con số dẫn xuất từ dữ liệu thực tế MORAQ 1.0 (2019–2022).</p>
+</header>
+
+<hr class="div">
+
+<!-- 01 EXECUTIVE SUMMARY -->
+<section class="section" id="exec">
+<div class="section-label">Phần 01</div>
+<h2>Tổng quan <em>Tài chính</em></h2>
+<p class="section-desc">8 con số định nghĩa toàn bộ mô hình.</p>
+<div class="metrics">
+<div class="metric-card"><div class="value">180K</div><div class="label">COGS / chai 50ml<br/>12% giá bán</div></div>
+<div class="metric-card"><div class="value">87.5%</div><div class="label">Biên gộp<br/>50ml bespoke</div></div>
+<div class="metric-card"><div class="value">~51%</div><div class="label">Biên ròng sau thuế<br/>Kịch bản trung bình</div></div>
+<div class="metric-card"><div class="value">4.3</div><div class="label">GD/ngày<br/>Break-even</div></div>
+<div class="metric-card"><div class="value">3.05B</div><div class="label">Vốn cần gọi<br/>12.5% equity</div></div>
+<div class="metric-card"><div class="value">&lt;3</div><div class="label">Tháng hoà vốn<br/>MORAQ 1.0 actual</div></div>
+<div class="metric-card"><div class="value">37</div><div class="label">GD/ngày max<br/>2 stations · 12h</div></div>
+<div class="metric-card"><div class="value amber">+338M</div><div class="label">Refill revenue T12<br/>Chi phí thu khách = 0</div></div>
+</div>
+<div class="callout"><h4>Luận điểm tài chính trung tâm</h4>
+<div class="metrics" style="margin:16px 0 8px">
+<div class="metric-card" style="padding:16px"><div class="value" style="font-size:24px">Giá vốn 12%</div><div class="label">Cấu trúc chi phí SaaS<br/>Biên gộp 87.5%</div></div>
+<div class="metric-card" style="padding:16px"><div class="value" style="font-size:24px">0đ</div><div class="label">Thu khách trả phí<br/>Tăng trưởng tự nhiên</div></div>
+<div class="metric-card" style="padding:16px"><div class="value" style="font-size:24px">4.3 TX</div><div class="label">Hoà vốn / ngày<br/>11% công suất</div></div>
+<div class="metric-card" style="padding:16px"><div class="value" style="font-size:24px">+338M</div><div class="label">Refill T12 / tháng<br/>Thu khách = 0</div></div>
+</div>
+<p style="margin-top:12px">Cửa hàng chỉ cần hoạt động ở 11% công suất để bù toàn bộ chi phí. Mọi giao dịch sau đó gần như 100% đóng góp vào lợi nhuận. Chương trình Refill tích luỹ: mỗi tháng thêm khách vào nhóm, doanh thu tăng không cần thêm marketing.</p></div>
+<div class="callout rb"><h4>Kịch bản Tăng trưởng chậm (Phần 13.5)</h4>
+<p>Nếu T1–T3 chỉ đạt 200–300M/tháng: tổng tiêu 488M, số dư thấp nhất 319M (T3), quay dương T4. Năm 1 DT ~10.1B. Dự phòng 500M đủ cover — chi tiết tại Dòng tiền Waterfall.</p></div>
+
+
+</section>
+
+<hr class="div">
+
+<!-- 02 UNIT ECONOMICS -->
+<section class="section" id="unit">
+<div class="section-label">Phần 02</div>
+<h2>Kinh tế <em>Đơn vị</em></h2>
+<p class="section-desc">Giá vốn từng sản phẩm. Dữ liệu từ báo giá nhà cung cấp thực tế.</p>
+<h3><span class="num">2.1</span> Giá vốn (COGS) — Chai 50ml theo yêu cầu</h3>
+<table><thead><tr><th>Thành phần</th><th>Chi tiết</th><th class="r">VNĐ</th><th class="r">% giá bán</th></tr></thead><tbody>
+<tr><td class="b">Hương liệu gốc</td><td class="m">14ml/chai · ~$100/kg IFRA · 1kg=1,000ml</td><td class="r">50,000</td><td class="r">3.3%</td></tr>
+<tr><td class="b">Bổ sung hương liệu</td><td class="m">Cồn nước hoa (36ml) + hao hụt</td><td class="r">20,000</td><td class="r">1.3%</td></tr>
+<tr class="sub"><td colspan="2">Tổng hương liệu</td><td class="r">70,000</td><td class="r">4.7%</td></tr>
+<tr><td class="b">Vỏ chai 50ml</td><td class="m">Loại tốt nhất · glass + cap + spray</td><td class="r">60,000</td><td class="r">4.0%</td></tr>
+<tr><td class="b">Bao bì</td><td class="m">Hộp + túi giấy + giấy lót + túi lụa</td><td class="r">50,000</td><td class="r">3.3%</td></tr>
+<tr class="tot"><td class="b" colspan="2">TỔNG COGS / 50ml</td><td class="r t">180,000</td><td class="r t">12.0%</td></tr>
+</tbody></table>
+<p class="note">Giá bán TB 1,500,000 VNĐ (chưa VAT 10%). Khách thanh toán 1,650,000 inclusive. Doanh thu trên Lãi lỗ = giá chưa VAT.</p>
+<p><strong>10ml Khám phá:</strong> COGS 70,000 VNĐ (19.2% giá bán 365K). Margin 80.8%.</p>
+<p><strong>Tỷ giá:</strong> COGS chỉ 12% giá bán → VND −10% chỉ tăng COGS 7K/chai. MOQ 75kg = phòng ngừa tự nhiên 9 tháng.</p>
+<h3><span class="num">2.4</span> Dòng doanh thu — Bản đồ biên lợi nhuận</h3>
+<table><thead><tr><th>Dòng SP</th><th>Giá</th><th class="r">Giá vốn</th><th class="r">Biên LN</th><th>Thời điểm</th></tr></thead><tbody>
+<tr><td class="b">① Theo yêu cầu 50ml</td><td>1.0–1.79M</td><td class="r">180K</td><td class="r t">85–90%</td><td class="m">Ngay · ~70% DT</td></tr>
+<tr><td class="b">② Bổ sung</td><td>+100–300K</td><td class="r">~40K</td><td class="r t">75–85%</td><td class="m">Ngay</td></tr>
+<tr><td class="b">③ Refill 50ml</td><td>600–900K</td><td class="r">~90K</td><td class="r t">85–90%</td><td class="m">T3+ · LTV driver</td></tr>
+<tr><td class="b">④ Quà tặng doanh nghiệp</td><td>Theo volume</td><td class="r">Variable</td><td class="r">55–65%</td><td class="m">T3+ · seasonal</td></tr>
+<tr><td class="b">⑤ 10ml Khám phá</td><td>350–380K</td><td class="r">70K</td><td class="r">78–81%</td><td class="m">Ngay · seed</td></tr>
+<tr><td class="b">⑥ Xưởng trải nghiệm</td><td>Theo package</td><td class="r">Variable</td><td class="r">40–55%</td><td class="m">T6+</td></tr>
+</tbody></table>
+</section>
+
+<hr class="div">
+
+<!-- 03 PRICING ARCHITECTURE -->
+<section class="section" id="pricing">
+<div class="section-label">Phần 03</div>
+<h2>Cấu trúc <em>Định giá</em></h2>
+<p class="section-desc">Khoảng 1.0–1.79 triệu gắn với mức cá nhân hoá, nguyên liệu, và thời gian trải nghiệm.</p>
+<table><thead><tr><th>Tầng</th><th>Giá (chưa VAT)</th><th>Đặc điểm</th><th class="r">Giá vốn</th><th class="r">Biên LN</th><th class="r">% khách</th></tr></thead><tbody>
+<tr><td class="b">Cơ bản</td><td>1.0–1.2M</td><td class="m">2–3 lớp hương · nguyên liệu chính · 25–30'</td><td class="r">150K</td><td class="r">85–87.5%</td><td class="r">30%</td></tr>
+<tr><td class="b">Đặc trưng</td><td>1.3–1.5M</td><td class="m">3–4 lớp · nguyên liệu cao cấp · 30–35'</td><td class="r">180K</td><td class="r">86–87.5%</td><td class="r">50%</td></tr>
+<tr><td class="b">Nghệ nhân</td><td>1.6–1.79M</td><td class="m">Phức tạp · nguyên liệu quý hiếm · 35–40'</td><td class="r">210K</td><td class="r">87–87.5%</td><td class="r">20%</td></tr>
+</tbody></table>
+<p><strong>Bình quân gia quyền:</strong> (30%×1.1M)+(50%×1.4M)+(20%×1.7M)=<span class="highlight">1.37M</span>. Thực tế 1.0 average ~1.5M do bán thêm tự nhiên (khắc tên, gói quà).</p>
+</section>
+
+<hr class="div">
+
+<!-- 04 CAPACITY ARCHITECTURE -->
+<section class="section" id="capacity">
+<div class="section-label">Phần 04</div>
+<h2>Cấu trúc <em>Công suất</em></h2>
+<p class="section-desc">Tính ngược từ doanh thu → giao dịch → trạm → nhân sự.</p>
+<div class="metrics">
+<div class="metric-card"><div class="value">12h</div><div class="label">10:00–22:00<br/>Staff từ 9:00</div></div>
+<div class="metric-card"><div class="value">30</div><div class="label">Ngày/tháng<br/>T2–CN</div></div>
+<div class="metric-card"><div class="value">35'</div><div class="label">Phút/TX<br/>TB 30–40</div></div>
+<div class="metric-card"><div class="value">1.5M</div><div class="label">VNĐ/TX<br/>Chưa VAT</div></div>
+</div>
+<table><thead><tr><th>Tháng</th><th class="r">Doanh thu</th><th class="r">TX/tháng</th><th class="r">GD/ngày</th><th class="r">Trạm cần</th></tr></thead><tbody>
+<tr><td class="b">T1</td><td class="r">300M</td><td class="r">200</td><td class="r">6.7</td><td class="r t">0.4</td></tr>
+<tr><td class="b">T2</td><td class="r">600M</td><td class="r">400</td><td class="r">13.3</td><td class="r t">0.7</td></tr>
+<tr><td class="b">T3</td><td class="r">1,200M</td><td class="r">800</td><td class="r">26.7</td><td class="r t">1.4</td></tr>
+<tr><td class="b">T4</td><td class="r">1,500M</td><td class="r">1,000</td><td class="r">33.3</td><td class="r a">1.7</td></tr>
+<tr><td class="b">T5 Peak</td><td class="r">1,800–2,200M</td><td class="r">1,200–1,467</td><td class="r">40–49</td><td class="r a">2.1–2.6</td></tr>
+</tbody></table>
+</section>
+
+<hr class="div">
+
+<!-- 05 PEOPLE -->
+
+<section class="section" id="people">
+<div class="section-label">Phần 05</div>
+<h2>Con người &amp; <em>Đối tác</em></h2>
+<p class="section-desc">Triết lý nhân sự: đối tác dài hạn, không phải nhân viên. Lộ trình phát triển, quỹ lợi nhuận chung, và mô hình đối tác.</p>
+<h3><span class="num">5.1</span> Triết lý: Đối tác, không phải nhân viên</h3><div class="callout"><h4>Mỗi thành viên = đối tác dài hạn của thương hiệu</h4>
+<p>MORAQ không thuê nhân viên — MORAQ mời đối tác. Mỗi người có lộ trình phát triển từ vị trí đầu tiên đến quản lý cửa hàng và xa hơn. Quản lý cửa hàng không được thuê từ bên ngoài — được đào tạo từ những người đã sống với Codex hằng ngày. Sự phát triển của nhân sự đi liền với sự mở rộng của thương hiệu &amp; group.</p>
+<p>Mỗi cấp độ được earn, không được assign. Không có shortcut — chỉ có con đường đã được chứng minh.</p></div><h4>Tầng 5 — Quỹ lợi nhuận chung</h4><div class="vc"><div class="vc-title">Quỹ Lợi Nhuận Chung — cơ chế sở hữu thực sự</div>
+<div class="vc-grid">
+<div class="vc-item accent"><div class="vc-num">3%</div><div class="vc-sub">LN ròng/tháng<br/>Vào quỹ chung</div></div>
+<div class="vc-item accent"><div class="vc-num">23.6M</div><div class="vc-sub">Vào pool/th<br/>Tại cơ sở 787M</div></div>
+<div class="vc-item"><div class="vc-num">~14M</div><div class="vc-sub">Mỗi người/quý<br/>5 thành viên</div></div>
+<div class="vc-item warn"><div class="vc-num">3×</div><div class="vc-sub">Quy mô quỹ<br/>Khi 3 stores</div></div>
+</div>
+<p class="vc-note">Phân phối: <strong>Trọng số thâm niên × Điểm hiệu suất</strong>. Người ở lâu = weight cao hơn. Sự thịnh vượng của team gắn liền với MORAQ.</p></div><div class="vc"><div class="vc-title">Mô hình đối tác — tại sao mạnh hơn</div>
+<div class="vc-grid">
+<div class="vc-item accent"><div class="vc-num">−30%</div><div class="vc-sub">Chi phí cố định<br/>96M → 67M</div></div>
+<div class="vc-item accent"><div class="vc-num">3.8</div><div class="vc-sub">GD/ngày hoà vốn<br/>Giảm từ 5.3</div></div>
+<div class="vc-item"><div class="vc-num">24–28M</div><div class="vc-sub">Nghệ nhân tổng/th<br/>Cơ bản 10M + biến động</div></div>
+<div class="vc-item"><div class="vc-num">15.5M</div><div class="vc-sub">Hỗ trợ tổng/th<br/>Cơ bản 8M + biến động</div></div>
+</div>
+<p class="vc-note">Mọi người đều có lý do để cửa hàng thành công — thu nhập gắn trực tiếp với thành công đó.</p></div></section>
+
+<hr class="div">
+
+<!-- 06 COMPENSATION -->
+
+<section class="section" id="compensation">
+<div class="section-label">Phần 06</div>
+<h2>Cấu trúc <em>Đãi ngộ</em></h2>
+<p class="section-desc">Nhân sự tăng theo cột mốc doanh thu. Đãi ngộ 5 tầng, quỹ kích hoạt, dự phòng biến động, và cam kết nhà sáng lập.</p>
+<div class="phase-grid">
+<div class="phase-card"><div class="pn">Giai đoạn 0 · Trước khai trương</div><div class="pt">Chuẩn bị</div><div class="pd">T−3→T−1<br/>NSL + QL cửa hàng + Vệ sinh<br/><strong>~41M/th</strong></div></div>
+<div class="phase-card"><div class="pn">Giai đoạn 1 · T1 · 300M</div><div class="pt">Nòng cốt</div><div class="pd">~7 TX/ng · + Pha chế #1<br/>QL kiêm tư vấn<br/><strong>~65M/th</strong></div></div>
+<div class="phase-card"><div class="pn">Giai đoạn 2 · T2–T3</div><div class="pt">Đội đủ</div><div class="pd">13–27 TX/ng<br/>+ Tư vấn viên + Pha chế #2<br/><strong>~96M/th</strong></div></div>
+<div class="phase-card"><div class="pn">Giai đoạn 3 · T4+</div><div class="pt">Cao điểm</div><div class="pd">33+ TX/ng<br/>+ Barista #3 ca cao điểm<br/><strong>~106M/th</strong></div></div>
+</div><h3><span class="num">6.1</span> Tổng đãi ngộ — Kịch bản cơ sở 1.54 tỷ</h3><table><thead><tr><th>Vị trí</th><th class="r">Cơ bản</th><th class="r">HH+Đội</th><th class="r">Liên chức năng</th><th class="r">Quỹ LN</th><th class="r">TỔNG/th</th></tr></thead><tbody>
+<tr><td class="b">Nghệ nhân A (Cao cấp)</td><td class="r">12,000K</td><td class="r">6,390K</td><td class="r">2,500K</td><td class="r">4,700K</td><td class="r t">25,590K</td></tr>
+<tr><td class="b">Nghệ nhân B</td><td class="r">10,000K</td><td class="r">6,390K</td><td class="r">1,000K</td><td class="r">4,700K</td><td class="r t">22,090K</td></tr>
+<tr><td class="b">Nghệ nhân C</td><td class="r">10,000K</td><td class="r">6,390K</td><td class="r">0</td><td class="r">4,700K</td><td class="r t">21,090K</td></tr>
+<tr><td class="b">Hỗ trợ</td><td class="r">8,000K</td><td class="r">1,770K</td><td class="r">1,000K</td><td class="r">4,700K</td><td class="r t">15,470K</td></tr>
+<tr><td class="b">NSL</td><td class="r">15,000K</td><td class="r m" colspan="3">+ 5% chia lợi nhuận (~39M)</td><td class="r">54,000K</td></tr>
+<tr class="sub"><td>Cố định (lương+BH)</td><td class="r" colspan="4"></td><td class="r">67,000K</td></tr>
+<tr class="sub"><td>Biến động (tất cả tầng)</td><td class="r" colspan="4"></td><td class="r">~71,000K</td></tr>
+<tr class="tot"><td>TOTAL</td><td class="r" colspan="4"></td><td class="r t">~138,000K</td></tr>
+<tr><td class="m">% revenue</td><td class="r m" colspan="4"></td><td class="r m">9.0%</td></tr>
+</tbody></table><h3><span class="num">6.2</span> Vai trò Nhà sáng lập</h3><p>Giai đoạn 1: Quản lý cửa hàng + Thương hiệu + Đào tạo (15M base + 5% chia lợi nhuận). Giai đoạn 2+: chuyển giao vận hành, giữ tầm nhìn sản phẩm + hệ sinh thái nhà cung cấp vĩnh viễn.</p><h3><span class="num">6.3</span> Quỹ kích hoạt theo cột mốc</h3><p>MORAQ tái đầu tư lợi nhuận vào con người và hệ sinh thái thông qua <strong>5 quỹ mục đích</strong>, mỗi quỹ chỉ kích hoạt khi doanh thu chạm ngưỡng — đảm bảo business đủ khỏe trước khi cam kết.</p><table><thead><tr><th>Quỹ</th><th class="r">% EBIT</th><th>Kích hoạt khi</th><th>Mục đích</th><th class="r">Ước tính/th (base)</th></tr></thead><tbody>
+<tr><td class="b">① Phát triển Đối tác</td><td class="r t">2.0%</td><td class="m">DT ≥ 1.0B · 3 tháng liên tục</td><td class="m">Đào tạo nâng cao, mentorship, brand immersion, khoá học bên ngoài</td><td class="r">~21M</td></tr>
+<tr><td class="b">② Công cụ &amp; Trang thiết bị</td><td class="r t">1.0%</td><td class="m">DT ≥ 800M · 2 tháng</td><td class="m">Nâng cấp counter, thiết bị mới, công cụ làm việc</td><td class="r">~16M</td></tr>
+<tr><td class="b">③ Phúc lợi Môi trường làm việc</td><td class="r">1.0%</td><td class="m">DT ≥ 1.2B · 3 tháng</td><td class="m">Bữa ăn staff, khám sức khỏe, xây dựng đội nhóm, cải thiện nơi làm</td><td class="r">~10M</td></tr>
+<tr><td class="b">④ Đầu tư Cộng đồng</td><td class="r">1.0%</td><td class="m">DT ≥ 1.5B · stable</td><td class="m">Local grants, giáo dục, hỗ trợ cộng đồng quanh cửa hàng</td><td class="r">~10M</td></tr>
+<tr><td class="b">⑤ Phát triển Nhà cung cấp</td><td class="r">1.0%</td><td class="m">DT ≥ 1.5B · stable</td><td class="m">Hỗ trợ nhà cung cấp địa phương nâng chất, chứng nhận IFRA, cộng đồng nông nghiệp</td><td class="r">~16M</td></tr>
+<tr class="sub"><td colspan="2">Tổng 5 quỹ (khi full activation)</td><td colspan="2"></td><td class="r">7.0% EBIT = ~73M/th</td></tr>
+</tbody></table><table><thead><tr><th>Tháng</th><th>Doanh thu</th><th>Quỹ kích hoạt</th><th class="r">Ngân sách thêm</th><th class="r">Tổng luỹ kế</th></tr></thead><tbody>
+<tr><td class="b">T1–T2</td><td class="m">300–600M</td><td class="m" style="color:var(--warm-400)">— Chưa kích hoạt — tập trung ramp</td><td class="r">0</td><td class="r">0</td></tr>
+<tr><td class="b">T3</td><td class="m">≥ 800M (2th)</td><td class="t">② Công cụ &amp; Trang thiết bị</td><td class="r">+16M/th</td><td class="r">16M/th</td></tr>
+<tr><td class="b">T4–T5</td><td class="m">≥ 1.0B (3th)</td><td class="t">① Partner Dev + ③ Wellbeing</td><td class="r">+31M/th</td><td class="r">47M/th</td></tr>
+<tr><td class="b">T6+</td><td class="m">≥ 1.5B stable</td><td class="t">④ Community + ⑤ Supplier</td><td class="r">+26M/th</td><td class="r t">73M/th</td></tr>
+<tr class="sub"><td colspan="3">Full activation = 7% EBIT</td><td class="r" colspan="2">73M/th = 876M/năm</td></tr>
+</tbody></table><h3><span class="num">6.4</span> Biến động nhân sự — chi phí ẩn</h3><div class="vc rb"><div class="vc-title">Chi phí biến động nhân sự — rủi ro ẩn lớn nhất bán lẻ VN</div>
+<div class="vc-grid">
+<div class="vc-item neg"><div class="vc-num">30–50%</div><div class="vc-sub">Biến động ngành<br/>2–3 người/năm</div></div>
+<div class="vc-item neg"><div class="vc-num">15M</div><div class="vc-sub">Chi phí/lần<br/>Tuyển + đào tạo 5 ngày</div></div>
+<div class="vc-item warn"><div class="vc-num">7M/th</div><div class="vc-sub">Đã trong P&amp;L<br/>Dự phòng turnover</div></div>
+<div class="vc-item accent"><div class="vc-num">SOP 5d</div><div class="vc-sub">Giảm thiểu<br/>Codex + lương 12–18M</div></div>
+</div></div><h3><span class="num">6.5</span> Chi phí cơ hội Nhà sáng lập</h3><div class="vc"><div class="vc-title">Cam kết Nhà sáng lập — điều nhà đầu tư nên biết</div>
+<div class="vc-grid">
+<div class="vc-item"><div class="vc-num">15M/th</div><div class="vc-sub">NSL nhận<br/>Dưới market rate</div></div>
+<div class="vc-item warn"><div class="vc-num">50–70M</div><div class="vc-sub">Mức thị trường/th<br/>Với kinh nghiệm tương đương</div></div>
+<div class="vc-item neg"><div class="vc-num">420–660M</div><div class="vc-sub">Trợ cấp ngầm/năm<br/>Không trên P&amp;L</div></div>
+<div class="vc-item accent"><div class="vc-num">5%</div><div class="vc-sub">Chia lợi nhuận<br/>~52M/th tại steady</div></div>
+</div>
+<p class="vc-note">Kinh nghiệm vận hành 12 cửa hàng + toàn bộ IP (phương pháp luận, quy trình, hệ thống) xây trước khi gọi vốn.</p></div></section>
+
+<hr class="div">
+
+<!-- 07 P&L -->
+<section class="section" id="pnl">
+<div class="section-label">Phần 07</div>
+<h2>Mô hình <em>Lãi lỗ</em></h2>
+<p class="section-desc">Lãi lỗ đầy đủ từ doanh thu đến lợi nhuận ròng sau thuế TNDN 20%. Bao gồm quỹ tu sửa và dự phòng biến động nhân sự.</p>
+<h3><span class="num">7.1</span> Lãi lỗ hàng tháng — 3 kịch bản (trạng thái ổn định)</h3>
+<table><thead><tr><th>Hạng mục</th><th class="r">Thận trọng</th><th class="r">Trung bình</th><th class="r">Lạc quan</th></tr></thead><tbody>
+<tr><td class="b">Doanh thu (chưa VAT)</td><td class="r b">1,100M</td><td class="r b">1,540M</td><td class="r b">2,000M</td></tr>
+<tr class="sp"><td></td><td></td><td></td><td></td></tr>
+<tr><td>Giá vốn (~12%)</td><td class="r">−132M</td><td class="r">−185M</td><td class="r">−240M</td></tr>
+<tr class="sub"><td>Lợi nhuận gộp (~87.5%)</td><td class="r">968M</td><td class="r">1,355M</td><td class="r">1,760M</td></tr>
+<tr class="sp"><td></td><td></td><td></td><td></td></tr>
+<tr><td>Tiếp thị (7–9%)</td><td class="r">−99M</td><td class="r">−123M</td><td class="r">−160M</td></tr>
+<tr><td>Nhân sự cơ bản + BH (mô hình đối tác)</td><td class="r">−67M</td><td class="r">−67M</td><td class="r">−67M</td></tr>
+<tr><td>Đãi ngộ biến động (gắn hiệu suất)</td><td class="r">−12M</td><td class="r">−25M</td><td class="r">−38M</td></tr>
+<tr><td>Quỹ LN (3% ròng) + giữ chân</td><td class="r">−10M</td><td class="r">−30M</td><td class="r">−38M</td></tr>
+<tr><td>Thuê mặt bằng</td><td class="r">−38M</td><td class="r">−38M</td><td class="r">−38M</td></tr>
+<tr><td>Vận hành (điện/nước/misc)</td><td class="r">−15M</td><td class="r">−15M</td><td class="r">−18M</td></tr>
+<tr><td>Khấu hao (800M/4 năm)</td><td class="r">−17M</td><td class="r">−17M</td><td class="r">−17M</td></tr>
+<tr><td>Quỹ tu sửa</td><td class="r">−5M</td><td class="r">−5M</td><td class="r">−5M</td></tr>
+<tr><td>Công nghệ + Kế toán + Pháp lý + Bảo hiểm</td><td class="r">−14M</td><td class="r">−14M</td><td class="r">−14M</td></tr>
+<tr class="sub"><td>Tổng chi phí vận hành</td><td class="r">−272M</td><td class="r">−319M</td><td class="r">−393M</td></tr>
+<tr class="sp"><td></td><td></td><td></td><td></td></tr>
+<tr style="font-weight:600"><td>EBIT</td><td class="r t">696M</td><td class="r t">1,036M</td><td class="r t">1,367M</td></tr>
+<tr><td class="m">Biên EBIT</td><td class="r">63.3%</td><td class="r">67.3%</td><td class="r">68.4%</td></tr>
+<tr class="sp"><td></td><td></td><td></td><td></td></tr>
+<tr><td>Founder chia lợi nhuận (5%) <span style="font-size:11px;color:var(--amber);font-weight:500;letter-spacing:.04em">· BÊN LIÊN QUAN</span></td><td class="r">−35M</td><td class="r">−52M</td><td class="r">−68M</td></tr>
+<tr style="font-weight:600"><td>Lợi nhuận trước thuế</td><td class="r">661M</td><td class="r">984M</td><td class="r">1,299M</td></tr>
+<tr><td>Thuế TNDN (CIT 20%)</td><td class="r rd">−132M</td><td class="r rd">−197M</td><td class="r rd">−260M</td></tr>
+<tr class="tot" style="background:var(--teal-bg)"><td>LỢI NHUẬN RÒNG</td><td class="r t" style="font-size:18px">529M</td><td class="r t" style="font-size:18px">787M</td><td class="r t" style="font-size:18px">1,039M</td></tr>
+<tr><td class="m">Biên ròng</td><td class="r t">48.1%</td><td class="r t">51.1%</td><td class="r t">52.0%</td></tr>
+</tbody></table>
+<p class="note">Quỹ tu sửa 5M/th = 60M/năm. Tích luỹ 18 tháng = 90M đủ minor refresh. Founder chia lợi nhuận hạch toán như chi phí quản lý (deductible trước CIT).</p>
+<h3><span class="num">7.2</span> So sánh với ngành</h3>
+<table><thead><tr><th>Chỉ số</th><th class="r">MORAQ</th><th class="r">Bán lẻ VN</th></tr></thead><tbody>
+<tr><td>Biên gộp</td><td class="r t">85–90%</td><td class="r">40–60%</td></tr>
+<tr><td>Tiếp thị / DT</td><td class="r t">7–9%</td><td class="r">15–25%</td></tr>
+<tr><td>Nhân sự / DT (inc. turnover)</td><td class="r t">5–7%</td><td class="r">15–25%</td></tr>
+<tr><td>Thuê / DT</td><td class="r t">~2.5%</td><td class="r">8–15%</td></tr>
+<tr><td>Biên EBIT</td><td class="r t">62–70%</td><td class="r">5–15%</td></tr>
+<tr><td>Biên ròng sau thuế</td><td class="r t">47–53%</td><td class="r">3–10%</td></tr>
+<tr><td>Hoàn vốn</td><td class="r t">2–3 tháng</td><td class="r">12–24 tháng</td></tr>
+</tbody></table>
+</section>
+
+<hr class="div">
+
+<!-- 08 MARKETING -->
+<section class="section" id="marketing">
+<div class="section-label">Phần 08</div>
+<h2>Cấu trúc <em>Tiếp thị</em></h2>
+<p class="section-desc">Ngân sách chi tiết theo tháng — từ pre-ra mắt đến trạng thái ổn định. Bao gồm nhân sự content, chất liệu, KOL, và paid ads.</p>
+<h3><span class="num">8.1</span> Người ảnh hưởng (KOL) / Báo chí — Lộ trình 18 tháng</h3>
+<table><thead><tr><th>Tháng</th><th>Giai đoạn</th><th>Hoạt động chính</th><th class="r">KOL/BC</th><th class="r">NS+VL</th><th class="r">QC</th><th class="r">TỔNG TT</th></tr></thead><tbody>
+<tr><td class="b">T−3</td><td class="m">Gieo mầm nhẹ</td><td class="m">3–5 người ảnh hưởng nhỏ · sản xuất nội dung · bộ tài liệu truyền thông</td><td class="r">21,000K</td><td class="r">29,000K</td><td class="r">30,000K</td><td class="r">80,000K</td></tr>
+<tr><td class="b">T−2</td><td class="m">Tăng cường</td><td class="m">5–8 KOL · nội dung báo chí dạng teaser · hậu trường thi công</td><td class="r">61,000K</td><td class="r">29,000K</td><td class="r">30,000K</td><td class="r">120,000K</td></tr>
+<tr><td class="b">T−1</td><td class="m">Trước ra mắt</td><td class="m">Sự kiện báo chí xem trước · người ảnh hưởng hàng đầu experience · chiến dịch truyền thông</td><td class="r">141,000K</td><td class="r">29,000K</td><td class="r">30,000K</td><td class="r a">200,000K</td></tr>
+<tr style="background:var(--teal-bg)"><td class="b">T0</td><td class="b" style="color:var(--teal)">RA MẮT</td><td class="m">Khai trương · người ảnh hưởng hàng đầu · đưa tin báo chí · event · chính xác, không dồn ép</td><td class="r">191,000K</td><td class="r">29,000K</td><td class="r">30,000K</td><td class="r t">250,000K</td></tr>
+<tr><td class="b">T1</td><td class="m">Duy trì</td><td class="m">Khuếch đại nội dung người dùng · loạt đánh giá · theo dõi báo chí</td><td class="r">141,000K</td><td class="r">29,000K</td><td class="r">30,000K</td><td class="r">200,000K</td></tr>
+<tr><td class="b">T2</td><td class="m">Giảm dần</td><td class="m">Chuyển đổi tự nhiên · giảm KOL · chương trình giới thiệu</td><td class="r">91,000K</td><td class="r">29,000K</td><td class="r">30,000K</td><td class="r">150,000K</td></tr>
+<tr class="sp"><td colspan="7"></td></tr>
+<tr class="sub"><td colspan="3">Subtotal T−3 → T2 (6 tháng)</td><td class="r">646M</td><td class="r">174M</td><td class="r">180M</td><td class="r">1,000M</td></tr>
+<tr class="sp"><td colspan="7"></td></tr>
+<tr><td class="b">T3</td><td class="m">Chuyển sang %DT</td><td class="m">7–9% × 1,200M = 84–108M</td><td class="r m">~37–49M</td><td class="r">29,000K</td><td class="r">30,000K</td><td class="r t">96,000K</td></tr>
+<tr><td class="b">T4</td><td class="m">Tăng trưởng</td><td class="m">8% × 1,500M = 120M</td><td class="r m">~61M</td><td class="r">29,000K</td><td class="r">30,000K</td><td class="r t">120,000K</td></tr>
+<tr><td class="b">T5+</td><td class="m">Steady state</td><td class="m">8% × 1,540M base = 123M</td><td class="r m">~64M</td><td class="r">29,000K</td><td class="r">30,000K</td><td class="r t">123,000K</td></tr>
+</tbody></table>
+<h3><span class="num">8.2</span> Tổng hợp cấu trúc tiếp thị — trạng thái ổn định</h3>
+<div class="metrics">
+<div class="metric-card"><div class="value">21M</div><div class="label">Nhân sự MKT/th<br/>2 chụp ảnh + 1 thiết kế</div></div>
+<div class="metric-card"><div class="value">8M</div><div class="label">Chất liệu/th<br/>In ấn + PR kit + props</div></div>
+<div class="metric-card"><div class="value">30M</div><div class="label">Quảng cáo trả phí/th<br/>Facebook + TikTok + YouTube + Google</div></div>
+<div class="metric-card"><div class="value amber">64M</div><div class="label">KOL/Press/th<br/>Phần còn lại 8% DT</div></div>
+</div>
+<table><thead><tr><th>Hạng mục</th><th class="r">Cơ sở (123M)</th><th class="r">% tổng MKT</th><th>Tính chất</th></tr></thead><tbody>
+<tr><td class="b">Nhân sự tiếp thị</td><td class="r">21,000K</td><td class="r">17%</td><td class="m">Bán cố định · cộng tác viên</td></tr>
+<tr><td class="b">Chất liệu</td><td class="r">8,000K</td><td class="r">7%</td><td class="m">Biến động theo campaign</td></tr>
+<tr><td class="b">Quảng cáo trả phí</td><td class="r">30,000K</td><td class="r">24%</td><td class="m">Cố định · chỉ tăng khi hiệu suất quảng cáo tốt</td></tr>
+<tr><td class="b">KOL / Báo chí / Người ảnh hưởng</td><td class="r">64,000K</td><td class="r">52%</td><td class="m">Biến động · điều chỉnh theo DT</td></tr>
+<tr class="tot"><td>TỔNG (8% × 1.54B)</td><td class="r t">123,000K</td><td class="r t">100%</td><td class="m">= P&amp;L line “Marketing”</td></tr>
+</tbody></table>
+<p class="note">KOL/Press chiếm 52% ngân sách tiếp thị = khoản linh hoạt nhất. Khi organic vòng quay mạnh (NPS ≥70, truyền miệng tăng), giảm KOL, tăng cộng đồng &amp; chương trình Refill. Mục tiêu Năm 2: KOL giảm còn 30% MKT, tự nhiên chiếm 70%.</p>
+</section>
+
+<hr class="div">
+
+<!-- 09 LTV -->
+<section class="section" id="refill">
+<div class="section-label">Phần 09</div>
+<h2>Refill &amp; <em>Giá trị Vòng đời</em></h2>
+<p class="section-desc">Dòng doanh thu ẩn lớn nhất — tích luỹ theo thời gian với chi phí thu khách = 0.</p>
+<div class="metrics">
+<div class="metric-card"><div class="value">15%</div><div class="label">Tỷ lệ refill<br/>Trong 90 ngày</div></div>
+<div class="metric-card"><div class="value">750K</div><div class="label">Giá refill TB<br/>600–900K</div></div>
+<div class="metric-card"><div class="value">~90K</div><div class="label">COGS/refill<br/>Margin 87.5%</div></div>
+<div class="metric-card"><div class="value">0đ</div><div class="label">Acquisition cost<br/>Đã là khách</div></div>
+</div>
+<h3><span class="num">9.1</span> Doanh thu Refill tích luỹ — 12 tháng</h3>
+<table><thead><tr><th>Tháng</th><th class="r">Mới (luỹ kế)</th><th class="r">Đủ điều kiện</th><th class="r">GD Refill</th><th class="r">Doanh thu</th></tr></thead><tbody>
+<tr><td>T1</td><td class="r">200</td><td class="r m">—</td><td class="r m">—</td><td class="r m">—</td></tr>
+<tr><td>T2</td><td class="r">600</td><td class="r m">—</td><td class="r m">—</td><td class="r m">—</td></tr>
+<tr><td>T3</td><td class="r">1,400</td><td class="r">200</td><td class="r">30</td><td class="r">22M</td></tr>
+<tr><td>T4</td><td class="r">2,400</td><td class="r">600</td><td class="r">90</td><td class="r t">68M</td></tr>
+<tr><td>T5</td><td class="r">3,600</td><td class="r">1,400</td><td class="r">210</td><td class="r t">158M</td></tr>
+<tr><td>T6</td><td class="r">4,800</td><td class="r">2,400</td><td class="r">360</td><td class="r t">270M</td></tr>
+<tr><td>T9</td><td class="r">8,400</td><td class="r">4,800</td><td class="r">~450</td><td class="r t">338M</td></tr>
+<tr><td class="b">T12</td><td class="r b">12,000</td><td class="r">8,400</td><td class="r b">~450</td><td class="r t b">338M</td></tr>
+</tbody></table>
+<p class="note">Refill bị giới hạn bởi công suất. Đến T6+, refill chiếm ~30% TX. Mỗi refill nhanh hơn (15–20' vs 35') → tăng effective capacity.</p>
+<h3><span class="num">9.2</span> Giá trị vòng đời (LTV) theo phân khúc khách</h3>
+<table><thead><tr><th>Phân khúc</th><th class="r">GD đầu</th><th class="r">LTV 12 tháng</th><th class="r">Bội số</th></tr></thead><tbody>
+<tr><td class="b">01 · Người Kết Nối</td><td class="r">1.5M</td><td class="r t">6–9M</td><td class="r t">4–6×</td></tr>
+<tr><td class="m" colspan="4" style="padding-left:24px">2× refill + 1–2× tặng quà + dẫn 2–3 người mới</td></tr>
+<tr><td class="b">02 · Người Tò Mò</td><td class="r">1.5M</td><td class="r">2.5–4.5M</td><td class="r">1.7–3×</td></tr>
+<tr><td class="m" colspan="4" style="padding-left:24px">1× refill + dẫn 2–4 người (hiệu ứng lan toả mạnh nhất)</td></tr>
+<tr><td class="b">03 · Người Trung Thành</td><td class="r">1.5M</td><td class="r t">10–15M</td><td class="r t">7–10×</td></tr>
+<tr><td class="m" colspan="4" style="padding-left:24px">3–4× refill + tặng quà + kể câu chuyện đầy đủ = bộ khuếch đại mạnh nhất</td></tr>
+</tbody></table>
+<div class="callout"><h4>Hiệu ứng tích luỹ</h4><p>Đến T12, refill ~338M/th = ~22% tổng DT — COGS thấp hơn, thu khách = 0, thời gian ngắn hơn. Mỗi tháng thêm khách vào nhóm, doanh thu tăng dần <strong>không cần thêm marketing</strong>. Đây là động lực chính năm 2 vượt Năm 1.</p></div>
+
+<div class="vc"><div class="vc-title">Refill ăn vào doanh thu mới — tác động ròng</div>
+<div class="vc-grid">
+<div class="vc-item"><div class="vc-num">~55M</div><div class="vc-sub">Max DT/ngày<br/>Gần không đổi</div></div>
+<div class="vc-item accent"><div class="vc-num">37→43</div><div class="vc-sub">GD/ngày<br/>Mở công suất</div></div>
+<div class="vc-item warn"><div class="vc-num">−2.9%</div><div class="vc-sub">Tác động DT ròng<br/>−86M nhưng COGS+MKT giảm</div></div>
+<div class="vc-item accent"><div class="vc-num">+0.5pp</div><div class="vc-sub">Biên EBIT<br/>67.3%→67.8%</div></div>
+</div>
+<p class="vc-note">Refill = tính năng: khách hài lòng quay lại = truyền miệng mạnh hơn = giảm chi phí thu khách. Vòng quay tích luỹ.</p></div>
+</section>
+
+<hr class="div">
+
+<!-- 10 CAPITAL -->
+<section class="section" id="startup">
+<div class="section-label">Phần 10</div>
+<h2>Vốn <em>Khởi điểm</em></h2>
+<p class="section-desc">Phân bổ 3,05 tỷ VNĐ. Bao gồm tiếp thị 4 giai đoạn, lượng đặt tối ưu, dự phòng T1, và dự phòng 3 tầng.</p>
+<table><thead><tr><th>Hạng mục</th><th>Chi tiết</th><th class="r">VNĐ</th><th class="r">%</th></tr></thead><tbody>
+<tr class="sec"><td colspan="4">① Cửa hàng — 31%</td></tr>
+<tr><td class="m" style="padding-left:24px">Thiết kế &amp; tiền sản xuất (5 giai đoạn)</td><td class="m">Không gian + vật liệu + biển hiệu + bao bì + kỹ thuật số</td><td class="r">200M</td><td class="r"></td></tr>
+<tr><td class="m" style="padding-left:24px">Thi công nội thất (thi công + vật liệu)</td><td class="m">Quầy, chiếu sáng, giác quan, nội thất</td><td class="r">600M</td><td class="r"></td></tr>
+<tr><td class="m" style="padding-left:24px">Cọc mặt bằng (2 tháng)</td><td class="m">37.5M × 2</td><td class="r">75M</td><td class="r"></td></tr>
+<tr class="sub"><td colspan="2">Subtotal</td><td class="r">875M</td><td class="r">31%</td></tr>
+<tr class="sec"><td colspan="4">② Tồn kho — 18%</td></tr>
+<tr><td class="m" style="padding-left:24px">Hương liệu MOQ</td><td class="m">25kg×3 = 75kg · $100/kg IFRA</td><td class="r">191M</td><td class="r"></td></tr>
+<tr><td class="m" style="padding-left:24px">Vỏ chai 50ml</td><td class="m">3,000 chai × 60K</td><td class="r">180M</td><td class="r"></td></tr>
+<tr><td class="m" style="padding-left:24px">Vỏ chai 10ml</td><td class="m">2,000 chai × 20K</td><td class="r">40M</td><td class="r"></td></tr>
+<tr><td class="m" style="padding-left:24px">Packaging batch 1</td><td class="m">1,500 sets</td><td class="r">65M</td><td class="r"></td></tr>
+<tr class="sub"><td colspan="2">Subtotal</td><td class="r">476M</td><td class="r">18%</td></tr>
+<tr class="sec"><td colspan="4">③ Tiếp thị — 21%</td></tr>
+<tr><td class="m" style="padding-left:24px">T−3 Seeding (KOL + nội dung + ads)</td><td class="m">3–5 người ảnh hưởng nhỏ · sản xuất nội dung</td><td class="r">80M</td><td class="r"></td></tr>
+<tr><td class="m" style="padding-left:24px">T−2 Build-up</td><td class="m">5–8 KOL + nội dung báo chí dạng teaser + ads</td><td class="r">120M</td><td class="r"></td></tr>
+<tr><td class="m" style="padding-left:24px">T−1 Pre-ra mắt</td><td class="m">Sự kiện báo chí + người ảnh hưởng hàng đầu experience</td><td class="r">200M</td><td class="r"></td></tr>
+<tr><td class="m" style="padding-left:24px">T0 Ra mắt</td><td class="m">Khai trương · chính xác, không dồn ép</td><td class="r">250M</td><td class="r"></td></tr>
+<tr class="sub"><td colspan="2">Subtotal</td><td class="r">650M</td><td class="r">21%</td></tr>
+<tr class="sec"><td colspan="4">④ Pháp lý &amp; Tech — 8%</td></tr>
+<tr><td class="m" style="padding-left:24px">Pháp nhân + trademark + investor agreement + tech + BH</td><td class="m">Đăng ký, luật sư, POS/CRM, bảo hiểm</td><td class="r">205M</td><td class="r"></td></tr>
+<tr class="sub"><td colspan="2">Subtotal</td><td class="r">205M</td><td class="r">8%</td></tr>
+<tr class="sec"><td colspan="4">⑤ Nhân sự pre-opening + hậu cần — 13%</td></tr>
+<tr><td class="m" style="padding-left:24px">Nhân sự trước quầy trước khai trương (3 tháng)</td><td class="m">Thuê + lương training + vận hành thử</td><td class="r">150M</td><td class="r"></td></tr>
+<tr><td class="m" style="padding-left:24px">Điều phối hậu cần (T−3 → T3)</td><td class="m">1 người kiêm nhiệm 7 tháng · tăng dần theo DT</td><td class="r">80M</td><td class="r"></td></tr>
+<tr class="sub"><td colspan="2">Subtotal</td><td class="r">230M</td><td class="r">8%</td></tr>
+<tr class="sec"><td colspan="4">⑥ Dự phòng 3 tầng — 16%</td></tr>
+<tr><td class="m" style="padding-left:24px">Dự phòng vận hành (4 tháng)</td><td class="m">Tầng 1 · NSL quyết định</td><td class="r">350M</td><td class="r"></td></tr>
+<tr><td class="m" style="padding-left:24px">Khẩn cấp / Dự phòng khẩn (5%)</td><td class="m">Tầng 2 · Cần consent founder + NĐT</td><td class="r">150M</td><td class="r"></td></tr>
+<tr class="sub"><td colspan="2">Subtotal</td><td class="r">500M</td><td class="r">16%</td></tr>
+<tr class="sec"><td colspan="4">⑦ Dự phòng vốn lưu động T1 — 4%</td></tr>
+<tr><td class="m" style="padding-left:24px">Cover T1 net âm (MKT 200M &gt; Revenue 300M)</td><td class="m">T1 tiêu vượt DT · hoàn lại từ T2+</td><td class="r">114M</td><td class="r"></td></tr>
+<tr class="sub"><td colspan="2">Subtotal</td><td class="r">114M</td><td class="r">4%</td></tr>
+<tr class="tot"><td colspan="2">TỔNG VỐN CẦN GỌI</td><td class="r t">3,050M</td><td class="r t">100%</td></tr>
+</tbody></table>
+</section>
+
+<hr class="div">
+
+<!-- 11 RESERVES -->
+<section class="section" id="dự phòng khẩn">
+<div class="section-label">Phần 11</div>
+<h2>Dự phòng <em>3 Tầng — Cơ chế Kích hoạt</em></h2>
+<p class="section-desc">Mỗi tầng có trigger rõ ràng, quyền quyết định, và quy trình kích hoạt. Không dùng khi chưa đạt ngưỡng.</p>
+<h3><span class="num">11.1</span> Kiến trúc 3 tầng</h3>
+<table><thead><tr><th>Tầng</th><th class="r">Số tiền</th><th>Trigger kích hoạt</th><th>Quyền quyết định</th><th>Mục đích</th></tr></thead><tbody>
+<tr><td class="b t">Tầng 1<br/>Dự phòng vận hành</td><td class="r t">350M</td><td class="m">Net dòng tiền &lt; 0 liên tục 2 tháng<br/>HOẶC số dư tiền mặt &lt; 3× fixed cost/tháng (~465M)</td><td class="m"><strong>NSL quyết định</strong><br/>Báo NĐT trong 48h</td><td class="m">Duy trì vận hành: lương, thuê, OPEX, tồn kho thiết yếu</td></tr>
+<tr><td class="b a">Tầng 2<br/>Dự phòng khẩn</td><td class="r a">100M</td><td class="m">Tầng 1 đã dùng ≥ 50% (175M)<br/>VÀ không có dấu hiệu phục hồi trong 30 ngày</td><td class="m"><strong>NSL + NĐT đồng ý</strong><br/>Cần đồng ý bằng văn bản</td><td class="m">Chi phí bất khả kháng: pháp lý, sự cố cơ sở, gián đoạn chuỗi cung ứng</td></tr>
+<tr><td class="b rd">Tầng 3<br/>Bất khả kháng</td><td class="r rd">50M</td><td class="m">Sự kiện bất khả kháng: thiên tai, dịch bệnh, hỏa hoạn, lệnh đóng cửa<br/>HOẶC tổng tầng 1+2 đã dùng ≥ 80%</td><td class="m"><strong>NĐT quyết định</strong><br/>NSL đề xuất + kế hoạch phục hồi</td><td class="m">Bảo toàn tài sản + exit có trật tự nếu cần</td></tr>
+<tr class="tot"><td colspan="2">TỔNG DỰ PHÒNG</td><td class="r" colspan="3"><strong>500M</strong> = 18% vốn gọi</td></tr>
+</tbody></table>
+</section>
+
+<hr class="div">
+
+<!-- 12 BREAK-EVEN -->
+<section class="section" id="breakeven">
+<div class="section-label">Phần 12</div>
+<h2>Hoà vốn &amp; <em>Độ nhạy</em></h2>
+<p class="section-desc">Ngưỡng sống còn và ma trận. Tất cả sau thuế TNDN 20%.</p>
+<div class="metrics">
+<div class="metric-card"><div class="value">155M</div><div class="label">Cố định/tháng<br/>Giai đoạn 2 full</div></div>
+<div class="metric-card"><div class="value">1.20M</div><div class="label">Contribution/TX<br/>Sau COGS + mkt</div></div>
+<div class="metric-card"><div class="value">129</div><div class="label">TX/tháng<br/>Break-even</div></div>
+<div class="metric-card"><div class="value">4.3</div><div class="label">GD/ngày<br/>= 14% công suất</div></div>
+</div>
+<h3><span class="num">12.1</span> Ma trận độ nhạy — LN ròng sau thuế (triệu/tháng)</h3>
+<div class="mw"><table class="mx"><thead>
+<tr><th class="cn">TX/ng ↓ · Giá →</th><th>1.0M</th><th>1.2M</th><th>1.5M</th><th>1.7M</th></tr>
+</thead><tbody>
+<tr><td class="hc">2 tx/ng</td><td class="neg">−144M</td><td class="neg">−120M</td><td class="neg">−96M</td><td class="neg">−78M</td></tr>
+<tr><td class="hc">5 tx/ng</td><td class="neg">−72M</td><td class="neg">−48M</td><td class="neu">−12M</td><td class="pos">+12M</td></tr>
+<tr><td class="hc">10 tx/ng</td><td class="pos">+24M</td><td class="pos">+72M</td><td class="pos">+132M</td><td class="pos">+180M</td></tr>
+<tr><td class="hc">20 tx/ng</td><td class="pos">+216M</td><td class="pos">+312M</td><td class="pos">+456M</td><td class="pos">+552M</td></tr>
+<tr><td class="hc">33 tx (base)</td><td class="pos">+432M</td><td class="pos">+588M</td><td class="pos">+790M</td><td class="pos">+948M</td></tr>
+<tr><td class="hc">40 tx (cao điểm)</td><td class="pos">+564M</td><td class="pos">+756M</td><td class="pos">+1,008M</td><td class="pos">+1,200M</td></tr>
+</tbody></table></div>
+<p class="note">Vùng đỏ chỉ xuất hiện dưới 5 tx/ng — cực kỳ khó xảy ra nếu Vòng quay thương hiệu hoạt động.</p>
+</section>
+
+<hr class="div">
+
+<!-- 13 CASH FLOW -->
+<section class="section" id="cashflow">
+<div class="section-label">Phần 13</div>
+<h2>Dòng tiền <em>Theo tháng</em></h2>
+<p class="section-desc">18 tháng — Ra mắt Th09/2026. Seasonality, pre-opening 10ml, CIT, refill blended revenue.</p>
+<h3><span class="num">13.1</span> Mùa vụ</h3>
+<table><thead><tr><th>T1</th><th>T2</th><th>T3</th><th>T4</th><th>T5</th><th>T6</th><th>T7</th><th>T8</th><th>T9</th><th>T10</th><th>T11</th><th>T12</th></tr></thead><tbody>
+<tr><td class="r t">1.35</td><td class="r t">1.25</td><td class="r">1.00</td><td class="r">0.90</td><td class="r">0.85</td><td class="r a">0.80</td><td class="r a">0.80</td><td class="r">0.85</td><td class="r">0.95</td><td class="r">1.00</td><td class="r t">1.10</td><td class="r t">1.15</td></tr>
+</tbody></table>
+<p class="note">Tết (T1–T2): +25–35%. Low season (T6–T7): −20%. Doanh nghiệp tặng quà (T11–T12): +10–15%.</p>
+<h3><span class="num">13.2</span> Thời điểm ra mắt — Th09/2026 (chậm: Th10)</h3>
+<table><thead><tr><th>Cửa hàng</th><th>Lịch</th><th class="r">Seas.</th><th>Đặc điểm</th></tr></thead><tbody>
+<tr><td class="b">T−4</td><td>Th05</td><td class="r m">N/A</td><td class="m">Nhận vốn + thiết kế</td></tr>
+<tr><td class="b">T−3</td><td>Th06</td><td class="r a">0.80</td><td class="m">Low → seeding nhẹ, tập trung thi công nội thất</td></tr>
+<tr><td class="b">T−2</td><td>Th07</td><td class="r a">0.80</td><td class="m">Low → thi công không ảnh hưởng</td></tr>
+<tr><td class="b">T−1</td><td>Th08</td><td class="r">0.85</td><td class="m">Recovery → VH thử + pre-ra mắt</td></tr>
+<tr style="background:var(--teal-bg)"><td class="b">T0</td><td class="b" style="color:var(--teal)">Th09</td><td class="r t">0.95</td><td class="m t">LAUNCH · mùa giao lưu trở lại</td></tr>
+<tr><td class="b">T1</td><td>Sep</td><td class="r">0.95</td><td class="m">Tăng tốc · mùa học = khám phá</td></tr>
+<tr><td class="b">T2</td><td>Oct</td><td class="r">1.00</td><td class="m">Stable · cưới hỏi</td></tr>
+<tr><td class="b t">T3</td><td class="b">Nov</td><td class="r t">1.10</td><td class="m t">Quà tặng cuối năm → tailwind!</td></tr>
+<tr><td class="b t">T4</td><td class="b">Dec</td><td class="r t">1.15</td><td class="m t">Christmas + doanh nghiệp → cao điểm 1</td></tr>
+<tr><td class="b t">T5</td><td class="b" style="color:var(--teal)">Jan Tết</td><td class="r t">1.35</td><td class="m t">CỰC ĐỈNH · tặng quà + self-reward</td></tr>
+<tr><td class="b t">T6</td><td>Feb</td><td class="r t">1.25</td><td class="m">Valentine + hậu Tết</td></tr>
+<tr><td class="b">T7</td><td>Mar</td><td class="r">1.00</td><td class="m">8/3 tặng quà · stable</td></tr>
+<tr><td class="b">T8</td><td>Apr</td><td class="r">0.90</td><td class="m">Giảm nhẹ</td></tr>
+<tr><td class="b">T9</td><td>May</td><td class="r">0.85</td><td class="m">Transition low</td></tr>
+<tr><td class="b">T10</td><td>Jun</td><td class="r a">0.80</td><td class="m">Low · đẩy xưởng trải nghiệm</td></tr>
+<tr><td class="b">T11</td><td>Jul</td><td class="r a">0.80</td><td class="m">Low · refill pool lớn</td></tr>
+<tr><td class="b">T12</td><td>Aug</td><td class="r">0.85</td><td class="m">Recovery → Năm 2</td></tr>
+</tbody></table>
+<div class="callout"><h4>Tháng 9 = thời điểm ra mắt tối ưu</h4>
+<p><strong>T3–T6 (Nov–Feb) = 4 tháng high season liên tục</strong> khi store đã ramp 2 tháng, đội đã thuần. Tết rơi vào T5 = trạng thái ổn định. Low season T10–T11 (Jun–Jul) khi dự phòng tiền mặt đã dày.</p>
+<p><strong>Kịch bản chậm (Th10):</strong> Vẫn tốt — T2=Nov (1.10), T3=Dec (1.15), T4=Tết (1.35). Chỉ mất 1 tháng ramp. Rủi ro: team chưa thể lệ lúc Tết.</p></div>
+<h3><span class="num">13.3</span> Bán trước 10ml trực tuyến</h3>
+<div class="callout"><h4>Giai đoạn 0: bán 10ml trước khi mở cửa hàng</h4><p>4 tháng pre-ra mắt: ~200 chai 10ml × 365K = <strong>73M revenue · COGS 14M · Contribution 59M</strong>. Giảm net tiêu ~40% và gieo 200 hạt giống sẽ convert thành lượt ghé cửa hàng.</p></div>
+<h3><span class="num">13.4</span> Dòng tiền 18 tháng — Tách từng tháng</h3>
+<p>Mỗi tháng bao gồm: Doanh thu (đã tính mùa vụ + tăng tốc), COGS, Staff, Tiếp thị (theo lộ trình 8.1), Rent, OPEX, VAT payable, CIT quarterly, và Tồn kho đặt thêm.</p>
+<h4>Trước khai trương (Th05→Th09/2026)</h4>
+<div class="metrics">
+<div class="metric-card"><div class="value" style="font-size:24px">−2,243M</div><div class="label">Tổng tiêu pre-opening<br/>T−4 → T0</div></div>
+<div class="metric-card"><div class="value" style="font-size:24px">807M</div><div class="label">Số dư tại T0<br/>Dự phòng an toàn</div></div>
+<div class="metric-card"><div class="value" style="font-size:24px">650M</div><div class="label">MKT pre-ra mắt<br/>4 pha (T−3→T0)</div></div>
+<div class="metric-card"><div class="value" style="font-size:24px">476M</div><div class="label">Tồn kho khởi điểm<br/>MOQ + chai + packaging</div></div>
+</div>
+<h4>Năm 1 — Th09/2026 → Th08/2027</h4>
+<div class="mw"><table style="font-size:13px"><thead><tr><th>Th</th><th>Giai đoạn</th><th>Mùa vụ</th><th class="r">Doanh thu</th><th class="r">COGS<br/>12%</th><th class="r">Staff<br/>Fix+Var</th><th class="r">Tiếp thị</th><th class="r">Rent+<br/>OPEX</th><th class="r">Other<br/>KH+Tech</th><th class="r">VAT<br/>Net</th><th class="r">CIT<br/>Q'ly</th><th class="r">Inv.<br/>Reorder</th><th class="r">Ròng</th><th class="r">Số dư</th></tr></thead><tbody>
+<tr><td class="b">T1</td><td class="m">Tăng tốc</td><td class="r">1.35</td><td class="r">300M</td><td class="r">−36M</td><td class="r">−72M</td><td class="r">−200M</td><td class="r">−53M</td><td class="r">−36M</td><td class="r">−22M</td><td class="r m">—</td><td class="r m">—</td><td class="r rd">−119M</td><td class="r">688M</td></tr>
+<tr><td class="b">T2</td><td class="m">Tăng tốc</td><td class="r">1.25</td><td class="r">600M</td><td class="r">−72M</td><td class="r">−80M</td><td class="r">−150M</td><td class="r">−53M</td><td class="r">−36M</td><td class="r">−45M</td><td class="r m">—</td><td class="r">−120M</td><td class="r t">+44M</td><td class="r">732M</td></tr>
+<tr><td class="b">T3</td><td class="m">Giai đoạn 2</td><td class="r">1.00</td><td class="r">1,200M</td><td class="r">−144M</td><td class="r">−96M</td><td class="r">−96M</td><td class="r">−53M</td><td class="r">−36M</td><td class="r">−86M</td><td class="r rd">−52M</td><td class="r">−95M</td><td class="r t">+542M</td><td class="r b">1,274M</td></tr>
+<tr><td class="b">T4</td><td class="m">Tăng trưởng</td><td class="r">0.90</td><td class="r">1,386M</td><td class="r">−166M</td><td class="r">−105M</td><td class="r">−111M</td><td class="r">−53M</td><td class="r">−36M</td><td class="r">−100M</td><td class="r m">—</td><td class="r">−140M</td><td class="r t">+675M</td><td class="r">1,949M</td></tr>
+<tr><td class="b">T5</td><td class="m">Ổn định</td><td class="r">0.85</td><td class="r">1,309M</td><td class="r">−157M</td><td class="r">−110M</td><td class="r">−105M</td><td class="r">−53M</td><td class="r">−36M</td><td class="r">−94M</td><td class="r m">—</td><td class="r a">−305M</td><td class="r t">+449M</td><td class="r">2,398M</td></tr>
+<tr><td class="b">T6</td><td class="m">Thấp điểm</td><td class="r a">0.80</td><td class="r a">1,232M</td><td class="r">−148M</td><td class="r">−105M</td><td class="r">−99M</td><td class="r">−53M</td><td class="r">−36M</td><td class="r">−88M</td><td class="r rd">−184M</td><td class="r">−120M</td><td class="r t">+399M</td><td class="r">2,797M</td></tr>
+<tr><td class="b">T7</td><td class="m">Thấp điểm</td><td class="r a">0.80</td><td class="r a">1,232M</td><td class="r">−148M</td><td class="r">−105M</td><td class="r">−99M</td><td class="r">−53M</td><td class="r">−36M</td><td class="r">−88M</td><td class="r m">—</td><td class="r m">—</td><td class="r t">+703M</td><td class="r">3,500M</td></tr>
+<tr><td class="b">T8</td><td class="m">Phục hồi</td><td class="r">0.85</td><td class="r">1,309M</td><td class="r">−157M</td><td class="r">−110M</td><td class="r">−105M</td><td class="r">−53M</td><td class="r">−36M</td><td class="r">−94M</td><td class="r m">—</td><td class="r">−310M</td><td class="r t">+444M</td><td class="r">3,944M</td></tr>
+<tr><td class="b">T9</td><td class="m">Xây dựng</td><td class="r">0.95</td><td class="r">1,463M</td><td class="r">−176M</td><td class="r">−115M</td><td class="r">−117M</td><td class="r">−53M</td><td class="r">−36M</td><td class="r">−106M</td><td class="r rd">−195M</td><td class="r m">—</td><td class="r t">+665M</td><td class="r">4,609M</td></tr>
+<tr><td class="b">T10</td><td class="m">Ổn định</td><td class="r">1.00</td><td class="r">1,540M</td><td class="r">−185M</td><td class="r">−118M</td><td class="r">−123M</td><td class="r">−53M</td><td class="r">−36M</td><td class="r">−111M</td><td class="r m">—</td><td class="r">−215M</td><td class="r t">+699M</td><td class="r">5,308M</td></tr>
+<tr><td class="b">T11</td><td class="m">Cuối năm</td><td class="r t">1.10</td><td class="r t">1,694M</td><td class="r">−203M</td><td class="r">−125M</td><td class="r">−136M</td><td class="r">−55M</td><td class="r">−36M</td><td class="r">−122M</td><td class="r m">—</td><td class="r a">−210M</td><td class="r t">+807M</td><td class="r">6,115M</td></tr>
+<tr><td class="b">T12</td><td class="m">Cao điểm</td><td class="r t">1.15</td><td class="r t">1,771M</td><td class="r">−213M</td><td class="r">−130M</td><td class="r">−142M</td><td class="r">−55M</td><td class="r">−36M</td><td class="r">−128M</td><td class="r rd">−213M</td><td class="r">−120M</td><td class="r t">+734M</td><td class="r b">6,849M</td></tr>
+<tr class="sp"><td colspan="14"></td></tr>
+<tr class="sub"><td colspan="3">TỔNG NĂM 1</td><td class="r b">15,036M</td><td class="r">−1,805M</td><td class="r">−1,271M</td><td class="r">−1,483M</td><td class="r">−640M</td><td class="r">−432M</td><td class="r">−1,084M</td><td class="r">−644M</td><td class="r">−1,635M</td><td class="r t">+6,042M</td><td class="r"></td></tr>
+</tbody></table></div>
+<h4>Năm 2 Nửa đầu — Trạng thái ổn định (T13 → T18)</h4>
+<div class="mw"><table style="font-size:13px"><thead><tr><th>Th</th><th>Mùa vụ</th><th class="r">Doanh thu</th><th class="r">Giá vốn</th><th class="r">Nhân sự</th><th class="r">Tiếp thị</th><th class="r">Thuê+VH</th><th class="r">Khác</th><th class="r">VAT</th><th class="r">Thuế TNDN</th><th class="r">Tồn kho</th><th class="r">Ròng</th><th class="r">Số dư</th></tr></thead><tbody>
+<tr><td class="b">T13</td><td class="r t">1.35</td><td class="r t">2,079M</td><td class="r">−250M</td><td class="r">−140M</td><td class="r">−166M</td><td class="r">−57M</td><td class="r">−36M</td><td class="r">−150M</td><td class="r m">—</td><td class="r m">—</td><td class="r t">+1,280M</td><td class="r">8,129M</td></tr>
+<tr><td class="b">T14</td><td class="r t">1.25</td><td class="r">1,925M</td><td class="r">−231M</td><td class="r">−135M</td><td class="r">−154M</td><td class="r">−57M</td><td class="r">−36M</td><td class="r">−139M</td><td class="r m">—</td><td class="r">−120M</td><td class="r t">+1,053M</td><td class="r">9,182M</td></tr>
+<tr><td class="b">T15</td><td class="r">1.00</td><td class="r">1,540M</td><td class="r">−185M</td><td class="r">−118M</td><td class="r">−123M</td><td class="r">−55M</td><td class="r">−36M</td><td class="r">−111M</td><td class="r rd">−260M</td><td class="r">−95M</td><td class="r t">+557M</td><td class="r">9,739M</td></tr>
+<tr><td class="b">T16</td><td class="r">0.90</td><td class="r">1,386M</td><td class="r">−166M</td><td class="r">−110M</td><td class="r">−111M</td><td class="r">−55M</td><td class="r">−36M</td><td class="r">−100M</td><td class="r m">—</td><td class="r">−140M</td><td class="r t">+668M</td><td class="r">10,407M</td></tr>
+<tr><td class="b">T17</td><td class="r">0.85</td><td class="r">1,309M</td><td class="r">−157M</td><td class="r">−110M</td><td class="r">−105M</td><td class="r">−55M</td><td class="r">−36M</td><td class="r">−94M</td><td class="r m">—</td><td class="r a">−305M</td><td class="r t">+447M</td><td class="r">10,854M</td></tr>
+<tr><td class="b">T18</td><td class="r a">0.80</td><td class="r a">1,232M</td><td class="r">−148M</td><td class="r">−105M</td><td class="r">−99M</td><td class="r">−55M</td><td class="r">−36M</td><td class="r">−88M</td><td class="r rd">−280M</td><td class="r">−120M</td><td class="r t">+301M</td><td class="r b">11,155M</td></tr>
+</tbody></table></div>
+
+<h3><span class="num">13.5</span> Kịch bản tăng trưởng chậm — 1–3 tháng đầu 200–300M</h3>
+<p>Doanh thu T1–T3 chỉ đạt 200–300M/tháng (thấp hơn base 50–75%), bắt đầu tăng gấp đôi từ T4 khi vòng quay thương hiệu bắt đầu quay. Ra mắt vẫn Th09/2026. MKT T1–T2 giữ nguyên cam kết, T3+ điều chỉnh theo DT thực tế.</p>
+
+<div class="mw"><table style="font-size:13px"><thead><tr><th>Th</th><th>Giai đoạn</th><th>Mùa vụ</th><th class="r">Doanh thu</th><th class="r">Giá vốn<br>12%</th><th class="r">Nhân sự</th><th class="r">Tiếp thị</th><th class="r">Thuê+<br>Vận hành</th><th class="r">Khác<br>KH+CN</th><th class="r">VAT<br>Ròng</th><th class="r">Thuế TNDN</th><th class="r">Tồn kho<br>Đặt thêm</th><th class="r">Ròng</th><th class="r">Số dư</th></tr></thead><tbody>
+<tr><td class="b">T1</td><td class="m">Khởi động chậm</td><td class="r">0.95</td><td class="r rd">200M</td><td class="r">&minus;24M</td><td class="r">&minus;65M</td><td class="r">&minus;200M</td><td class="r">&minus;53M</td><td class="r">&minus;36M</td><td class="r">&minus;14M</td><td class="r m">&mdash;</td><td class="r m">&mdash;</td><td class="r rd">&minus;192M</td><td class="r">615M</td></tr>
+<tr><td class="b">T2</td><td class="m">Khởi động chậm</td><td class="r">1.00</td><td class="r rd">250M</td><td class="r">&minus;30M</td><td class="r">&minus;65M</td><td class="r">&minus;150M</td><td class="r">&minus;53M</td><td class="r">&minus;36M</td><td class="r">&minus;18M</td><td class="r m">&mdash;</td><td class="r">&minus;120M</td><td class="r rd">&minus;222M</td><td class="r a">393M</td></tr>
+<tr><td class="b">T3</td><td class="m">Khởi động chậm</td><td class="r t">1.10</td><td class="r a">300M</td><td class="r">&minus;36M</td><td class="r">&minus;72M</td><td class="r">&minus;60M</td><td class="r">&minus;53M</td><td class="r">&minus;36M</td><td class="r">&minus;22M</td><td class="r m">&mdash;</td><td class="r">&minus;95M</td><td class="r rd">&minus;74M</td><td class="r rd">319M</td></tr>
+<tr style="background:#FDE8E8"><td class="b" style="color:var(--red-soft)">LOW</td><td class="m" style="color:var(--red-soft)">Điểm thấp nhất</td><td class="r"></td><td class="r"></td><td class="r" colspan="8"></td><td class="r rd" style="font-weight:700">Δ &minus;488M</td><td class="r rd" style="font-size:15px;font-weight:700">319M</td></tr>
+<tr><td class="b">T4</td><td class="m">Tăng tốc</td><td class="r t">1.15</td><td class="r">600M</td><td class="r">&minus;72M</td><td class="r">&minus;80M</td><td class="r">&minus;60M</td><td class="r">&minus;53M</td><td class="r">&minus;36M</td><td class="r">&minus;43M</td><td class="r m">&mdash;</td><td class="r">&minus;140M</td><td class="r t">+116M</td><td class="r">435M</td></tr>
+<tr><td class="b">T5</td><td class="m" style="color:var(--teal)">Đẩy Tết</td><td class="r t">1.35</td><td class="r t">1,100M</td><td class="r">&minus;132M</td><td class="r">&minus;96M</td><td class="r">&minus;88M</td><td class="r">&minus;53M</td><td class="r">&minus;36M</td><td class="r">&minus;79M</td><td class="r m">&mdash;</td><td class="r">&minus;120M</td><td class="r t">+496M</td><td class="r">931M</td></tr>
+<tr><td class="b">T6</td><td class="m">Phục hồi</td><td class="r t">1.25</td><td class="r">1,200M</td><td class="r">&minus;144M</td><td class="r">&minus;96M</td><td class="r">&minus;96M</td><td class="r">&minus;53M</td><td class="r">&minus;36M</td><td class="r">&minus;86M</td><td class="r rd">&minus;120M</td><td class="r m">&mdash;</td><td class="r t">+569M</td><td class="r">1,500M</td></tr>
+<tr><td class="b">T7</td><td class="m">Hội tụ</td><td class="r">1.00</td><td class="r">1,200M</td><td class="r">&minus;144M</td><td class="r">&minus;105M</td><td class="r">&minus;96M</td><td class="r">&minus;53M</td><td class="r">&minus;36M</td><td class="r">&minus;86M</td><td class="r m">&mdash;</td><td class="r">&minus;120M</td><td class="r t">+560M</td><td class="r">2,060M</td></tr>
+<tr><td class="b">T8</td><td class="m">Ổn định</td><td class="r">0.90</td><td class="r">1,200M</td><td class="r">&minus;144M</td><td class="r">&minus;105M</td><td class="r">&minus;96M</td><td class="r">&minus;53M</td><td class="r">&minus;36M</td><td class="r">&minus;86M</td><td class="r m">&mdash;</td><td class="r">&minus;210M</td><td class="r t">+370M</td><td class="r">2,430M</td></tr>
+<tr><td class="b">T9</td><td class="m">Ổn định</td><td class="r">0.85</td><td class="r">1,300M</td><td class="r">&minus;156M</td><td class="r">&minus;110M</td><td class="r">&minus;104M</td><td class="r">&minus;53M</td><td class="r">&minus;36M</td><td class="r">&minus;94M</td><td class="r rd">&minus;160M</td><td class="r m">&mdash;</td><td class="r t">+587M</td><td class="r">3,017M</td></tr>
+<tr><td class="b">T10</td><td class="m">Ổn định</td><td class="r a">0.80</td><td class="r">1,200M</td><td class="r">&minus;144M</td><td class="r">&minus;105M</td><td class="r">&minus;96M</td><td class="r">&minus;53M</td><td class="r">&minus;36M</td><td class="r">&minus;86M</td><td class="r m">&mdash;</td><td class="r">&minus;215M</td><td class="r t">+365M</td><td class="r">3,382M</td></tr>
+<tr><td class="b">T11</td><td class="m">Ổn định</td><td class="r a">0.80</td><td class="r">1,200M</td><td class="r">&minus;144M</td><td class="r">&minus;105M</td><td class="r">&minus;96M</td><td class="r">&minus;53M</td><td class="r">&minus;36M</td><td class="r">&minus;86M</td><td class="r m">&mdash;</td><td class="r m">&mdash;</td><td class="r t">+580M</td><td class="r">3,962M</td></tr>
+<tr><td class="b">T12</td><td class="m">Phục hồi</td><td class="r">0.85</td><td class="r">1,300M</td><td class="r">&minus;156M</td><td class="r">&minus;110M</td><td class="r">&minus;104M</td><td class="r">&minus;55M</td><td class="r">&minus;36M</td><td class="r">&minus;94M</td><td class="r rd">&minus;175M</td><td class="r">&minus;120M</td><td class="r t">+450M</td><td class="r b">4,412M</td></tr>
+<tr class="sp"><td colspan="14"></td></tr>
+<tr class="sub"><td colspan="3">TỔNG NĂM 1 (Tăng trưởng chậm)</td><td class="r b">10,050M</td><td class="r">&minus;1,206M</td><td class="r">&minus;1,114M</td><td class="r">&minus;1,246M</td><td class="r">&minus;637M</td><td class="r">&minus;432M</td><td class="r">&minus;794M</td><td class="r">&minus;455M</td><td class="r">&minus;1,140M</td><td class="r t">+3,605M</td><td class="r"></td></tr>
+</tbody></table></div>
+
+<div class="vc rb"><div class="vc-title">Tăng trưởng chậm — kết quả kiểm tra sức chịu</div>
+<div class="vc-grid">
+<div class="vc-item neg"><div class="vc-num">319M</div><div class="vc-sub">Số dư thấp nhất<br>T3 · vẫn &gt; 0</div></div>
+<div class="vc-item warn"><div class="vc-num">&minus;488M</div><div class="vc-sub">Tổng tiêu T1–T3<br>3 tháng âm</div></div>
+<div class="vc-item accent"><div class="vc-num">T4</div><div class="vc-sub">Quay dương<br>Doanh thu 600M</div></div>
+<div class="vc-item accent"><div class="vc-num">4.4B</div><div class="vc-sub">Số dư T12<br>vs 6.85B base</div></div>
+</div>
+<p class="vc-note"><strong>Kết luận:</strong> Ngay cả khi T1–T3 chỉ đạt 200–300M (thấp hơn base 50–75%), số dư không bao giờ chạm 0. Điểm thấp nhất 319M — vẫn trên 0 nhưng đã dùng gần hết Dự phòng vận hành Tầng 1 (350M). Nếu T4 không tăng tốc, kích hoạt Tầng 2 dự phòng khẩn (100M) cần consent NĐT. Tổng DT Năm 1: 10.1B (vs cơ sở 15.0B, &minus;33%). Số dư T12: 4.4B (vs 6.85B) — vẫn đủ cân nhắc Store 2 nhưng chậm hơn 6–9 tháng.</p>
+</div>
+
+<div class="callout rb"><h4>Cảnh báo sớm — Quy trình tăng trưởng chậm</h4>
+<p><strong>Nếu T2 &lt; 250M:</strong> Cắt MKT T3 về 40M (giữ organic + content, dừng KOL mới). Giữ Giai đoạn 1 staffing, chưa thuê thêm. Báo NĐT status update.<br>
+<strong>Nếu T3 &lt; 300M VÀ không có tín hiệu tăng:</strong> Kích hoạt review toàn diện. Cân nhắc chuyển tiếp thị sang 100% organic. NSL giảm lương 50% (15M → 7.5M). Kéo dài thêm 3 tháng.<br>
+<strong>Nếu T4 &lt; 400M:</strong> Kích hoạt Tầng 2 dự phòng khẩn. Đồng ý bằng văn bản NĐT. Đánh giá sản phẩm phù hợp thị trường trước khi tiếp tục tiêu.</p></div>
+
+
+<div class="vc"><div class="vc-title">Nhận định — Dòng tiền 18 tháng</div>
+<div class="vc-grid">
+<div class="vc-item accent"><div class="vc-num">807M</div><div class="vc-sub">Số dư T0<br/>Dự phòng an toàn</div></div>
+<div class="vc-item warn"><div class="vc-num">−119M</div><div class="vc-sub">T1 ròng (sụt duy nhất)<br/>T2 quay dương</div></div>
+<div class="vc-item"><div class="vc-num">644M</div><div class="vc-sub">Thuế TNDN Năm 1<br/>Hàng quý</div></div>
+<div class="vc-item accent"><div class="vc-num">6.85B</div><div class="vc-sub">Số dư T12<br/>Tự tài trợ cửa hàng 2</div></div>
+</div>
+<p class="vc-note">Đặt tồn kho T5+T11 nặng nhất (MOQ 210M). VAT ~1,084M/năm = chuyển qua. T18 số dư ~11.2B.</p></div>
+</section>
+
+<hr class="div">
+
+<!-- 14 ONLINE -->
+<section class="section" id="ecom">
+<div class="section-label">Phần 14</div>
+<h2>Bán trực tuyến <em>— Chỉ phiên bản giới hạn</em></h2>
+<p class="section-desc">Website duy nhất ngoài store. Chỉ phiên bản giới hạn + refill + 10ml. Mạng xã hội dẫn traffic, không bán hàng.</p>
+<h3><span class="num">14.1</span> Chiến lược kênh</h3>
+<table><thead><tr><th>Kênh</th><th>Nhiệm vụ</th><th>Bán?</th></tr></thead><tbody>
+<tr><td class="b t">Cửa hàng</td><td class="m">Bespoke experience đầy đủ · full line</td><td class="t">✓ Chính</td></tr>
+<tr><td class="b t">Website</td><td class="m">Limited edition · refill · 10ml · tặng quà</td><td class="t">✓ Phụ</td></tr>
+<tr><td class="b">IG / TikTok / FB</td><td class="m">Brand building · UGC · dẫn traffic</td><td class="rd">✗</td></tr>
+</tbody></table>
+<p class="note"><strong>Không bán bespoke 50ml trực tuyến</strong> — đó là trải nghiệm cửa hàng. Trực tuyến = gieo (10ml→ghé cửa hàng) + convenience (refill). Mục tiêu trực tuyến: 5–8% DT, không hơn.</p>
+<h3><span class="num">14.2</span> Sản phẩm trực tuyến</h3>
+<table><thead><tr><th>Sản phẩm</th><th>Giá</th><th class="r">Giá vốn</th><th>Giới hạn</th><th>Từ</th></tr></thead><tbody>
+<tr><td class="b">10ml Khám phá</td><td>365–380K</td><td class="r">70K</td><td class="m">Không giới hạn</td><td class="m">T−3</td></tr>
+<tr><td class="b">Phiên bản mùa (50ml)</td><td>1.6–1.8M</td><td class="r">200K</td><td class="m">100–200 chai/đợt</td><td class="m">T3</td></tr>
+<tr><td class="b">Refill gửi đường bưu</td><td>600–900K</td><td class="r">90K</td><td class="m">Khách cũ có profile</td><td class="m">T4</td></tr>
+<tr><td class="b">Bộ quà tặng (10ml×3)</td><td>900K–1.1M</td><td class="r">210K</td><td class="m">Chỉ mùa quà tặng</td><td class="m">T3, T5</td></tr>
+</tbody></table>
+<div class="callout ab"><h4>Phiên bản giới hạn = động lực chính</h4>
+<p>Mỗi quý 1 mùi mới, 100–200 chai, <strong>chỉ trực tuyến</strong>. Tạo khan hiếm + sợ bỏ lỡ + lý do theo dõi thương hiệu. Khi hết = hết. Mỗi phiên bản giới hạn cần: thiết kế nhãn riêng (~500K) + buổi chụp nội dung (dùng chung đội tiếp thị) + 2–3 tuần tạo sóng trước trên mạng xã hội. Doanh thu/đợt: 100 chai × 1.7M = 170M, biên ~88%.</p></div>
+</section>
+
+<hr class="div">
+
+<!-- 15 RISK -->
+<section class="section" id="risk">
+<div class="section-label">Phần 15</div>
+<h2>Sổ <em>Rủi ro</em></h2>
+<p class="section-desc">Rủi ro đo bằng tiền. Mỗi rủi ro có financial impact và mitigation.</p>
+<div class="ri"><div class="ric h">1</div><div>
+<strong>Rủi ro nhà sáng lập duy nhất</strong>
+<p class="m" style="margin:4px 0">Tác động: Toàn bộ vận hành + Codex · Xác suất: Thấp nhưng hệ quả cao</p>
+<p style="font-size:14px"><strong>Giảm thiểu:</strong> SOP 5 ngày · QL cửa hàng độc lập · Bảo hiểm nhân sự chủ chốt · Vesting 3–4 năm · IP thuộc pháp nhân. Dự phòng 545M = 13 tháng.</p>
+</div></div>
+<div class="ri"><div class="ric me">2</div><div>
+<strong>Doanh thu tăng chậm</strong>
+<p class="m" style="margin:4px 0">Tác động: Đốt tiền · Xác suất: Trung bình</p>
+<p style="font-size:14px">BE 5.3 TX/ng. Nếu T1 chỉ 50% (150M), loss 42M/th. Dự phòng 545M = 13 tháng. Thuê theo giai đoạn giữ tiêu thấp.</p>
+</div></div>
+<div class="ri"><div class="ric me">3</div><div>
+<strong>Biến động nhân sự cao</strong>
+<p class="m" style="margin:4px 0">Tác động: Trải nghiệm + chi phí · Xác suất: TB–Cao</p>
+<p style="font-size:14px">Trường hợp xấu nhất 50% (3 ng/năm) = ~95M/năm. Provision 7M/th trong P&amp;L. Lương cạnh tranh + Codex retention + SOP 5 ngày.</p>
+</div></div>
+<div class="ri"><div class="ric me">4</div><div>
+<strong>Mùa vụ — tháng thấp điểm</strong>
+<p class="m" style="margin:4px 0">Tác động: Doanh thu T6–T7 −20% · Xác suất: Cao (chắc chắn)</p>
+<p style="font-size:14px">Doanh thu ~1.23B vs avg ~1.54B. Vẫn profitable (~730M EBIT). Quà tặng doanh nghiệp T11–T12 + Tết compensate. Đẩy xưởng trải nghiệm T6–T8.</p>
+</div></div>
+<div class="ri"><div class="ric l">5</div><div>
+<strong>Tỷ giá VND/USD</strong>
+<p class="m" style="margin:4px 0">Tác động: Giá vốn tăng · Xác suất: TB</p>
+<p style="font-size:14px">VND −10%: COGS +7K/chai → biên 87.5%→87.5%. MOQ 75kg = hedge 9 tháng. Khoá tỷ giá khi đặt hàng.</p>
+</div></div>
+<div class="ri"><div class="ric l">6</div><div>
+<strong>Cạnh tranh sao chép</strong>
+<p class="m" style="margin:4px 0">Tác động: Phân mảnh · Xác suất: Cao (đã xảy ra)</p>
+<p style="font-size:14px">Lợi thế cạnh tranh = sự nhất quán toàn diện, không phải mô hình. 87.5% margin cho phép reinvest mà đối thủ không theo được.</p>
+</div></div>
+<div class="ri"><div class="ric l">7</div><div>
+<strong>Nguyên liệu tăng giá</strong>
+<p class="m" style="margin:4px 0">Tác động: Giá vốn · Xác suất: Thấp</p>
+<p style="font-size:14px">+50% cực đoan: COGS 180K→215K → biên lợi nhuận vẫn 85.7%. lượng đặt tối thiểu phòng ngừa 9 tháng.</p>
+</div></div>
+</section>
+
+<hr class="div">
+
+<!-- 16 RETURNS -->
+<section class="section" id="investor">
+<div class="section-label">Phần 16</div>
+<h2>Lợi nhuận <em>Nhà đầu tư</em></h2>
+<p class="section-desc">Tỷ suất hoàn vốn (IRR), bội số (MOIC), thời gian thu hồi — sau CIT 20%.</p>
+<table><thead><tr><th>Chỉ số</th><th class="r">Thận trọng</th><th class="r">Trung bình</th><th class="r">Lạc quan</th></tr></thead><tbody>
+<tr><td class="b">DT năm 1 (có mùa vụ)</td><td class="r">13.2B</td><td class="r">18.5B</td><td class="r">24.0B</td></tr>
+<tr><td class="b">LN ròng sau thuế năm 1</td><td class="r">~5.4B</td><td class="r">~8.5B</td><td class="r">~11.5B</td></tr>
+<tr><td class="b">12.5% × LN ròng</td><td class="r t">~675M</td><td class="r t">~1,063M</td><td class="r t">~1,438M</td></tr>
+<tr class="sp"><td></td><td></td><td></td><td></td></tr>
+<tr><td class="b">Định giá năm 3 (3 cửa hàng)</td><td class="r">~36B</td><td class="r">~50B</td><td class="r">~72B</td></tr>
+<tr><td class="b">Giá trị 12.5%</td><td class="r t">4.3–6.5B</td><td class="r t">6–9B</td><td class="r t">8.6–13B</td></tr>
+<tr><td class="b">MOIC</td><td class="r">1.5–2.3×</td><td class="r t">2.1–3.2×</td><td class="r t">3.1–4.6×</td></tr>
+<tr><td class="b">Thu hồi (chia lợi nhuận)</td><td class="r">~T5</td><td class="r t">~T3</td><td class="r t">~T2.5</td></tr>
+</tbody></table>
+<div class="callout"><h4>Phương pháp định giá</h4>
+<p><strong>Bội số doanh thu:</strong> 21.3B ÷ 18.5B DT Y1 = 1.15× — thấp hơn chuẩn đối sánh F&amp;B trải nghiệm VN (2–5×). <strong>Bội số lợi nhuận:</strong> 21.3B ÷ 8.5B LN ròng Y1 = 2.5× — thận trọng so với ngành (5–8×). <strong>So sánh:</strong> Nước hoa theo yêu cầu quốc tế được định giá 8–15× lợi nhuận khi M&amp;A. MORAQ áp dụng 2.5× phản ánh rủi ro 1 cửa hàng + chiết khấu thị trường mới.</p></div>
+<div class="vc"><div class="vc-title">Định giá 21.3 tỷ trước vốn</div>
+<div class="vc-grid">
+<div class="vc-item accent"><div class="vc-num">24.4B</div><div class="vc-sub">Sau vốn<br/>3,050M / 12.5%</div></div>
+<div class="vc-item accent"><div class="vc-num">2.5×</div><div class="vc-sub">LN ròng Y1<br/>21.3B / 8.5B</div></div>
+<div class="vc-item"><div class="vc-num">1.15×</div><div class="vc-sub">DT Năm 1<br/>21.3B / 18.5B</div></div>
+<div class="vc-item"><div class="vc-num">2–5×</div><div class="vc-sub">Benchmark<br/>F&amp;B trải nghiệm VN</div></div>
+</div>
+<p class="vc-note">3 tài sản: ① IP hoàn thiện ② Unit economics 2.5 năm ③ Bài học 360° từ MORAQ 1.0.</p></div>
+<h3><span class="num">16.1</span> Lộ trình thoái vốn</h3>
+<table><thead><tr><th>#</th><th>Đường</th><th>Thời gian</th><th>Cơ chế</th></tr></thead><tbody>
+<tr><td class="b t">①</td><td class="b">Chia lợi nhuận</td><td class="m">Từ T3</td><td>12.5% × LN ròng ~787M = ~98M/th cho NĐT · payback ~31 tháng</td></tr>
+<tr><td class="b t">②</td><td class="b">Nhà sáng lập mua lại</td><td class="m">Năm 2–3</td><td>Tiền mặt ~6,85 tỷ T12 (11,2 tỷ T18) cho phép tự tài trợ</td></tr>
+<tr><td class="b t">③</td><td class="b">NĐT chiến lược</td><td class="m">Năm 3–5</td><td>Nhượng quyền + mở rộng danh mục → Quỹ đầu tư chiến lược</td></tr>
+<tr><td class="b t">④</td><td class="b">Chuẩn hoá ngành</td><td class="m">Năm 5+</td><td>Nền tảng nguyên liệu đạt chuẩn → vượt 1 brand</td></tr>
+</tbody></table>
+</section>
+
+<hr class="div">
+
+<!-- 17 KPIS -->
+<section class="section" id="kpi">
+<div class="section-label">Phần 17</div>
+<h2>Khung <em>Chỉ số</em></h2>
+<p class="section-desc">Dẫn dắt dự báo. Xác nhận kết quả. Đo hàng tuần.</p>
+<h3><span class="num">17.1</span> Chỉ số dẫn dắt</h3>
+<table><thead><tr><th>Chỉ số</th><th>Mục tiêu</th></tr></thead><tbody>
+<tr><td class="b">Tỷ lệ đặt lịch</td><td class="t">≥70%/tuần</td></tr>
+<tr><td class="b">Tương tác mạng xã hội</td><td class="t">≥5% tự nhiên</td></tr>
+<tr><td class="b">Vào trực tiếp : Đặt lịch</td><td class="t">30:70→50:50</td></tr>
+<tr><td class="b">Số tuần tồn kho</td><td class="t">4–8 tuần</td></tr>
+<tr><td class="b">Tỷ lệ đặt Refill</td><td class="t">≥12% (T3+)</td></tr>
+</tbody></table>
+<h3><span class="num">17.2</span> Chỉ số xác nhận</h3>
+<table><thead><tr><th>Chỉ số</th><th>Mục tiêu</th></tr></thead><tbody>
+<tr><td class="b">Doanh thu/tháng</td><td class="t">Theo ramp</td><td class="m">POS+bank</td><td class="m">W+M</td></tr>
+<tr><td class="b">Biên gộp</td><td class="t">≥85%</td></tr>
+<tr><td class="b">Biên EBIT</td><td class="t">≥60%</td></tr>
+<tr><td class="b">Biên ròng</td><td class="t">≥45%</td></tr>
+<tr><td class="b">Giá trị GD bình quân</td><td class="t">≥1.4M</td></tr>
+<tr><td class="b">GD/ngày</td><td class="t">Theo ramp</td></tr>
+<tr><td class="b">Quay lại 30 ngày</td><td class="t">≥15%</td></tr>
+<tr><td class="b">NPS</td><td class="t">≥70</td></tr>
+<tr><td class="b">Tỷ lệ quà tặng</td><td class="t">≥30%</td></tr>
+<tr><td class="b">Biến động nhân sự</td><td class="t">&lt;25%/n</td></tr>
+</tbody></table>
+<h3><span class="num">17.3</span> Cột mốc — NĐT</h3>
+<table><thead><tr><th>Cột mốc</th><th>Mục tiêu</th><th>Báo cáo</th></tr></thead><tbody>
+<tr><td class="b">Hoà vốn</td><td class="t">T2–T3</td><td class="m">P&amp;L + cash</td></tr>
+<tr><td class="b">20+ TX/ng</td><td class="t">T3</td><td class="m">POS hàng ngày</td></tr>
+<tr><td class="b">Refill ≥12%</td><td class="t">T4–T5</td><td class="m">CRM</td></tr>
+<tr><td class="b">NPS ≥70 (3 tháng)</td><td class="t">T4–T5</td><td class="m">Khảo sát</td></tr>
+<tr><td class="b">Hoàn vốn 3.05B</td><td class="t">T5–T7</td><td class="m">Dòng tiền luỹ kế</td></tr>
+<tr><td class="b">Sẵn sàng cửa hàng 2</td><td class="t">T9–T12</td><td class="m">Danh mục kiểm tra</td></tr>
+<tr><td class="b">Quyết định cửa hàng 2</td><td class="t">T15–T18</td><td class="m">Chỉ khi đạt gates</td></tr>
+</tbody></table>
+</section>
+
+<div class="foot">
+<div class="logo">MORAQ</div>
+<div class="mt">Document 05 · Cấu trúc Tài chính v4.0 · Ấn bản Nhà đầu tư · CIT + Seasonality + FX + Partnership + Career Path + Profit Pool + Growth Funds + OPEX + MKT Phase + EOQ + VAT + Dự phòng khẩn Triggers + Monthly Dòng tiền + Capital 3.05B + Trước vốn 21.3B + Sep Ra mắt + Refill Cannibal + E-com + Thi công nội thất + Ấn bản Nhà đầu tư · Chi tiết vận hành tại v2.3<br/>Dẫn xuất từ dữ liệu thực tế MORAQ 1.0 · Ấn bản Nhà đầu tư · Bảo mật · Tháng 4/2026</div>
+</div>
+
+</div>
+</body>
+</html>
