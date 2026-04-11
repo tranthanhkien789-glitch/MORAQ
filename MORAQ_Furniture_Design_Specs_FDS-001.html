@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MORAQ — Furniture Design Specs · FDS-001</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1A1916;--teal:#0F6E56;--amber:#854F0B;--cream:#FAF9F6;--linen:#E8DFD0;--stone:#C8C0B4;--wood-dk:#3E3020;--wood-lt:#B8A88C;--metal:#4A4A4A}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:#F4F3EF;color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased}
+
+.hdr{background:var(--ink);padding:2rem 2.5rem 1.2rem}
+.hdr-r{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.12em;color:var(--linen);opacity:.35;margin-bottom:.6rem;text-transform:uppercase}
+.hdr h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:1.6rem;color:var(--cream);line-height:1.35}
+.hdr h1 em{font-style:italic;color:var(--linen);opacity:.65}
+.hdr-d{font-size:.78rem;color:var(--linen);opacity:.4;margin-top:.5rem;max-width:720px;line-height:1.7}
+
+.tabs{display:flex;background:var(--ink);padding:0 2.5rem;overflow-x:auto;border-bottom:1px solid rgba(232,223,208,.08);gap:.15rem}
+.tb{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.06em;text-transform:uppercase;color:var(--cream);opacity:.4;background:none;border:none;border-bottom:2px solid transparent;padding:.6rem .7rem;cursor:pointer;transition:all .2s;white-space:nowrap}
+.tb:hover{opacity:.7;color:var(--cream)}.tb.on{opacity:1;color:var(--teal);border-bottom-color:var(--teal)}
+
+.pnl{display:none;padding:1.6rem 2.5rem 2rem;max-width:1000px;margin:0 auto}.pnl.on{display:block}
+
+h2{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.35rem;margin:2rem 0 .7rem;padding-top:1.5rem;border-top:1px solid rgba(0,0,0,.06)}
+h2:first-child{border-top:none;padding-top:0}
+h3{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.05rem;margin:1.3rem 0 .45rem;color:var(--teal)}
+p{font-size:.8rem;opacity:.55;margin-bottom:.6rem;line-height:1.8}
+p strong{opacity:1;font-weight:600}
+
+.card{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:6px;padding:1.2rem 1.3rem;margin:.7rem 0}
+.tag{display:inline-block;font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.08em;text-transform:uppercase;color:#fff;padding:.18rem .55rem;border-radius:2px;margin-bottom:.4rem}
+.t1{background:var(--teal)}.t2{background:var(--amber)}.t3{background:var(--ink)}.t4{background:var(--stone);color:var(--ink)}.t5{background:var(--wood-dk)}
+.ct{font-family:'Cormorant Garamond',serif;font-size:1.05rem;margin-bottom:.3rem;color:var(--ink)}
+.cd{font-size:.74rem;opacity:.45;line-height:1.7;margin-bottom:.5rem}
+
+.ig{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin:.4rem 0}
+.ig3{grid-template-columns:1fr 1fr 1fr}
+.it{background:#FAFAF8;border:1px solid rgba(0,0,0,.04);border-radius:4px;padding:.6rem .8rem}
+.it-n{font-family:'DM Mono',monospace;font-size:.56rem;font-weight:500;margin-bottom:.12rem;color:var(--ink)}
+.it-s{font-size:.68rem;opacity:.4;line-height:1.55}
+
+.tbl{width:100%;border-collapse:collapse;margin:.6rem 0;font-size:.72rem}
+.tbl th{font-family:'DM Mono',monospace;font-size:.48rem;letter-spacing:.06em;text-transform:uppercase;text-align:left;padding:.4rem .55rem;background:var(--ink);color:var(--cream);opacity:.6}
+.tbl td{padding:.4rem .55rem;border-bottom:1px solid rgba(0,0,0,.04);vertical-align:top;line-height:1.55}
+.tbl td:first-child{font-weight:500;width:130px}
+.tbl tr:nth-child(even) td{background:#FAFAF8}
+
+.note{background:var(--ink);color:var(--linen);padding:.6rem .9rem;border-radius:4px;margin:.6rem 0;font-size:.72rem;line-height:1.75;opacity:.7}
+.note strong{color:var(--cream);opacity:1}
+.warn{background:rgba(133,79,11,.06);border-left:3px solid var(--amber);padding:.55rem .85rem;margin:.6rem 0;font-size:.72rem;line-height:1.65;color:var(--ink);opacity:.6}
+
+.dwg{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:6px;padding:1rem;margin:.8rem 0;overflow-x:auto}
+.dwg-label{font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);opacity:.3;margin-bottom:.5rem}
+
+.dim{font-family:'DM Mono',monospace;font-size:6px;fill:#854F0B;letter-spacing:.3px}
+.mat-label{font-family:'DM Mono',monospace;font-size:5.5px;letter-spacing:.3px}
+.L{font-family:'DM Mono',monospace;letter-spacing:.3px}
+.spec-row{display:flex;gap:.3rem;align-items:center;margin:.2rem 0;font-size:.72rem}
+.spec-k{font-family:'DM Mono',monospace;font-size:.52rem;font-weight:500;min-width:90px;letter-spacing:.03em;color:var(--ink);opacity:.5}
+.spec-v{color:var(--ink);opacity:.7}
+
+.ft{max-width:1000px;margin:1.4rem auto;padding:0 2.5rem;display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:.42rem;letter-spacing:.08em;opacity:.15;text-transform:uppercase}
+
+@media(max-width:700px){.hdr,.tabs,.pnl{padding-left:1rem;padding-right:1rem}.ig,.ig3{grid-template-columns:1fr}.ft{flex-direction:column;gap:.3rem;padding:0 1rem}}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+<div class="hdr-r"><span>MORAQ</span><span>FDS-001 · V1.0 · APR 2026</span></div>
+<h1>Furniture Design Specs —<br><em>12 Units · Technical Drawing · Contractor-Ready</em></h1>
+<div class="hdr-d">Bản vẽ kỹ thuật từng đơn vị nội thất. Dimensions, materials, edge profiles, joints, hardware, finish, lighting integration. Tổng hợp từ MDL-001, PMP-001, MSDL-001, MSDL-001-S1, LID-001.</div>
+</div>
+
+<div class="tabs">
+<button class="tb on" data-t="idx">Index</button>
+<button class="tb" data-t="fc">Front Counter</button>
+<button class="tb" data-t="bc">Back Counter</button>
+<button class="tb" data-t="lb">Lab Booth</button>
+<button class="tb" data-t="ti">Tester Island</button>
+<button class="tb" data-t="aw">Archive Wall</button>
+<button class="tb" data-t="st">Stools</button>
+<button class="tb" data-t="sv">Service Table</button>
+<button class="tb" data-t="ub">Umbrella</button>
+<button class="tb" data-t="ws">Wall Shelf 12</button>
+<button class="tb" data-t="ss">Self-Service</button>
+<button class="tb" data-t="uc">Under-Counter</button>
+<button class="tb" data-t="gn">General Notes</button>
+</div>
+
+<!-- ═══ INDEX ═══ -->
+<div class="pnl on" id="p-idx">
+<h2>Index — 12 Furniture Units</h2>
+<p>Mỗi unit có: bản vẽ elevation + plan, bảng dimension, material breakdown, edge profile, joint detail, hardware, finish, lighting integration point. <strong>Tất cả dimension tính bằng mm trừ khi ghi rõ.</strong></p>
+
+<table class="tbl">
+<tr><th>#</th><th>Unit</th><th>Zone</th><th>Qty</th><th>Priority</th></tr>
+<tr><td>FDS-01</td><td>Front Counter · Social · Marble</td><td>Z3</td><td>1</td><td>★★★</td></tr>
+<tr><td>FDS-02</td><td>Back Counter · Logistics</td><td>Z3</td><td>1</td><td>★★★</td></tr>
+<tr><td>FDS-03</td><td>Lab Booth · Enclosed</td><td>Z3</td><td>1</td><td>★★★</td></tr>
+<tr><td>FDS-04</td><td>Tester Island</td><td>Z2</td><td>1</td><td>★★★</td></tr>
+<tr><td>FDS-05</td><td>Archive Wall Shelf System</td><td>Z2</td><td>1 set</td><td>★★★</td></tr>
+<tr><td>FDS-06</td><td>Counter Stools</td><td>Z3</td><td>6</td><td>★★☆</td></tr>
+<tr><td>FDS-07</td><td>Service Table</td><td>Z1</td><td>1</td><td>★★☆</td></tr>
+<tr><td>FDS-08</td><td>Umbrella Storage + Display</td><td>Z1</td><td>2</td><td>★☆☆</td></tr>
+<tr><td>FDS-09</td><td>Wall Shelf 12 SKU</td><td>Z3</td><td>1</td><td>★★☆</td></tr>
+<tr><td>FDS-10</td><td>Self-Service Niche</td><td>Z3</td><td>1</td><td>★☆☆</td></tr>
+<tr><td>FDS-11</td><td>Under-Counter System</td><td>Z3</td><td>1 set</td><td>★★★</td></tr>
+<tr><td>FDS-12</td><td>General Notes · Forbidden Materials · QC</td><td>All</td><td>—</td><td>—</td></tr>
+</table>
+
+<h3>Material Palette Reference</h3>
+<div class="ig ig3">
+<div class="it"><div class="it-n">Counter Stone</div><div class="it-s">Marble/Granite/Limestone · Honed · ≥30mm · Cool 19–21°C · Eased edge 3mm</div></div>
+<div class="it"><div class="it-n">Dark Hardwood</div><div class="it-s">Teak/Walnut/Wenge · Matte oil · Visible grain · "Xương"</div></div>
+<div class="it"><div class="it-n">Light Hardwood</div><div class="it-s">Ash/White Oak/Pine raw · Natural oil · No stain · "Da"</div></div>
+<div class="it"><div class="it-n">Dark Metal</div><div class="it-s">Steel · Matte black powder coat hoặc blackened wax · No chrome</div></div>
+<div class="it"><div class="it-n">Glass</div><div class="it-s">Tempered clear · Lab Booth only · 10mm min</div></div>
+<div class="it"><div class="it-n">Brass (sàn only)</div><div class="it-s">Transition strip · Brushed matte · 5mm width · Floor joint only</div></div>
+</div>
+
+<div class="warn"><strong>Forbidden:</strong> Acrylic/nhựa bề mặt · Laminate giả · Vinyl · Satin/high-gloss varnish · Chrome/brushed nickel · MDF visible · Stainless polished · Carpet · Drop ceiling · Tường trắng.</div>
+</div>
+
+<!-- ═══ FDS-01 · FRONT COUNTER ═══ -->
+<div class="pnl" id="p-fc">
+<h2>FDS-01 · Front Counter · Social · Marble</h2>
+<p><strong>Altar của store.</strong> Điểm đến visual từ cửa vào. Stone top + dark wood base. 6 chỗ ngồi. Packaging ceremony area ở giữa. Ref: MDL-001, PMP-001, MSDL-001.</p>
+
+<div class="dwg">
+<div class="dwg-label">Front Elevation · Scale 1:20</div>
+<svg width="100%" viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg">
+<!-- Floor line -->
+<line x1="30" y1="245" x2="670" y2="245" stroke="#ccc" stroke-width=".5"/>
+<text x="680" y="248" class="dim" style="font-size:5px;fill:#ccc">FL</text>
+
+<!-- Dark wood base -->
+<rect x="80" y="115" width="540" height="130" rx="0" fill="var(--wood-dk)" opacity=".2" stroke="var(--wood-dk)" stroke-width=".8"/>
+
+<!-- Left pedestal -->
+<rect x="82" y="117" width="80" height="126" fill="var(--wood-dk)" opacity=".15"/>
+<!-- Right pedestal -->
+<rect x="538" y="117" width="80" height="126" fill="var(--wood-dk)" opacity=".15"/>
+
+<!-- Under-counter compartments (dotted) -->
+<rect x="170" y="135" width="360" height="105" fill="none" stroke="var(--wood-dk)" stroke-width=".3" stroke-dasharray="3 2" opacity=".3"/>
+<text x="350" y="195" text-anchor="middle" class="L" style="font-size:6px;fill:#999;opacity:.5">UNDER-COUNTER OS (xem FDS-11)</text>
+
+<!-- Stone top -->
+<rect x="70" y="100" width="560" height="18" rx="0" fill="var(--stone)" stroke="#A09888" stroke-width=".6" opacity=".7"/>
+
+<!-- Reveal gap (stone-wood) -->
+<line x1="80" y1="118" x2="620" y2="118" stroke="var(--ink)" stroke-width=".3" opacity=".3"/>
+<text x="640" y="112" class="dim" style="fill:var(--teal)">3mm gap</text>
+
+<!-- Edge detail callout -->
+<line x1="70" y1="109" x2="50" y2="80" stroke="var(--amber)" stroke-width=".4" opacity=".5"/>
+<circle cx="50" cy="80" r="10" fill="none" stroke="var(--amber)" stroke-width=".4" opacity=".5"/>
+<text x="50" y="83" text-anchor="middle" class="dim" style="font-size:4.5px">E-01</text>
+<text x="50" y="70" text-anchor="middle" class="dim" style="font-size:5px">Eased 3mm R</text>
+
+<!-- Overhang callout -->
+<line x1="80" y1="118" x2="80" y2="130" stroke="var(--amber)" stroke-width=".3"/>
+<line x1="70" y1="118" x2="70" y2="130" stroke="var(--amber)" stroke-width=".3"/>
+<text x="75" y="140" text-anchor="middle" class="dim" style="font-size:4.5px">10mm</text>
+<text x="75" y="148" text-anchor="middle" class="dim" style="font-size:4px;opacity:.5">overhang</text>
+
+<!-- Hook indicators -->
+<g opacity=".3">
+<line x1="150" y1="215" x2="150" y2="235" stroke="var(--metal)" stroke-width="1.5"/>
+<line x1="250" y1="215" x2="250" y2="235" stroke="var(--metal)" stroke-width="1.5"/>
+<line x1="350" y1="215" x2="350" y2="235" stroke="var(--metal)" stroke-width="1.5"/>
+<line x1="450" y1="215" x2="450" y2="235" stroke="var(--metal)" stroke-width="1.5"/>
+<line x1="550" y1="215" x2="550" y2="235" stroke="var(--metal)" stroke-width="1.5"/>
+</g>
+<text x="350" y="255" text-anchor="middle" class="L" style="font-size:5px;fill:#999">HOOKS · 6 vị trí · dưới mỗi seat</text>
+
+<!-- Dimensions -->
+<!-- Height total -->
+<line x1="35" y1="100" x2="35" y2="245" stroke="var(--amber)" stroke-width=".3"/>
+<line x1="30" y1="100" x2="40" y2="100" stroke="var(--amber)" stroke-width=".3"/>
+<line x1="30" y1="245" x2="40" y2="245" stroke="var(--amber)" stroke-width=".3"/>
+<text x="33" y="175" text-anchor="middle" class="dim" transform="rotate(-90,33,175)">900</text>
+
+<!-- Width -->
+<line x1="70" y1="265" x2="630" y2="265" stroke="var(--amber)" stroke-width=".3"/>
+<line x1="70" y1="260" x2="70" y2="270" stroke="var(--amber)" stroke-width=".3"/>
+<line x1="630" y1="260" x2="630" y2="270" stroke="var(--amber)" stroke-width=".3"/>
+<text x="350" y="273" text-anchor="middle" class="dim">2400 (adjustable per store 2000–2800)</text>
+
+<!-- Top thickness -->
+<line x1="645" y1="100" x2="660" y2="100" stroke="var(--amber)" stroke-width=".3"/>
+<line x1="645" y1="118" x2="660" y2="118" stroke="var(--amber)" stroke-width=".3"/>
+<line x1="655" y1="100" x2="655" y2="118" stroke="var(--amber)" stroke-width=".3"/>
+<text x="668" y="112" class="dim">30</text>
+
+<!-- Material labels -->
+<text x="350" y="111" text-anchor="middle" class="mat-label" style="fill:var(--stone)">MARBLE · HONED · ≥30mm</text>
+<text x="350" y="160" text-anchor="middle" class="mat-label" style="fill:var(--wood-dk);opacity:.5">DARK HARDWOOD · MATTE OIL</text>
+
+<!-- 6 stool positions -->
+<g opacity=".25">
+<circle cx="140" cy="52" r="16" fill="none" stroke="#888" stroke-width=".5"/>
+<circle cx="240" cy="52" r="16" fill="none" stroke="#888" stroke-width=".5"/>
+<circle cx="350" cy="52" r="16" fill="none" stroke="#888" stroke-width=".5"/>
+<text x="350" y="55" text-anchor="middle" class="L" style="font-size:5px;fill:#888">PACKAGING</text>
+<text x="350" y="62" text-anchor="middle" class="L" style="font-size:5px;fill:#888">CEREMONY</text>
+<circle cx="460" cy="52" r="16" fill="none" stroke="#888" stroke-width=".5"/>
+<circle cx="560" cy="52" r="16" fill="none" stroke="#888" stroke-width=".5"/>
+</g>
+<text x="350" y="30" text-anchor="middle" class="L" style="font-size:6px;fill:#999;opacity:.4">← KHÁCH NGỒI PHÍA NÀY · 5 seats + ceremony area →</text>
+</svg>
+</div>
+
+<h3>Dimension Table</h3>
+<table class="tbl">
+<tr><th>Parameter</th><th>Spec</th><th>Note</th></tr>
+<tr><td>Tổng cao (H)</td><td>900mm</td><td>Chiều cao tự nhiên đứng tiếp xúc · Ref: MSDL-001</td></tr>
+<tr><td>Sâu (D)</td><td>650mm (600–700)</td><td>Đủ cho packaging ceremony + hero display</td></tr>
+<tr><td>Rộng (W)</td><td>2400mm (2000–2800)</td><td>Tùy store width · Tối thiểu 2000 cho 6 seats</td></tr>
+<tr><td>Stone top dày</td><td>≥ 30mm</td><td>Substantial feel · Cool to touch</td></tr>
+<tr><td>Overhang stone</td><td>10mm mỗi bên</td><td>Marble overhang wood base · Tạo shadow line</td></tr>
+<tr><td>Reveal gap</td><td>3mm ± 0.5mm</td><td>Stone-wood joint · Không silicone · Shadow line đen mỏng</td></tr>
+<tr><td>Base cao</td><td>870mm (900 − 30 top)</td><td>Dark hardwood carcass</td></tr>
+<tr><td>Kickboard</td><td>100mm recessed 40mm</td><td>Shadow effect · Chân counter "float"</td></tr>
+</table>
+
+<h3>Material Breakdown</h3>
+<div class="ig">
+<div class="it"><div class="it-n">Top</div><div class="it-s">Marble/Granite/Limestone · Honed matte · Cool 19–21°C (AC 24°C) · CRI-safe dưới 2700K · Không polished (glare)</div></div>
+<div class="it"><div class="it-n">Base carcass</div><div class="it-s">Teak/Walnut/Wenge · Matte oil only · Visible grain · Thud nặng khi gõ</div></div>
+<div class="it"><div class="it-n">Hidden bracket</div><div class="it-s">Steel bracket bên trong · Support stone top · Không visible</div></div>
+<div class="it"><div class="it-n">Kickboard</div><div class="it-s">Dark wood hoặc metal · Recessed 40mm · Shadow effect</div></div>
+</div>
+
+<h3>Edge Profiles</h3>
+<div class="ig">
+<div class="it">
+<div class="it-n">E-01 · Counter Top Edge</div>
+<div class="it-s"><strong>Eased Edge — 3mm Radius ± 0.5mm</strong><br>Tất cả 4 cạnh exposed. Honed finish match mặt top. Comfortable tựa cánh tay 10+ phút không để lại vết đỏ. Không bullnose (15mm+ = spa signal). Không sharp (industrial nguy hiểm). Ref: MDL-001 EDGE-01.</div>
+</div>
+<div class="it">
+<div class="it-n">E-04 · Drawer Front Edge</div>
+<div class="it-s"><strong>Eased Edge — 1.5mm Radius</strong><br>Light wood drawer fronts. Sanded 320-grit + natural oil. Top + bottom horizontal edges. Sides square (hidden by frame gap). Ref: MDL-001 EDGE-04.</div>
+</div>
+</div>
+
+<h3>Joint Details</h3>
+<div class="ig">
+<div class="it">
+<div class="it-n">J-01 · Stone meets Wood</div>
+<div class="it-s"><strong>Reveal Gap 3mm</strong> · Không flush (factory-made) · Không silicone (bathroom) · Gap trống tạo shadow line đen mỏng · Visual separation · Marble overhang 10mm. Support: hidden steel bracket. Ref: MDL-001 JOINT-01.</div>
+</div>
+<div class="it">
+<div class="it-n">J-05 · Floor Transition</div>
+<div class="it-s"><strong>Brass strip 5mm</strong> · Flush ± 0.5mm · Brushed matte (không polished) · No trip hazard · Nơi duy nhất brass được phép. Ref: MDL-001 JOINT-05.</div>
+</div>
+</div>
+
+<h3>Hardware</h3>
+<div class="ig">
+<div class="it"><div class="it-n">Drawer slides</div><div class="it-s">Soft-close undermount · Full extension · 50kg rated</div></div>
+<div class="it"><div class="it-n">Drawer pulls</div><div class="it-s">Knurled matte black · Ø12mm · Countersunk mount · Ref: MDL-001 HW-01</div></div>
+<div class="it"><div class="it-n">Hooks (khách)</div><div class="it-s">Matte black · Under-counter · 6 positions · Cho túi xách</div></div>
+<div class="it"><div class="it-n">Charging ports</div><div class="it-s">USB-C + Lightning · Flush mount mặt counter · 6 ports · Cable routed âm</div></div>
+<div class="it"><div class="it-n">Waste chute</div><div class="it-s">Lỗ Ø80mm âm mặt bàn · Stainless ring · Thùng kín dưới</div></div>
+<div class="it"><div class="it-n">Hinges (nếu có cửa)</div><div class="it-s">Concealed soft-close · 110° · Matte black</div></div>
+</div>
+
+<h3>Lighting Integration</h3>
+<div class="ig">
+<div class="it"><div class="it-n">L3 Task light</div><div class="it-s">Under-shelf / integrated track · 2700K · 800–1000 lux tại mặt counter · Đủ sáng cho French knot</div></div>
+<div class="it"><div class="it-n">Conduit</div><div class="it-s">Pre-route cable path trong base carcass · Exit point tại back · Kết nối L3 track</div></div>
+</div>
+
+<div class="note"><strong>Contractor note:</strong> Counter là altar — piece quan trọng nhất trong store. Stone sample board phải được duyệt dưới 2700K CRI≥95 trước khi order. Marble veining direction thống nhất toàn bộ top — không ghép nhiều tấm nếu không khớp grain.</div>
+</div>
+
+<!-- ═══ FDS-02 · BACK COUNTER ═══ -->
+<div class="pnl" id="p-bc">
+<h2>FDS-02 · Back Counter · Logistics</h2>
+<p><strong>Cao hơn front +50–100mm.</strong> Che giấu thiết bị kỹ thuật. Staff workspace. Dark wood toàn bộ.</p>
+
+<div class="dwg">
+<div class="dwg-label">Front Elevation (nhìn từ phía staff) · Scale 1:20</div>
+<svg width="100%" viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg">
+<line x1="30" y1="230" x2="670" y2="230" stroke="#ccc" stroke-width=".5"/>
+
+<!-- Back counter body -->
+<rect x="80" y="85" width="540" height="145" rx="0" fill="var(--wood-dk)" opacity=".25" stroke="var(--wood-dk)" stroke-width=".8"/>
+
+<!-- Top surface -->
+<rect x="78" y="80" width="544" height="12" rx="0" fill="var(--wood-dk)" opacity=".4" stroke="var(--wood-dk)" stroke-width=".5"/>
+
+<!-- Sections -->
+<line x1="250" y1="97" x2="250" y2="225" stroke="var(--wood-dk)" stroke-width=".3" stroke-dasharray="3 2" opacity=".3"/>
+<line x1="450" y1="97" x2="450" y2="225" stroke="var(--wood-dk)" stroke-width=".3" stroke-dasharray="3 2" opacity=".3"/>
+
+<!-- POS area -->
+<rect x="100" y="100" width="130" height="50" fill="none" stroke="#888" stroke-width=".3" stroke-dasharray="2 2" opacity=".3"/>
+<text x="165" y="128" text-anchor="middle" class="L" style="font-size:5.5px;fill:#888">POS + CRM</text>
+
+<!-- Printer area -->
+<rect x="270" y="100" width="160" height="50" fill="none" stroke="#888" stroke-width=".3" stroke-dasharray="2 2" opacity=".3"/>
+<text x="350" y="128" text-anchor="middle" class="L" style="font-size:5.5px;fill:#888">PRINTER + LABEL BACKUP</text>
+
+<!-- Sink -->
+<rect x="470" y="100" width="130" height="50" rx="3" fill="none" stroke="var(--teal)" stroke-width=".5" opacity=".4"/>
+<text x="535" y="128" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--teal);opacity:.6">SINK 400×300</text>
+
+<!-- Cabinets below -->
+<text x="350" y="195" text-anchor="middle" class="L" style="font-size:5.5px;fill:#999;opacity:.4">CABINETS · Stock dự phòng · Tools</text>
+
+<!-- Height dimension -->
+<line x1="40" y1="80" x2="40" y2="230" stroke="var(--amber)" stroke-width=".3"/>
+<line x1="35" y1="80" x2="45" y2="80" stroke="var(--amber)" stroke-width=".3"/>
+<line x1="35" y1="230" x2="45" y2="230" stroke="var(--amber)" stroke-width=".3"/>
+<text x="38" y="158" text-anchor="middle" class="dim" transform="rotate(-90,38,158)">950–1000</text>
+
+<!-- Comparison to front -->
+<text x="660" y="90" class="dim" style="font-size:5px;fill:var(--teal)">+50–100mm</text>
+<text x="660" y="98" class="dim" style="font-size:4.5px;opacity:.5">vs Front Counter</text>
+
+<text x="350" y="250" text-anchor="middle" class="dim">2400 (match Front Counter width)</text>
+</svg>
+</div>
+
+<table class="tbl">
+<tr><th>Parameter</th><th>Spec</th><th>Note</th></tr>
+<tr><td>Tổng cao (H)</td><td>950–1000mm</td><td>Cao hơn front 50–100mm · Che thiết bị</td></tr>
+<tr><td>Sâu (D)</td><td>500–600mm</td><td>POS + printer + sink</td></tr>
+<tr><td>Rộng (W)</td><td>Match front counter</td><td>Parallel · Walkway 1100–1200mm giữa</td></tr>
+<tr><td>Top dày</td><td>25mm</td><td>Dark hardwood · Eased edge 3mm</td></tr>
+<tr><td>Sink</td><td>400×300mm · Sâu 180mm</td><td>Stainless undermount · Deep clean + tool wash</td></tr>
+</table>
+
+<h3>Material</h3>
+<div class="ig">
+<div class="it"><div class="it-n">Top + carcass</div><div class="it-s">Dark hardwood toàn bộ · Matte oil · Không stone (phân biệt với front)</div></div>
+<div class="it"><div class="it-n">Edge profile</div><div class="it-s">Eased 3mm radius · Match front counter edge language</div></div>
+<div class="it"><div class="it-n">Sink</div><div class="it-s">Stainless steel undermount · Matte finish · Không polished</div></div>
+<div class="it"><div class="it-n">Back panel</div><div class="it-s">Cable management panel · Access for IT maintenance</div></div>
+</div>
+
+<div class="warn"><strong>Walkway rule:</strong> Khoảng cách front → back counter: 1100–1200mm. Đủ cho 2 staff đi ngược chiều. Không nhỏ hơn 1100mm.</div>
+</div>
+
+<!-- ═══ FDS-03 · LAB BOOTH ═══ -->
+<div class="pnl" id="p-lb">
+<h2>FDS-03 · Lab Booth · Enclosed</h2>
+<p><strong>Mini laboratory enclosed trong kính + thép đen.</strong> Khách xem qua kính. Staff pivot move bên trong. Hệ thống hút mùi riêng biệt. Le Labo reference.</p>
+
+<div class="dwg">
+<div class="dwg-label">Plan View · Scale 1:20</div>
+<svg width="100%" viewBox="0 0 700 350" xmlns="http://www.w3.org/2000/svg">
+
+<!-- Booth outline -->
+<rect x="100" y="40" width="500" height="260" rx="2" fill="none" stroke="var(--ink)" stroke-width="2"/>
+
+<!-- Glass front (facing customers) -->
+<rect x="100" y="40" width="500" height="4" fill="var(--teal)" opacity=".3"/>
+<text x="350" y="32" text-anchor="middle" class="L" style="font-size:7px;fill:var(--teal);opacity:.6;letter-spacing:1px">KÍNH PHÍA TRƯỚC · KHÁCH XEM</text>
+
+<!-- Steel frame corners -->
+<rect x="100" y="40" width="8" height="260" fill="var(--ink)" opacity=".2"/>
+<rect x="592" y="40" width="8" height="260" fill="var(--ink)" opacity=".2"/>
+<text x="104" y="175" text-anchor="middle" class="L" style="font-size:4.5px;fill:#888;writing-mode:tb" transform="rotate(-90,104,175)">THÉP ĐEN FRAME</text>
+
+<!-- Circular workflow -->
+<circle cx="350" cy="170" r="90" fill="none" stroke="var(--teal)" stroke-width=".5" stroke-dasharray="4 3" opacity=".25"/>
+<text x="350" y="175" text-anchor="middle" class="L" style="font-size:6px;fill:var(--teal);opacity:.4">PIVOT · ≤1 BƯỚC</text>
+
+<!-- Equipment positions -->
+<!-- Fridge -->
+<rect x="130" y="70" width="100" height="60" rx="3" fill="var(--stone)" opacity=".2" stroke="var(--stone)" stroke-width=".5"/>
+<text x="180" y="98" text-anchor="middle" class="L" style="font-size:6px;fill:#888;font-weight:500">TỦ MÁT</text>
+<text x="180" y="110" text-anchor="middle" class="L" style="font-size:5px;fill:#aaa">15–20°C</text>
+
+<!-- Scale -->
+<rect x="260" y="75" width="70" height="50" rx="3" fill="var(--wood-lt)" opacity=".2" stroke="var(--wood-lt)" stroke-width=".5"/>
+<text x="295" y="103" text-anchor="middle" class="L" style="font-size:6px;fill:#888;font-weight:500">CÂN 0.01g</text>
+
+<!-- Work surface -->
+<rect x="360" y="60" width="220" height="80" rx="3" fill="var(--wood-dk)" opacity=".1" stroke="var(--wood-dk)" stroke-width=".5"/>
+<text x="470" y="95" text-anchor="middle" class="L" style="font-size:6px;fill:#888;font-weight:500">MẶT BÀN LÀM VIỆC</text>
+<text x="470" y="107" text-anchor="middle" class="L" style="font-size:5px;fill:#aaa">Mix · Cap · Beakers · Pipettes</text>
+
+<!-- Printer -->
+<rect x="130" y="210" width="90" height="60" rx="3" fill="var(--metal)" opacity=".1" stroke="var(--metal)" stroke-width=".5"/>
+<text x="175" y="240" text-anchor="middle" class="L" style="font-size:6px;fill:#888;font-weight:500">LABEL PRINTER</text>
+
+<!-- Sink small -->
+<rect x="260" y="220" width="80" height="50" rx="3" fill="none" stroke="var(--teal)" stroke-width=".5" opacity=".4"/>
+<text x="300" y="248" text-anchor="middle" class="L" style="font-size:6px;fill:var(--teal);opacity:.6">MINI SINK</text>
+
+<!-- Shelving / bottles -->
+<rect x="380" y="200" width="200" height="80" rx="3" fill="var(--wood-dk)" opacity=".08" stroke="var(--wood-dk)" stroke-width=".4"/>
+<text x="480" y="238" text-anchor="middle" class="L" style="font-size:6px;fill:#888;font-weight:500">CHAI + SUPPLIES SHELF</text>
+<text x="480" y="250" text-anchor="middle" class="L" style="font-size:5px;fill:#aaa">Bottle storage · Caps · Tools</text>
+
+<!-- Exhaust indicator -->
+<rect x="540" y="265" width="50" height="30" fill="none" stroke="var(--amber)" stroke-width=".5" stroke-dasharray="3 2"/>
+<text x="565" y="283" text-anchor="middle" class="L" style="font-size:5px;fill:var(--amber)">EXHAUST</text>
+
+<!-- Dimensions -->
+<line x1="100" y1="320" x2="600" y2="320" stroke="var(--amber)" stroke-width=".3"/>
+<text x="350" y="335" text-anchor="middle" class="dim">1800–2200 (tuỳ store)</text>
+<line x1="80" y1="40" x2="80" y2="300" stroke="var(--amber)" stroke-width=".3"/>
+<text x="65" y="170" text-anchor="middle" class="dim" transform="rotate(-90,65,170)">1200–1500</text>
+
+<!-- Door -->
+<rect x="560" y="280" width="40" height="20" fill="var(--ink)" opacity=".1"/>
+<text x="580" y="293" text-anchor="middle" class="L" style="font-size:4.5px;fill:#888">CỬA</text>
+
+</svg>
+</div>
+
+<table class="tbl">
+<tr><th>Parameter</th><th>Spec</th><th>Note</th></tr>
+<tr><td>Footprint</td><td>1800–2200 × 1200–1500mm</td><td>Tuỳ store · Tối thiểu đủ pivot move</td></tr>
+<tr><td>Cao trần booth</td><td>2400mm min</td><td>Hoặc kết nối trần store nếu < 3000</td></tr>
+<tr><td>Frame</td><td>Steel 40×40mm box section</td><td>Matte black powder coat · Weld ground smooth</td></tr>
+<tr><td>Kính</td><td>Tempered clear 10mm</td><td>3 mặt kính (trước + 2 bên) · Back tường</td></tr>
+<tr><td>Cửa</td><td>Steel frame + glass · 700mm clear</td><td>Self-closing hinge · Soft close</td></tr>
+<tr><td>Work surface cao</td><td>900mm</td><td>Match front counter height</td></tr>
+<tr><td>Work surface sâu</td><td>600mm</td><td>Dark hardwood · Eased edge 3mm</td></tr>
+</table>
+
+<h3>Structural</h3>
+<div class="ig">
+<div class="it"><div class="it-n">Frame</div><div class="it-s">Steel 40×40mm box · Weld ground smooth (không polished) · Visible weld bead OK nếu consistent · Ref: MDL-001 EDGE-03</div></div>
+<div class="it"><div class="it-n">Glass-Steel joint</div><div class="it-s">Structural silicone (clear) hoặc gasket · Không visible mounting hardware</div></div>
+<div class="it"><div class="it-n">Floor mount</div><div class="it-s">Steel base plate bolted to slab · Concealed by kickboard</div></div>
+<div class="it"><div class="it-n">Ceiling mount</div><div class="it-s">Steel angle bracket to structure · Concealed by frame cap</div></div>
+</div>
+
+<h3>MEP Integration Points</h3>
+<div class="ig">
+<div class="it"><div class="it-n">Exhaust</div><div class="it-s">Duct Ø150mm min · Riêng biệt · Không connect HVAC store · Exit roof/wall</div></div>
+<div class="it"><div class="it-n">Plumbing</div><div class="it-s">Mini sink cold water · Drain Ø40mm · Stub-up từ slab</div></div>
+<div class="it"><div class="it-n">Electrical</div><div class="it-s">4× double socket · 1× 16A (fridge) · UPS protected · Conduit trong frame</div></div>
+<div class="it"><div class="it-n">Lighting</div><div class="it-s">L2 Accent spotlight bên trong · 2700K CRI≥95 · Track mount trên steel frame · Khách thấy staff làm việc</div></div>
+</div>
+
+<div class="note"><strong>Le Labo lesson:</strong> Booth là theater — kính phải luôn sạch (cleaning schedule 2×/ngày). Spotlight bên trong 800+ lux tại work surface. Khách từ front counter nhìn vào thấy toàn bộ craft process.</div>
+</div>
+
+<!-- ═══ FDS-04 · TESTER ISLAND ═══ -->
+<div class="pnl" id="p-ti">
+<h2>FDS-04 · Tester Island</h2>
+<p><strong>Standalone furniture — nhìn thấy ngay khi vào (3-second rule).</strong> 12 testers theo Scent Grammar L→R. Light wood top, dark wood base. Ngăn kéo ngầm.</p>
+
+<table class="tbl">
+<tr><th>Parameter</th><th>Spec</th><th>Note</th></tr>
+<tr><td>Rộng (W)</td><td>1200–1500mm</td><td>Đủ 12 chai × 80mm spacing + margin</td></tr>
+<tr><td>Sâu (D)</td><td>500–600mm</td><td>Đủ cho 2 người đứng đối diện thử hương</td></tr>
+<tr><td>Cao (H)</td><td>850–900mm</td><td>Comfortable đứng thử hương</td></tr>
+<tr><td>Chai spacing</td><td>80mm center-to-center</td><td>Ref: MDL-001 spacing rule · Negative space</td></tr>
+<tr><td>Tray recess</td><td>Mỗi chai có recess Ø50mm × 3mm sâu</td><td>Chai không lăn · Position cố định</td></tr>
+</table>
+
+<h3>Material</h3>
+<div class="ig">
+<div class="it"><div class="it-n">Top surface</div><div class="it-s"><strong>Light hardwood</strong> · Ash/White Oak · Natural oil · Sanded 220-grit · Chamfer 2mm × 45° edges · Ref: MDL-001 EDGE-02</div></div>
+<div class="it"><div class="it-n">Base/Legs</div><div class="it-s"><strong>Dark hardwood</strong> · Teak/Walnut · Matte oil · Butt joint tight (dark-light = contrast line tự nhiên, không cần gap) · Ref: MDL-001 JOINT-03</div></div>
+<div class="it"><div class="it-n">Drawer (ngầm)</div><div class="it-s">2 ngăn kéo dưới · Soft-close · Light wood front · Eased 1.5mm · Chứa strips, coffee beans, refill</div></div>
+<div class="it"><div class="it-n">Metal accent</div><div class="it-s">Matte black steel stretcher bar giữa chân · Visible bolt M6 · Ref: MDL-001 JOINT-02</div></div>
+</div>
+
+<h3>Lighting Integration</h3>
+<p>L2 Accent spotlight từ track ceiling aim xuống tester island. Beam 36° (wider vì furniture rộng). Aim 1/3 trên chai. Mỗi chai phải có highlight riêng — không flood toàn bàn.</p>
+
+<div class="warn"><strong>3-second rule:</strong> Tester Island phải là thứ đầu tiên khách nhìn thấy khi bước từ Zone 1 sang Zone 2. Nếu không — repositioning bàn, không phải thêm signage.</div>
+</div>
+
+<!-- ═══ FDS-05 · ARCHIVE WALL ═══ -->
+<div class="pnl" id="p-aw">
+<h2>FDS-05 · Archive Wall Shelf System</h2>
+<p><strong>"Thư viện" — toàn bộ BST trưng bày.</strong> Dark metal frame + light wood shelf. Visible bolt. Shadow gap 5mm từ tường. Ngăn kéo refill chân kệ.</p>
+
+<div class="dwg">
+<div class="dwg-label">Front Elevation · Scale 1:25</div>
+<svg width="100%" viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg">
+<!-- Wall -->
+<rect x="60" y="10" width="580" height="300" fill="var(--ink)" opacity=".03"/>
+<text x="350" y="25" text-anchor="middle" class="L" style="font-size:5px;fill:#ccc;letter-spacing:1px">PLASTER WALL</text>
+
+<!-- Shelf frame -->
+<rect x="80" y="30" width="540" height="230" fill="none" stroke="var(--metal)" stroke-width="1.5" opacity=".4"/>
+
+<!-- Vertical uprights -->
+<rect x="80" y="30" width="6" height="230" fill="var(--metal)" opacity=".25"/>
+<rect x="260" y="30" width="4" height="230" fill="var(--metal)" opacity=".2"/>
+<rect x="438" y="30" width="4" height="230" fill="var(--metal)" opacity=".2"/>
+<rect x="614" y="30" width="6" height="230" fill="var(--metal)" opacity=".25"/>
+
+<!-- Shelves (3 rows) -->
+<rect x="88" y="80" width="524" height="8" rx="0" fill="var(--wood-lt)" opacity=".35" stroke="var(--wood-lt)" stroke-width=".5"/>
+<rect x="88" y="145" width="524" height="8" rx="0" fill="var(--wood-lt)" opacity=".35" stroke="var(--wood-lt)" stroke-width=".5"/>
+<rect x="88" y="210" width="524" height="8" rx="0" fill="var(--wood-lt)" opacity=".35" stroke="var(--wood-lt)" stroke-width=".5"/>
+
+<!-- Bottles on shelves -->
+<g opacity=".2">
+<rect x="110" y="55" width="14" height="24" rx="2" fill="var(--ink)"/>
+<rect x="140" y="58" width="14" height="21" rx="2" fill="var(--ink)"/>
+<rect x="170" y="53" width="14" height="26" rx="2" fill="var(--ink)"/>
+<rect x="220" y="56" width="14" height="23" rx="2" fill="var(--ink)"/>
+<rect x="290" y="55" width="14" height="24" rx="2" fill="var(--ink)"/>
+<rect x="320" y="58" width="14" height="21" rx="2" fill="var(--ink)"/>
+<rect x="380" y="53" width="14" height="26" rx="2" fill="var(--ink)"/>
+<rect x="460" y="56" width="14" height="23" rx="2" fill="var(--ink)"/>
+<rect x="490" y="55" width="14" height="24" rx="2" fill="var(--ink)"/>
+<rect x="550" y="58" width="14" height="21" rx="2" fill="var(--ink)"/>
+</g>
+
+<!-- Refill drawers at bottom -->
+<rect x="88" y="230" width="165" height="25" rx="2" fill="var(--wood-dk)" opacity=".15" stroke="var(--wood-dk)" stroke-width=".4"/>
+<rect x="261" y="230" width="170" height="25" rx="2" fill="var(--wood-dk)" opacity=".15" stroke="var(--wood-dk)" stroke-width=".4"/>
+<rect x="439" y="230" width="173" height="25" rx="2" fill="var(--wood-dk)" opacity=".15" stroke="var(--wood-dk)" stroke-width=".4"/>
+<text x="350" y="247" text-anchor="middle" class="L" style="font-size:5.5px;fill:#888">NGĂN KÉO REFILL · 3 sections · Staff refill không cần BOH</text>
+
+<!-- Shadow gap callout -->
+<line x1="75" y1="30" x2="75" y2="260" stroke="var(--amber)" stroke-width=".3" stroke-dasharray="2 1"/>
+<line x1="80" y1="30" x2="80" y2="260" stroke="var(--amber)" stroke-width=".3"/>
+<text x="58" y="145" text-anchor="middle" class="dim" transform="rotate(-90,58,145)">5mm SHADOW GAP</text>
+
+<!-- Bolt detail callout -->
+<circle cx="88" cy="82" r="3" fill="var(--ink)" opacity=".4"/>
+<line x1="91" y1="82" x2="120" y2="95" stroke="var(--amber)" stroke-width=".3"/>
+<text x="125" y="98" class="dim" style="font-size:5px">M6 MATTE BLACK HEX · FLUSH</text>
+
+<!-- Dimensions -->
+<line x1="80" y1="280" x2="620" y2="280" stroke="var(--amber)" stroke-width=".3"/>
+<text x="350" y="295" text-anchor="middle" class="dim">FULL WALL WIDTH (tuỳ store · 2000–4000mm)</text>
+<text x="640" y="140" text-anchor="start" class="dim" style="font-size:5.5px">H: 2100</text>
+<text x="640" y="155" text-anchor="start" class="dim" style="font-size:4.5px;opacity:.5">to ceiling</text>
+</svg>
+</div>
+
+<table class="tbl">
+<tr><th>Parameter</th><th>Spec</th><th>Note</th></tr>
+<tr><td>Rộng tổng</td><td>Full wall width</td><td>Modular bays ~600mm · Số bay tuỳ store</td></tr>
+<tr><td>Cao</td><td>2100mm (hoặc đến trần)</td><td>Top shelf: display only · Staff dùng step stool</td></tr>
+<tr><td>Sâu shelf</td><td>200–250mm</td><td>Đủ cho chai lớn nhất + scent card</td></tr>
+<tr><td>Shelf spacing</td><td>300–350mm vertical</td><td>3 rows display + 1 row refill dưới cùng</td></tr>
+<tr><td>Shadow gap (tường)</td><td>5mm ± 1mm</td><td>Furniture "float" · French cleat / Z-bracket mount · Ref: MDL-001 JOINT-06</td></tr>
+<tr><td>Bolt pattern</td><td>M6 matte black hex cap</td><td>Equidistant · Aligned horizontally · Flush/1mm recess · Ref: MDL-001 JOINT-02</td></tr>
+</table>
+
+<h3>Material</h3>
+<div class="ig">
+<div class="it"><div class="it-n">Frame</div><div class="it-s">Steel 30×30mm box section · Matte black powder coat · Weld ground smooth</div></div>
+<div class="it"><div class="it-n">Shelves</div><div class="it-s">Light hardwood 20mm · Chamfer 2mm × 45° edge · Sanded 220-grit + oil · "Golden thread" dưới 2700K</div></div>
+<div class="it"><div class="it-n">Refill drawers</div><div class="it-s">Dark wood front · Soft-close · Knurled pull matte black</div></div>
+<div class="it"><div class="it-n">Scent cards</div><div class="it-s">Brass card holder (only allowed brass usage ngoài floor) — OR matte black metal</div></div>
+</div>
+
+<h3>Lighting</h3>
+<p>L2 Accent spotlight per shelf level. Track mount top of frame. Beam 24° aim 1/3 trên chai. Mỗi bay có ≥1 spotlight individually aimable.</p>
+</div>
+
+<!-- ═══ FDS-06 · STOOLS ═══ -->
+<div class="pnl" id="p-st">
+<h2>FDS-06 · Counter Stools × 6</h2>
+<p><strong>Cast iron base + dark wood seat.</strong> 75cm seat height. Footrest. Stackable hoặc semi-stackable nếu có thể.</p>
+
+<div class="dwg">
+<div class="dwg-label">Front Elevation · Scale 1:5</div>
+<svg width="100%" viewBox="0 0 500 340" xmlns="http://www.w3.org/2000/svg">
+<!-- Floor -->
+<line x1="30" y1="310" x2="470" y2="310" stroke="#ccc" stroke-width=".5"/>
+
+<!-- ─── STOOL ─── -->
+<!-- Base plate -->
+<ellipse cx="250" cy="305" rx="70" ry="8" fill="var(--ink)" opacity=".1" stroke="var(--ink)" stroke-width=".5" opacity=".2"/>
+<text x="250" y="322" text-anchor="middle" class="dim" style="font-size:5.5px">BASE Ø400 · CAST IRON · ≥8kg</text>
+
+<!-- Column -->
+<rect x="244" y="135" width="12" height="170" fill="var(--ink)" opacity=".12" stroke="var(--ink)" stroke-width=".4"/>
+<text x="270" y="220" class="mat-label" style="fill:var(--metal);opacity:.5">STEEL COLUMN</text>
+<text x="270" y="230" class="mat-label" style="fill:var(--metal);opacity:.4">Matte black</text>
+
+<!-- Footrest ring -->
+<ellipse cx="250" cy="245" rx="50" ry="6" fill="none" stroke="var(--ink)" stroke-width="1" opacity=".25"/>
+<text x="310" y="248" class="dim">FOOTREST Ø300</text>
+
+<!-- Seat -->
+<rect x="190" y="120" width="120" height="16" rx="8" fill="var(--wood-dk)" opacity=".3" stroke="var(--wood-dk)" stroke-width=".6"/>
+<text x="250" y="115" text-anchor="middle" class="mat-label" style="fill:var(--wood-dk)">DARK HARDWOOD SEAT</text>
+<text x="250" y="105" text-anchor="middle" class="mat-label" style="fill:var(--wood-dk);opacity:.5">Ø350–380 · 30–40mm thick</text>
+<text x="250" y="95" text-anchor="middle" class="mat-label" style="fill:var(--wood-dk);opacity:.4">Sanded 320-grit · Matte oil</text>
+
+<!-- Edge callout -->
+<line x1="190" y1="128" x2="165" y2="80" stroke="var(--amber)" stroke-width=".4" opacity=".5"/>
+<circle cx="165" cy="75" r="8" fill="none" stroke="var(--amber)" stroke-width=".4" opacity=".5"/>
+<text x="165" y="78" text-anchor="middle" class="dim" style="font-size:4.5px">E-01</text>
+<text x="165" y="65" text-anchor="middle" class="dim" style="font-size:5px">Eased 3mm R</text>
+
+<!-- Felt pad -->
+<rect x="185" y="308" width="130" height="3" rx="1" fill="var(--teal)" opacity=".15"/>
+<text x="250" y="335" text-anchor="middle" class="dim" style="font-size:5px;fill:var(--teal)">FELT PAD 3mm · stone floor protection</text>
+
+<!-- Dimensions -->
+<line x1="45" y1="128" x2="45" y2="310" stroke="var(--amber)" stroke-width=".3"/>
+<line x1="40" y1="128" x2="50" y2="128" stroke="var(--amber)" stroke-width=".3"/>
+<line x1="40" y1="310" x2="50" y2="310" stroke="var(--amber)" stroke-width=".3"/>
+<text x="43" y="225" text-anchor="middle" class="dim" transform="rotate(-90,43,225)">SEAT H: 750</text>
+
+<line x1="420" y1="245" x2="420" y2="310" stroke="var(--amber)" stroke-width=".3"/>
+<line x1="415" y1="245" x2="425" y2="245" stroke="var(--amber)" stroke-width=".3"/>
+<line x1="415" y1="310" x2="425" y2="310" stroke="var(--amber)" stroke-width=".3"/>
+<text x="440" y="280" class="dim">FOOTREST</text>
+<text x="440" y="290" class="dim">H: 250</text>
+</svg>
+</div>
+
+<table class="tbl">
+<tr><th>Parameter</th><th>Spec</th><th>Note</th></tr>
+<tr><td>Seat height</td><td>750mm</td><td>Counter 900mm − 150mm = comfortable</td></tr>
+<tr><td>Seat Ø</td><td>350–380mm</td><td>Dark hardwood · Shaped for comfort</td></tr>
+<tr><td>Seat thickness</td><td>30–40mm</td><td>Solid, substantial feel</td></tr>
+<tr><td>Footrest height</td><td>250mm from floor</td><td>Steel ring hoặc bar</td></tr>
+<tr><td>Base Ø</td><td>400mm</td><td>Cast iron · Stable · Weighted</td></tr>
+<tr><td>Tổng cao</td><td>750mm (seat) · 850mm (backrest nếu có)</td><td>Backless preferred — cleaner</td></tr>
+</table>
+
+<h3>Material</h3>
+<div class="ig">
+<div class="it"><div class="it-n">Seat</div><div class="it-s">Dark hardwood · Sanded 320-grit · Matte oil · Eased edge 3mm all round · Comfortable 30+ phút</div></div>
+<div class="it"><div class="it-n">Base + column</div><div class="it-s">Cast iron · Matte black powder coat · Weighted base (≥8kg) cho stability</div></div>
+<div class="it"><div class="it-n">Footrest</div><div class="it-s">Steel ring Ø300mm · Matte black · Weld ground smooth</div></div>
+<div class="it"><div class="it-n">Floor protector</div><div class="it-s">Felt pad dưới base · Không scratch stone floor</div></div>
+</div>
+
+<div class="note"><strong>Qty 6 + 2 backup</strong> = order 8 total. Backup trong BOH. Stools phải đồng nhất 100% — cùng batch production.</div>
+</div>
+
+<!-- ═══ FDS-07 · SERVICE TABLE ═══ -->
+<div class="pnl" id="p-sv">
+<h2>FDS-07 · Service Table · Zone 1</h2>
+<p><strong>Kệ nhỏ để khách đặt đồ nặng.</strong> Giải phóng đôi tay trước khi thử hương. Vị trí: giữa Zone 1.</p>
+
+<div class="dwg">
+<div class="dwg-label">Front Elevation + Side · Scale 1:10</div>
+<svg width="100%" viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg">
+<!-- Floor -->
+<line x1="20" y1="250" x2="680" y2="250" stroke="#ccc" stroke-width=".5"/>
+
+<!-- ─── FRONT VIEW ─── -->
+<text x="200" y="20" text-anchor="middle" class="L" style="font-size:7px;fill:#888;letter-spacing:1.5px">FRONT VIEW</text>
+
+<!-- Legs front -->
+<rect x="62" y="90" width="16" height="160" rx="1" fill="var(--wood-dk)" opacity=".35" stroke="var(--wood-dk)" stroke-width=".5"/>
+<rect x="322" y="90" width="16" height="160" rx="1" fill="var(--wood-dk)" opacity=".35" stroke="var(--wood-dk)" stroke-width=".5"/>
+
+<!-- Top surface -->
+<rect x="50" y="74" width="300" height="18" rx="1" fill="var(--wood-dk)" opacity=".35" stroke="var(--wood-dk)" stroke-width=".8"/>
+<text x="200" y="64" text-anchor="middle" class="mat-label" style="fill:var(--wood-dk);font-weight:500">DARK HARDWOOD · MATTE OIL · EASED 3mm</text>
+
+<!-- Lower shelf -->
+<rect x="68" y="188" width="264" height="12" rx="1" fill="var(--wood-dk)" opacity=".2" stroke="var(--wood-dk)" stroke-width=".5"/>
+<text x="200" y="215" text-anchor="middle" class="L" style="font-size:5.5px;fill:#888">LOWER SHELF · mũ bảo hiểm · đồ lớn</text>
+
+<!-- Cross brace -->
+<line x1="78" y1="150" x2="330" y2="150" stroke="var(--wood-dk)" stroke-width=".8" opacity=".12"/>
+
+<!-- Items on top -->
+<rect x="90" y="42" width="50" height="32" rx="4" fill="var(--linen)" opacity=".6" stroke="var(--stone)" stroke-width=".5"/>
+<text x="115" y="62" text-anchor="middle" class="L" style="font-size:5px;fill:#999">TÚI</text>
+<rect x="165" y="46" width="45" height="28" rx="12" fill="var(--linen)" opacity=".6" stroke="var(--stone)" stroke-width=".5"/>
+<text x="188" y="64" text-anchor="middle" class="L" style="font-size:5px;fill:#999">MŨ</text>
+<rect x="240" y="50" width="55" height="24" rx="3" fill="var(--linen)" opacity=".5" stroke="var(--stone)" stroke-width=".5"/>
+<text x="268" y="66" text-anchor="middle" class="L" style="font-size:5px;fill:#999">ĐỒ</text>
+
+<!-- Front dimensions -->
+<line x1="30" y1="80" x2="30" y2="250" stroke="var(--amber)" stroke-width=".4"/>
+<line x1="24" y1="80" x2="36" y2="80" stroke="var(--amber)" stroke-width=".4"/>
+<line x1="24" y1="250" x2="36" y2="250" stroke="var(--amber)" stroke-width=".4"/>
+<text x="28" y="170" text-anchor="middle" class="dim" style="font-size:6.5px" transform="rotate(-90,28,170)">H: 750–800</text>
+
+<line x1="50" y1="265" x2="350" y2="265" stroke="var(--amber)" stroke-width=".4"/>
+<line x1="50" y1="260" x2="50" y2="270" stroke="var(--amber)" stroke-width=".3"/>
+<line x1="350" y1="260" x2="350" y2="270" stroke="var(--amber)" stroke-width=".3"/>
+<text x="200" y="278" text-anchor="middle" class="dim" style="font-size:6.5px">W: 800–1000</text>
+
+<!-- ─── SIDE VIEW ─── -->
+<text x="535" y="20" text-anchor="middle" class="L" style="font-size:7px;fill:#888;letter-spacing:1.5px">SIDE VIEW</text>
+
+<!-- Legs side -->
+<rect x="465" y="90" width="16" height="160" rx="1" fill="var(--wood-dk)" opacity=".35" stroke="var(--wood-dk)" stroke-width=".5"/>
+<rect x="580" y="90" width="16" height="160" rx="1" fill="var(--wood-dk)" opacity=".35" stroke="var(--wood-dk)" stroke-width=".5"/>
+
+<!-- Top side -->
+<rect x="458" y="74" width="145" height="18" rx="1" fill="var(--wood-dk)" opacity=".35" stroke="var(--wood-dk)" stroke-width=".8"/>
+
+<!-- Lower shelf side -->
+<rect x="471" y="188" width="120" height="12" rx="1" fill="var(--wood-dk)" opacity=".2" stroke="var(--wood-dk)" stroke-width=".5"/>
+
+<!-- Cross brace side -->
+<line x1="481" y1="150" x2="590" y2="150" stroke="var(--wood-dk)" stroke-width=".8" opacity=".12"/>
+
+<!-- Side dimension -->
+<line x1="458" y1="265" x2="603" y2="265" stroke="var(--amber)" stroke-width=".4"/>
+<line x1="458" y1="260" x2="458" y2="270" stroke="var(--amber)" stroke-width=".3"/>
+<line x1="603" y1="260" x2="603" y2="270" stroke="var(--amber)" stroke-width=".3"/>
+<text x="530" y="278" text-anchor="middle" class="dim" style="font-size:6.5px">D: 400</text>
+</svg>
+</div>
+
+<table class="tbl">
+<tr><th>Parameter</th><th>Spec</th><th>Note</th></tr>
+<tr><td>Rộng (W)</td><td>800–1000mm</td><td>Đủ cho 2–3 túi lớn + mũ bảo hiểm</td></tr>
+<tr><td>Sâu (D)</td><td>400mm</td><td>Không quá sâu — không cản lối đi</td></tr>
+<tr><td>Cao (H)</td><td>750–800mm</td><td>Comfortable đặt đồ không cúi</td></tr>
+</table>
+
+<h3>Material</h3>
+<div class="ig">
+<div class="it"><div class="it-n">Top</div><div class="it-s">Dark hardwood · Matte oil · Eased edge 3mm · Solid, hefty feel</div></div>
+<div class="it"><div class="it-n">Legs</div><div class="it-s">Dark hardwood hoặc steel frame matte black · 4 legs simple</div></div>
+<div class="it"><div class="it-n">Shelf dưới</div><div class="it-s">Optional shelf thấp hơn 300mm cho đồ to (mũ bảo hiểm)</div></div>
+</div>
+</div>
+
+<!-- ═══ FDS-08 · UMBRELLA ═══ -->
+<div class="pnl" id="p-ub">
+<h2>FDS-08 · Umbrella Storage + Display</h2>
+<p>Hai unit: (A) khu để ô/dù TRÁI — functional, (B) kệ bán ô/dù PHẢI — retail display.</p>
+
+<div class="dwg">
+<div class="dwg-label">Front Elevation · A (Storage) + B (Display) · Scale 1:15</div>
+<svg width="100%" viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
+<line x1="20" y1="270" x2="680" y2="270" stroke="#ccc" stroke-width=".5"/>
+
+<!-- ─── A: STORAGE (LEFT) ─── -->
+<text x="155" y="18" text-anchor="middle" class="L" style="font-size:7.5px;fill:var(--ink);letter-spacing:1.5px;opacity:.6">FDS-08A · STORAGE</text>
+
+<!-- Container body -->
+<rect x="50" y="80" width="210" height="185" rx="3" fill="var(--ink)" opacity=".04" stroke="var(--metal)" stroke-width="1.2" opacity=".4"/>
+
+<!-- Top rail -->
+<rect x="50" y="78" width="210" height="8" rx="2" fill="var(--metal)" opacity=".2" stroke="var(--metal)" stroke-width=".5"/>
+
+<!-- Signage bar -->
+<rect x="55" y="82" width="200" height="16" rx="2" fill="var(--ink)" opacity=".08"/>
+<text x="155" y="93" text-anchor="middle" class="L" style="font-size:5.5px;fill:#777;font-weight:500">BẢNG CHÚ GIẢI · DM MONO · "Để ô tại đây"</text>
+
+<!-- Divider slots -->
+<g stroke="var(--metal)" stroke-width=".7" opacity=".25">
+<line x1="85" y1="98" x2="85" y2="258"/>
+<line x1="120" y1="98" x2="120" y2="258"/>
+<line x1="155" y1="98" x2="155" y2="258"/>
+<line x1="190" y1="98" x2="190" y2="258"/>
+<line x1="225" y1="98" x2="225" y2="258"/>
+</g>
+
+<!-- Umbrella handles (curved tops) -->
+<g opacity=".35" stroke="var(--ink)" stroke-width="2" fill="none">
+<path d="M95,55 C95,42 105,42 105,55 L100,260"/>
+<path d="M130,50 C130,38 140,38 140,50 L135,260"/>
+<path d="M165,58 C165,45 175,45 175,58 L170,260"/>
+<path d="M200,52 C200,40 210,40 210,52 L205,260"/>
+</g>
+
+<!-- Drip tray -->
+<rect x="52" y="258" width="206" height="10" rx="2" fill="var(--stone)" opacity=".35" stroke="var(--stone)" stroke-width=".6"/>
+<text x="155" y="266" text-anchor="middle" class="L" style="font-size:4.5px;fill:#888">DRIP TRAY · STAINLESS · REMOVABLE</text>
+
+<text x="155" y="290" text-anchor="middle" class="dim" style="font-size:6.5px">W: 500 × D: 300 × H: 600</text>
+
+<!-- ─── B: DISPLAY (RIGHT) ─── -->
+<text x="500" y="18" text-anchor="middle" class="L" style="font-size:7.5px;fill:var(--ink);letter-spacing:1.5px;opacity:.6">FDS-08B · RETAIL DISPLAY</text>
+
+<!-- Frame uprights -->
+<rect x="388" y="38" width="8" height="232" fill="var(--metal)" opacity=".25"/>
+<rect x="604" y="38" width="8" height="232" fill="var(--metal)" opacity=".25"/>
+
+<!-- Top bar -->
+<rect x="388" y="38" width="224" height="6" rx="0" fill="var(--metal)" opacity=".2"/>
+
+<!-- 3 shelf levels -->
+<rect x="398" y="98" width="204" height="8" rx="1" fill="var(--wood-lt)" opacity=".45" stroke="var(--wood-lt)" stroke-width=".6"/>
+<rect x="398" y="163" width="204" height="8" rx="1" fill="var(--wood-lt)" opacity=".45" stroke="var(--wood-lt)" stroke-width=".6"/>
+<rect x="398" y="228" width="204" height="8" rx="1" fill="var(--wood-lt)" opacity=".45" stroke="var(--wood-lt)" stroke-width=".6"/>
+
+<!-- Products on shelves (bigger, more visible) -->
+<g opacity=".25">
+<rect x="412" y="60" width="18" height="37" rx="3" fill="var(--ink)"/>
+<rect x="445" y="65" width="18" height="32" rx="3" fill="var(--ink)"/>
+<rect x="478" y="58" width="18" height="39" rx="3" fill="var(--ink)"/>
+<rect x="530" y="62" width="18" height="35" rx="3" fill="var(--ink)"/>
+<rect x="412" y="125" width="18" height="37" rx="3" fill="var(--ink)"/>
+<rect x="445" y="130" width="18" height="32" rx="3" fill="var(--ink)"/>
+<rect x="530" y="127" width="18" height="35" rx="3" fill="var(--ink)"/>
+<rect x="572" y="123" width="18" height="39" rx="3" fill="var(--ink)"/>
+<rect x="412" y="192" width="18" height="35" rx="3" fill="var(--ink)"/>
+<rect x="478" y="195" width="18" height="32" rx="3" fill="var(--ink)"/>
+<rect x="530" y="190" width="18" height="37" rx="3" fill="var(--ink)"/>
+</g>
+
+<!-- Spotlight -->
+<line x1="500" y1="25" x2="500" y2="40" stroke="var(--amber)" stroke-width=".6" opacity=".5"/>
+<circle cx="500" cy="24" r="5" fill="none" stroke="var(--amber)" stroke-width=".5" opacity=".5"/>
+<text x="525" y="28" class="dim" style="font-size:5.5px;fill:var(--amber)">L2 · 2700K</text>
+
+<text x="500" y="290" text-anchor="middle" class="dim" style="font-size:6.5px">W: 600 × D: 300 × H: 1200</text>
+</svg>
+</div>
+
+<h3>FDS-08A · Umbrella Storage (Trái)</h3>
+<table class="tbl">
+<tr><th>Parameter</th><th>Spec</th></tr>
+<tr><td>Kích thước</td><td>W 500 × D 300 × H 600mm</td></tr>
+<tr><td>Dung lượng</td><td>8–12 ô/dù</td></tr>
+<tr><td>Material</td><td>Dark metal frame + drip tray stainless removable</td></tr>
+<tr><td>Signage</td><td>Bảng chú giải nhỏ · DM Mono · "Để ô tại đây"</td></tr>
+</table>
+
+<h3>FDS-08B · Umbrella Retail Display (Phải)</h3>
+<table class="tbl">
+<tr><th>Parameter</th><th>Spec</th></tr>
+<tr><td>Kích thước</td><td>W 600 × D 300 × H 1200mm</td></tr>
+<tr><td>Display</td><td>6–10 ô/dù cao cấp branded MORAQ</td></tr>
+<tr><td>Material</td><td>Dark metal frame + light wood shelf · Match Archive Wall language</td></tr>
+<tr><td>Lighting</td><td>1× L2 Accent spotlight · 2700K · Retail touchpoint đầu tiên</td></tr>
+</table>
+</div>
+
+<!-- ═══ FDS-09 · WALL SHELF 12 ═══ -->
+<div class="pnl" id="p-ws">
+<h2>FDS-09 · Wall Shelf 12 SKU</h2>
+<p><strong>Tường phía sau back counter.</strong> Staff quay lưng lấy chai pre-blended. Scent Grammar L→R. 12 vị trí cố định.</p>
+
+<div class="dwg">
+<div class="dwg-label">Front Elevation · Scale 1:20</div>
+<svg width="100%" viewBox="0 0 700 160" xmlns="http://www.w3.org/2000/svg">
+<!-- Wall bg -->
+<rect x="40" y="5" width="620" height="140" fill="var(--ink)" opacity=".025"/>
+
+<!-- Shadow gap indicator (left) -->
+<line x1="55" y1="20" x2="55" y2="110" stroke="var(--amber)" stroke-width=".4" stroke-dasharray="2 1.5"/>
+<line x1="60" y1="20" x2="60" y2="110" stroke="var(--metal)" stroke-width=".8" opacity=".3"/>
+<text x="38" y="70" text-anchor="middle" class="dim" style="font-size:5px" transform="rotate(-90,38,70)">5mm GAP</text>
+
+<!-- Shelf bracket / L-bracket -->
+<rect x="60" y="62" width="580" height="6" rx="0" fill="var(--metal)" opacity=".3" stroke="var(--metal)" stroke-width=".5"/>
+
+<!-- Shelf surface -->
+<rect x="58" y="52" width="584" height="12" rx="1" fill="var(--wood-dk)" opacity=".35" stroke="var(--wood-dk)" stroke-width=".6"/>
+
+<!-- LED strip under shelf -->
+<rect x="62" y="64" width="576" height="3" rx="1" fill="var(--amber)" opacity=".2"/>
+<text x="350" y="80" text-anchor="middle" class="dim" style="font-size:5.5px;fill:var(--amber);opacity:.7">LINEAR LED · 2700K · CRI≥95 · "glowing shelf"</text>
+
+<!-- 12 bottle positions -->
+<g opacity=".3">
+<rect x="78" y="22" width="16" height="29" rx="3" fill="var(--ink)"/>
+<rect x="125" y="24" width="16" height="27" rx="3" fill="var(--ink)"/>
+<rect x="172" y="21" width="16" height="30" rx="3" fill="var(--ink)"/>
+<rect x="219" y="23" width="16" height="28" rx="3" fill="var(--ink)"/>
+<rect x="266" y="22" width="16" height="29" rx="3" fill="var(--ink)"/>
+<rect x="313" y="25" width="16" height="26" rx="3" fill="var(--ink)"/>
+<rect x="360" y="21" width="16" height="30" rx="3" fill="var(--ink)"/>
+<rect x="407" y="24" width="16" height="27" rx="3" fill="var(--ink)"/>
+<rect x="454" y="22" width="16" height="29" rx="3" fill="var(--ink)"/>
+<rect x="501" y="23" width="16" height="28" rx="3" fill="var(--ink)"/>
+<rect x="548" y="21" width="16" height="30" rx="3" fill="var(--ink)"/>
+<rect x="595" y="24" width="16" height="27" rx="3" fill="var(--ink)"/>
+</g>
+
+<!-- Scent Grammar labels -->
+<text x="102" y="17" text-anchor="middle" class="L" style="font-size:4.5px;fill:var(--teal);opacity:.5;font-weight:500">FRESH</text>
+<text x="243" y="17" text-anchor="middle" class="L" style="font-size:4.5px;fill:var(--teal);opacity:.5;font-weight:500">FLORAL</text>
+<text x="384" y="17" text-anchor="middle" class="L" style="font-size:4.5px;fill:var(--teal);opacity:.5;font-weight:500">WOODY</text>
+<text x="571" y="17" text-anchor="middle" class="L" style="font-size:4.5px;fill:var(--teal);opacity:.5;font-weight:500">ORIENTAL</text>
+
+<!-- Mount note -->
+<text x="350" y="96" text-anchor="middle" class="L" style="font-size:5px;fill:#999">MOUNT: Steel L-bracket matte black · French cleat backup</text>
+
+<!-- Dimensions -->
+<line x1="58" y1="110" x2="642" y2="110" stroke="var(--amber)" stroke-width=".4"/>
+<line x1="58" y1="105" x2="58" y2="115" stroke="var(--amber)" stroke-width=".3"/>
+<line x1="642" y1="105" x2="642" y2="115" stroke="var(--amber)" stroke-width=".3"/>
+<text x="350" y="125" text-anchor="middle" class="dim" style="font-size:6.5px">MATCH BACK COUNTER WIDTH · 2000–2800mm</text>
+
+<!-- Height from floor -->
+<text x="665" y="55" class="dim" style="font-size:6px">1200–1500mm</text>
+<text x="665" y="65" class="dim" style="font-size:5px;opacity:.5">from floor</text>
+</svg>
+</div>
+
+<table class="tbl">
+<tr><th>Parameter</th><th>Spec</th><th>Note</th></tr>
+<tr><td>Rộng</td><td>Match back counter width</td><td>2000–2800mm</td></tr>
+<tr><td>Sâu shelf</td><td>150–180mm</td><td>Đủ cho chai lớn nhất</td></tr>
+<tr><td>Shelf height</td><td>1200–1500mm từ sàn</td><td>Staff lấy không cần bước thêm</td></tr>
+<tr><td>Slot spacing</td><td>~150–200mm mỗi chai</td><td>12 positions · Fixed dividers</td></tr>
+</table>
+
+<h3>Material</h3>
+<div class="ig">
+<div class="it"><div class="it-n">Shelf</div><div class="it-s">Dark hardwood · Matte oil · Chamfer 2mm edge · Match back counter material</div></div>
+<div class="it"><div class="it-n">Frame</div><div class="it-s">Steel L-bracket matte black · Shadow gap 5mm từ tường</div></div>
+<div class="it"><div class="it-n">Position labels</div><div class="it-s">DM Mono engraved hoặc printed · Scent Grammar order</div></div>
+</div>
+
+<h3>Lighting</h3>
+<p>L2 Accent spotlight aim xuống mỗi chai. Linear LED strip dưới shelf cũng OK — 2700K CRI≥95. Tạo "glowing shelf" khi nhìn từ phía khách.</p>
+</div>
+
+<!-- ═══ FDS-10 · SELF-SERVICE ═══ -->
+<div class="pnl" id="p-ss">
+<h2>FDS-10 · Self-Service Niche</h2>
+<p><strong>Gần cửa, tách riêng.</strong> Thiệp, khăn, shipper tablet. Shipper backup path.</p>
+
+<div class="dwg">
+<div class="dwg-label">Front Elevation · Scale 1:10</div>
+<svg width="100%" viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg">
+<line x1="30" y1="270" x2="470" y2="270" stroke="#ccc" stroke-width=".5"/>
+
+<!-- Frame uprights -->
+<rect x="100" y="48" width="8" height="222" fill="var(--metal)" opacity=".25" stroke="var(--metal)" stroke-width=".3"/>
+<rect x="352" y="48" width="8" height="222" fill="var(--metal)" opacity=".25" stroke="var(--metal)" stroke-width=".3"/>
+
+<!-- Top surface -->
+<rect x="92" y="38" width="276" height="14" rx="1" fill="var(--wood-lt)" opacity=".45" stroke="var(--wood-lt)" stroke-width=".7"/>
+<text x="230" y="30" text-anchor="middle" class="mat-label" style="fill:var(--wood-lt);font-weight:500">LIGHT HARDWOOD TOP · NATURAL OIL</text>
+
+<!-- Top shelf — cards/thiệp -->
+<rect x="110" y="100" width="240" height="8" rx="1" fill="var(--wood-lt)" opacity=".3" stroke="var(--wood-lt)" stroke-width=".4"/>
+<rect x="125" y="65" width="38" height="34" rx="3" fill="var(--linen)" opacity=".5" stroke="var(--stone)" stroke-width=".5"/>
+<rect x="175" y="68" width="38" height="31" rx="3" fill="var(--linen)" opacity=".5" stroke="var(--stone)" stroke-width=".5"/>
+<rect x="225" y="66" width="38" height="33" rx="3" fill="var(--linen)" opacity=".4" stroke="var(--stone)" stroke-width=".5"/>
+<text x="230" y="90" text-anchor="middle" class="L" style="font-size:5.5px;fill:#888">THIỆP · CARDS · DISPLAY</text>
+
+<!-- Middle shelf — khăn -->
+<rect x="110" y="170" width="240" height="8" rx="1" fill="var(--wood-lt)" opacity=".3" stroke="var(--wood-lt)" stroke-width=".4"/>
+<rect x="125" y="133" width="70" height="36" rx="4" fill="var(--linen)" opacity=".5" stroke="var(--stone)" stroke-width=".5"/>
+<rect x="210" y="133" width="70" height="36" rx="4" fill="var(--linen)" opacity=".4" stroke="var(--stone)" stroke-width=".5"/>
+<text x="230" y="158" text-anchor="middle" class="L" style="font-size:5.5px;fill:#888">KHĂN · POCKET SQUARE</text>
+
+<!-- Bottom — tablet dock -->
+<rect x="140" y="192" width="180" height="65" rx="5" fill="var(--ink)" opacity=".05" stroke="var(--ink)" stroke-width=".5" opacity=".15"/>
+<rect x="175" y="202" width="110" height="42" rx="4" fill="var(--ink)" opacity=".1" stroke="var(--ink)" stroke-width=".4"/>
+<text x="230" y="228" text-anchor="middle" class="L" style="font-size:6.5px;fill:#777;font-weight:500">SHIPPER TABLET</text>
+<text x="230" y="250" text-anchor="middle" class="L" style="font-size:5px;fill:#aaa">1× socket hidden · Cable routed in frame</text>
+
+<!-- Dimensions -->
+<line x1="55" y1="42" x2="55" y2="270" stroke="var(--amber)" stroke-width=".4"/>
+<line x1="49" y1="42" x2="61" y2="42" stroke="var(--amber)" stroke-width=".4"/>
+<line x1="49" y1="270" x2="61" y2="270" stroke="var(--amber)" stroke-width=".4"/>
+<text x="53" y="160" text-anchor="middle" class="dim" style="font-size:6.5px" transform="rotate(-90,53,160)">H: 900</text>
+
+<line x1="92" y1="285" x2="368" y2="285" stroke="var(--amber)" stroke-width=".4"/>
+<line x1="92" y1="280" x2="92" y2="290" stroke="var(--amber)" stroke-width=".3"/>
+<line x1="368" y1="280" x2="368" y2="290" stroke="var(--amber)" stroke-width=".3"/>
+<text x="230" y="298" text-anchor="middle" class="dim" style="font-size:6.5px">W: 600–800 × D: 350</text>
+</svg>
+</div>
+
+<table class="tbl">
+<tr><th>Parameter</th><th>Spec</th></tr>
+<tr><td>Kích thước</td><td>W 600–800 × D 350 × H 900mm</td></tr>
+<tr><td>Material</td><td>Light hardwood top · Dark metal frame · Match store language</td></tr>
+<tr><td>Nội dung</td><td>Thiệp display · Khăn pocket square · Shipper tablet dock</td></tr>
+<tr><td>Electrical</td><td>1× socket cho tablet · Cable hidden</td></tr>
+</table>
+</div>
+
+<!-- ═══ FDS-11 · UNDER-COUNTER ═══ -->
+<div class="pnl" id="p-uc">
+<h2>FDS-11 · Under-Counter System</h2>
+<p><strong>Integrated vào FDS-01 Front Counter.</strong> Cockpit design — mọi thứ tầm tay, có vị trí cố định.</p>
+
+<div class="dwg">
+<div class="dwg-label">Section View · Scale 1:10</div>
+<svg width="100%" viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
+<!-- Counter top -->
+<rect x="50" y="20" width="600" height="12" fill="var(--stone)" opacity=".5" stroke="#A09888" stroke-width=".5"/>
+<text x="350" y="12" text-anchor="middle" class="dim" style="font-size:5.5px">MARBLE TOP · 900mm từ sàn</text>
+
+<!-- Reveal gap -->
+<rect x="60" y="35" width="580" height="2" fill="var(--ink)" opacity=".15"/>
+
+<!-- Charging ports in top -->
+<circle cx="150" cy="26" r="4" fill="none" stroke="var(--teal)" stroke-width=".5" opacity=".5"/>
+<circle cx="250" cy="26" r="4" fill="none" stroke="var(--teal)" stroke-width=".5" opacity=".5"/>
+<circle cx="350" cy="26" r="4" fill="none" stroke="var(--teal)" stroke-width=".5" opacity=".5"/>
+<circle cx="450" cy="26" r="4" fill="none" stroke="var(--teal)" stroke-width=".5" opacity=".5"/>
+<circle cx="550" cy="26" r="4" fill="none" stroke="var(--teal)" stroke-width=".5" opacity=".5"/>
+<text x="350" y="45" text-anchor="middle" class="L" style="font-size:5px;fill:var(--teal);opacity:.5">USB-C + LIGHTNING · FLUSH MOUNT · 6 ports</text>
+
+<!-- Waste chute -->
+<rect x="345" y="20" width="10" height="12" fill="var(--metal)" opacity=".3"/>
+<text x="380" y="30" class="dim" style="font-size:4.5px">Ø80mm waste chute</text>
+
+<!-- Zone A: Fast-Packing -->
+<rect x="70" y="55" width="180" height="110" rx="3" fill="var(--wood-lt)" opacity=".1" stroke="var(--wood-dk)" stroke-width=".4"/>
+<text x="160" y="75" text-anchor="middle" class="L" style="font-size:6.5px;fill:var(--wood-dk);font-weight:500">FAST-PACKING</text>
+<text x="160" y="88" text-anchor="middle" class="L" style="font-size:5px;fill:#888">Hộp xếp đứng dạng file</text>
+<!-- File-style dividers -->
+<line x1="95" y1="95" x2="95" y2="155" stroke="var(--wood-dk)" stroke-width=".3" opacity=".3"/>
+<line x1="120" y1="95" x2="120" y2="155" stroke="var(--wood-dk)" stroke-width=".3" opacity=".3"/>
+<line x1="145" y1="95" x2="145" y2="155" stroke="var(--wood-dk)" stroke-width=".3" opacity=".3"/>
+<line x1="170" y1="95" x2="170" y2="155" stroke="var(--wood-dk)" stroke-width=".3" opacity=".3"/>
+<line x1="195" y1="95" x2="195" y2="155" stroke="var(--wood-dk)" stroke-width=".3" opacity=".3"/>
+<line x1="220" y1="95" x2="220" y2="155" stroke="var(--wood-dk)" stroke-width=".3" opacity=".3"/>
+<text x="160" y="148" text-anchor="middle" class="L" style="font-size:4.5px;fill:#aaa">S · M · L · XL · CARD · TISSUE</text>
+
+<!-- Zone B: Drawers -->
+<rect x="270" y="55" width="180" height="110" rx="3" fill="var(--wood-lt)" opacity=".1" stroke="var(--wood-dk)" stroke-width=".4"/>
+<text x="360" y="75" text-anchor="middle" class="L" style="font-size:6.5px;fill:var(--wood-dk);font-weight:500">SOFT-CLOSE DRAWERS</text>
+<!-- 3 drawers -->
+<rect x="280" y="85" width="160" height="22" rx="2" fill="var(--wood-lt)" opacity=".15" stroke="var(--wood-dk)" stroke-width=".3"/>
+<text x="360" y="100" text-anchor="middle" class="L" style="font-size:4.5px;fill:#888">RIBBON · CARDS · TISSUE</text>
+<rect x="280" y="112" width="160" height="22" rx="2" fill="var(--wood-lt)" opacity=".15" stroke="var(--wood-dk)" stroke-width=".3"/>
+<text x="360" y="127" text-anchor="middle" class="L" style="font-size:4.5px;fill:#888">GIFT BOX · TÚI KRAFT</text>
+<rect x="280" y="139" width="160" height="22" rx="2" fill="var(--wood-lt)" opacity=".15" stroke="var(--wood-dk)" stroke-width=".3"/>
+<text x="360" y="154" text-anchor="middle" class="L" style="font-size:4.5px;fill:#888">CHAI EMPTY · BACKUP</text>
+
+<!-- Zone C: Hooks + personal storage -->
+<rect x="470" y="55" width="170" height="110" rx="3" fill="var(--wood-lt)" opacity=".1" stroke="var(--wood-dk)" stroke-width=".4"/>
+<text x="555" y="75" text-anchor="middle" class="L" style="font-size:6.5px;fill:var(--wood-dk);font-weight:500">KHÁCH STORAGE</text>
+<text x="555" y="88" text-anchor="middle" class="L" style="font-size:5px;fill:#888">Hooks + shelf dưới mỗi seat</text>
+<!-- Hooks -->
+<g opacity=".3">
+<line x1="495" y1="100" x2="495" y2="130" stroke="var(--metal)" stroke-width="2"/>
+<line x1="525" y1="100" x2="525" y2="130" stroke="var(--metal)" stroke-width="2"/>
+<line x1="555" y1="100" x2="555" y2="130" stroke="var(--metal)" stroke-width="2"/>
+<line x1="585" y1="100" x2="585" y2="130" stroke="var(--metal)" stroke-width="2"/>
+<line x1="615" y1="100" x2="615" y2="130" stroke="var(--metal)" stroke-width="2"/>
+</g>
+<text x="555" y="150" text-anchor="middle" class="L" style="font-size:4.5px;fill:#aaa">MATTE BLACK · 6 HOOKS</text>
+
+<!-- Cable management -->
+<rect x="70" y="180" width="570" height="30" rx="3" fill="var(--ink)" opacity=".04" stroke="var(--ink)" stroke-width=".3" stroke-dasharray="3 2"/>
+<text x="350" y="200" text-anchor="middle" class="L" style="font-size:5.5px;fill:#888;opacity:.5">CABLE MANAGEMENT · ỐNG GEN · 1 POWER HUB · KHÔNG DÂY LỘ</text>
+
+<!-- Waste bin -->
+<rect x="300" y="215" width="100" height="60" rx="3" fill="var(--ink)" opacity=".06" stroke="var(--ink)" stroke-width=".3"/>
+<text x="350" y="245" text-anchor="middle" class="L" style="font-size:5.5px;fill:#888;opacity:.5">THÙNG RÁC KÍN</text>
+<text x="350" y="258" text-anchor="middle" class="L" style="font-size:4.5px;fill:#aaa">Lỗ Ø80mm top → thẳng xuống</text>
+
+<!-- Floor -->
+<line x1="50" y1="285" x2="650" y2="285" stroke="#ccc" stroke-width=".5"/>
+</svg>
+</div>
+
+<h3>Spec Summary</h3>
+<div class="ig">
+<div class="it"><div class="it-n">Fast-Packing</div><div class="it-s">Dividers cố định · Mỗi size 1 slot · Staff rút 1 box 1 giây · Muscle memory sau 1 tuần</div></div>
+<div class="it"><div class="it-n">Drawers</div><div class="it-s">3× soft-close · Full extension · Light wood front · Knurled pull matte black Ø12mm</div></div>
+<div class="it"><div class="it-n">Charging</div><div class="it-s">6× USB-C/Lightning flush mount · Cable routed trong ống gen đến Power Hub</div></div>
+<div class="it"><div class="it-n">Waste system</div><div class="it-s">Lỗ Ø80mm âm mặt bàn · Stainless ring · Thùng 20L kín dưới · Removable</div></div>
+<div class="it"><div class="it-n">Cable management</div><div class="it-s">1 Power Hub · Ống gen toàn bộ · Không dây chạy qua zone · Pre-routed trong carcass</div></div>
+<div class="it"><div class="it-n">Hooks khách</div><div class="it-s">Matte black · Under-counter per seat · Đủ cho túi xách lớn · 5kg rated mỗi hook</div></div>
+</div>
+</div>
+
+<!-- ═══ FDS-12 · GENERAL NOTES ═══ -->
+<div class="pnl" id="p-gn">
+<h2>General Notes for Contractor</h2>
+
+<h3>Finish Standards</h3>
+<div class="ig">
+<div class="it"><div class="it-n">Wood — matte oil only</div><div class="it-s">Không varnish · Không lacquer · Không stain. Grain phải visible. Oil cho phép patina tự nhiên theo thời gian. Reapply mỗi 6–12 tháng.</div></div>
+<div class="it"><div class="it-n">Metal — matte black</div><div class="it-s">Powder coat hoặc blackened wax. Weld ground smooth nhưng không polish — visible bead OK nếu consistent. Không chrome, không brushed nickel.</div></div>
+<div class="it"><div class="it-n">Stone — honed only</div><div class="it-s">Không polished (glare dưới spotlight). Honed = glow mềm. Seal with penetrating sealer, không topical.</div></div>
+<div class="it"><div class="it-n">Glass — clear tempered</div><div class="it-s">10mm min cho Lab Booth. Polished edges. Không tinted, không frosted (khách phải thấy rõ craft).</div></div>
+</div>
+
+<h3>Edge Profile Master Reference</h3>
+<table class="tbl">
+<tr><th>Code</th><th>Profile</th><th>Spec</th><th>Apply to</th></tr>
+<tr><td>E-01</td><td>Eased Edge</td><td>3mm radius ± 0.5mm</td><td>Counter stone top · All exposed edges</td></tr>
+<tr><td>E-02</td><td>Chamfer</td><td>2mm × 45°</td><td>Shelf/riser wood edges · Tester island top</td></tr>
+<tr><td>E-03</td><td>Ground Smooth</td><td>No radius · Weld flush</td><td>Metal shelf frame · Lab Booth frame</td></tr>
+<tr><td>E-04</td><td>Eased Edge</td><td>1.5mm radius</td><td>Drawer fronts (light wood)</td></tr>
+</table>
+
+<h3>Joint Master Reference</h3>
+<table class="tbl">
+<tr><th>Code</th><th>Joint</th><th>Spec</th><th>Apply to</th></tr>
+<tr><td>J-01</td><td>Reveal Gap</td><td>3mm ± 0.5mm · No filler</td><td>Stone top → wood base</td></tr>
+<tr><td>J-02</td><td>Visible Bolt</td><td>M6/M8 matte black hex · Flush/1mm recess</td><td>Metal frame → wood shelf</td></tr>
+<tr><td>J-03</td><td>Butt Joint</td><td>0mm gap · Tight · Dowel+glue</td><td>Dark wood → light wood (color contrast đủ)</td></tr>
+<tr><td>J-04</td><td>Shadow Gap</td><td>5mm ± 1mm</td><td>Wall-mount furniture → plaster</td></tr>
+<tr><td>J-05</td><td>Flush Transition</td><td>Brass strip 5mm × 3mm</td><td>Stone floor → wood floor zone transition</td></tr>
+</table>
+
+<h3>Hardware Master Reference</h3>
+<table class="tbl">
+<tr><th>Item</th><th>Spec</th><th>Supplier Note</th></tr>
+<tr><td>Drawer pulls</td><td>Knurled matte black Ø12mm</td><td>Consistent toàn store · Cùng batch</td></tr>
+<tr><td>Drawer slides</td><td>Soft-close undermount · Full extension</td><td>50kg rated minimum</td></tr>
+<tr><td>Hinges</td><td>Concealed 110° soft-close</td><td>Matte black · Blum hoặc tương đương</td></tr>
+<tr><td>Bolts</td><td>M6/M8 hex cap matte black</td><td>DIN 912 hoặc tương đương</td></tr>
+<tr><td>Hooks</td><td>Matte black · 5kg rated</td><td>Under-counter mount</td></tr>
+<tr><td>Floor protectors</td><td>Felt pad 3mm</td><td>Tất cả chân furniture trên stone floor</td></tr>
+</table>
+
+<h3>QC Checklist — Mỗi unit trước bàn giao</h3>
+<div class="ig">
+<div class="it"><div class="it-n">Visual</div><div class="it-s">Kiểm tra dưới 2700K CRI≥95 · Không dưới ánh sáng nhà xưởng · Màu vật liệu phải đúng dưới store lighting</div></div>
+<div class="it"><div class="it-n">Edge</div><div class="it-s">Sờ tay toàn bộ exposed edges · Không sharp point · Không splinter · Radius đúng spec</div></div>
+<div class="it"><div class="it-n">Joint</div><div class="it-s">Gap đo bằng feeler gauge · ± tolerance theo spec · Không silicone/filler trừ khi spec cho phép</div></div>
+<div class="it"><div class="it-n">Hardware</div><div class="it-s">Soft-close test 20 lần mỗi drawer · Bolt torque check · Hook load test 5kg</div></div>
+<div class="it"><div class="it-n">Finish</div><div class="it-s">Oil coverage đều · Không varnish spots · Metal coat đều không chip · Stone seal test (water bead)</div></div>
+<div class="it"><div class="it-n">Level</div><div class="it-s">Spirit level trên mỗi surface · ± 2mm trên 2000mm run</div></div>
+</div>
+
+<div class="note"><strong>Sample board required trước production:</strong> Mỗi vật liệu cần 300×300mm sample board, duyệt dưới store lighting condition (2700K CRI≥95, lux theo zone). Không duyệt dưới ánh sáng văn phòng/nhà xưởng.</div>
+
+<h3>Document Cross-Reference</h3>
+<div class="ig ig3">
+<div class="it"><div class="it-n">MDL-001</div><div class="it-s">Macro-Detailing Library</div></div>
+<div class="it"><div class="it-n">PMP-001</div><div class="it-s">Physical Material Palette</div></div>
+<div class="it"><div class="it-n">MSDL-001</div><div class="it-s">Material & Space Design</div></div>
+<div class="it"><div class="it-n">MSDL-001-S1</div><div class="it-s">Material Supplement 01</div></div>
+<div class="it"><div class="it-n">LID-001</div><div class="it-s">Lighting Identity</div></div>
+<div class="it"><div class="it-n">SRS-001</div><div class="it-s">Store Readiness Standards</div></div>
+</div>
+</div>
+
+<div class="ft"><span>MORAQ · FDS-001 · FURNITURE DESIGN SPECS · 12 UNITS · CONTRACTOR-READY</span><span>CONFIDENTIAL · APR 2026</span></div>
+
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  var btns=document.querySelectorAll('.tb');
+  var pnls=document.querySelectorAll('.pnl');
+  btns.forEach(function(b){
+    b.addEventListener('click',function(){
+      var t=this.getAttribute('data-t');
+      btns.forEach(function(x){x.classList.remove('on')});
+      pnls.forEach(function(x){x.classList.remove('on')});
+      this.classList.add('on');
+      document.getElementById('p-'+t).classList.add('on');
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+});
+</script>
+</body>
+</html>

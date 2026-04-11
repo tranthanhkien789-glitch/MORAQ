@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="color-scheme" content="dark">
+<title>MORAQ Customer Ceremony Map</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#0C0B0A!important;color:#fff!important;height:100%}
+.shell{position:fixed;inset:0;background:#0C0B0A;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:flex;flex-direction:column;overflow:hidden}
+
+/* TOP */
+.top{height:50px;flex-shrink:0;background:#111010;border-bottom:1px solid #242220;display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:50}
+.t-l{display:flex;align-items:center;gap:12px}
+.t-brand{font-family:'Menlo','Monaco','Courier New',monospace;font-size:10px;letter-spacing:.2em;color:#9FE1CB;opacity:.8}
+.t-sep{width:1px;height:14px;background:#2A2724}
+.t-title{font-family:'Georgia','Times New Roman',serif;font-size:13px;font-style:italic;color:rgba(255,255,255,.35)}
+.t-doc{font-family:'Menlo','Monaco','Courier New',monospace;font-size:8px;color:rgba(255,255,255,.2)}
+
+/* STAGE TABS — horizontal scroll */
+.stage-rail{
+  height:42px;flex-shrink:0;background:#0E0D0C;
+  border-bottom:1px solid #242220;
+  display:flex;overflow-x:auto;scrollbar-width:none;align-items:stretch;
+}
+.stage-rail::-webkit-scrollbar{display:none}
+.stab{
+  display:flex;align-items:center;gap:8px;padding:0 16px;
+  cursor:pointer;flex-shrink:0;border-bottom:2px solid transparent;
+  transition:all .18s;user-select:none;
+}
+.stab-num{font-family:'Menlo','Monaco','Courier New',monospace;font-size:9px;letter-spacing:.08em;color:rgba(255,255,255,.2)}
+.stab-lbl{font-family:'Menlo','Monaco','Courier New',monospace;font-size:8px;letter-spacing:.08em;color:rgba(255,255,255,.28);white-space:nowrap}
+.stab:hover .stab-lbl{color:rgba(255,255,255,.55)}
+.stab.on .stab-lbl,.stab.on .stab-num{color:#fff}
+.stab.on{border-bottom-color:var(--sc)}
+
+/* MAIN AREA */
+.main{flex:1;overflow:hidden;display:flex;flex-direction:column}
+
+/* JOURNEY HEADER */
+.journey-header{height:52px;flex-shrink:0;display:flex;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid #1A1918;background:#0A0908}
+.journey-header::-webkit-scrollbar{display:none}
+.jh-stage{display:flex;flex-direction:column;justify-content:center;padding:0 16px;border-right:1px solid #1A1918;min-width:160px;cursor:pointer;transition:background .15s;user-select:none}
+.jh-stage:last-child{border-right:none}
+.jh-stage:hover{background:#111010}
+.jh-stage.active-s{background:#141210;border-bottom:2px solid var(--sc)}
+.jhs-num{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.1em;color:rgba(255,255,255,.2);margin-bottom:3px}
+.jhs-name{font-family:'Georgia','Times New Roman',serif;font-size:13px;color:rgba(255,255,255,.55);line-height:1.2}
+.jh-stage.active-s .jhs-name{color:#fff}
+.jhs-count{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;color:rgba(255,255,255,.18);margin-top:2px}
+
+/* CONTENT AREA — split */
+.content-area{flex:1;display:flex;overflow:hidden}
+
+/* MOMENT LIST */
+.moment-list{width:260px;flex-shrink:0;border-right:1px solid #242220;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#2A2724 transparent;background:#0E0D0C}
+.moment-list::-webkit-scrollbar{width:3px}
+.moment-list::-webkit-scrollbar-thumb{background:#2A2724}
+.ml-stage-header{padding:10px 14px 8px;border-bottom:1px solid #1A1918;position:sticky;top:0;background:#0E0D0C;z-index:5}
+.mlsh-label{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.12em;color:rgba(255,255,255,.22);display:block;margin-bottom:4px}
+.mlsh-name{font-family:'Georgia','Times New Roman',serif;font-size:15px;color:#fff}
+.moment-item{padding:12px 14px;border-bottom:1px solid #1A1918;cursor:pointer;transition:background .15s;border-left:3px solid transparent;user-select:none}
+.moment-item:hover{background:#141210}
+.moment-item.on{background:#1A1916;border-left-color:var(--sc)}
+.mi-time{font-family:'Menlo','Monaco','Courier New',monospace;font-size:8px;letter-spacing:.06em;color:rgba(255,255,255,.22);margin-bottom:4px}
+.moment-item.on .mi-time{color:var(--sc)}
+.mi-name{font-size:12.5px;color:rgba(255,255,255,.6);line-height:1.3;font-weight:500;margin-bottom:4px}
+.moment-item.on .mi-name{color:#fff}
+.mi-senses{display:flex;gap:3px;flex-wrap:wrap}
+.ms{font-family:'Menlo','Monaco','Courier New',monospace;font-size:6.5px;padding:1.5px 5px;border-radius:8px}
+
+/* MOMENT DETAIL */
+.moment-detail{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#2A2724 transparent;background:#0C0B0A}
+.moment-detail::-webkit-scrollbar{width:3px}
+.moment-detail::-webkit-scrollbar-thumb{background:#2A2724}
+.md-empty{display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,.2);font-family:'Georgia','Times New Roman',serif;font-size:16px;font-style:italic}
+.md-content{padding:22px;display:flex;flex-direction:column;gap:14px}
+
+/* DETAIL HEADER */
+.dh{display:flex;flex-direction:column;gap:5px;padding-bottom:14px;border-bottom:1px solid #242220}
+.dh-stage{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.14em;color:var(--sc,#9FE1CB)}
+.dh-time{font-family:'Menlo','Monaco','Courier New',monospace;font-size:8px;letter-spacing:.06em;color:rgba(255,255,255,.3)}
+.dh-name{font-family:'Georgia','Times New Roman',serif;font-size:clamp(20px,3.5vw,30px);font-weight:300;line-height:.97;color:#fff}
+.dh-name em{font-style:italic}
+.dh-senses{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
+
+/* DETAIL SECTIONS */
+.dsec{background:#1A1916;border:1px solid #2A2724;border-radius:6px;overflow:hidden}
+.dsec-header{background:#141210;padding:9px 13px;border-bottom:1px solid #242220}
+.dsech{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.12em;color:rgba(255,255,255,.3)}
+.dsec-body{padding:12px 13px;display:flex;flex-direction:column;gap:8px}
+.ds-row{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid #1A1918;align-items:flex-start}
+.ds-row:last-child{border-bottom:none}
+.ds-icon{font-size:13px;flex-shrink:0;width:18px;text-align:center;margin-top:1px}
+.ds-text{flex:1;font-size:12px;color:rgba(255,255,255,.58);line-height:1.65}
+.ds-text b{color:rgba(255,255,255,.85);font-weight:400}
+
+/* EMOTION BAR */
+.emotion-bar{display:flex;flex-direction:column;gap:6px}
+.eb-label{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.1em;color:rgba(255,255,255,.25);margin-bottom:2px}
+.eb-track{height:6px;background:#242220;border-radius:3px;overflow:hidden}
+.eb-fill{height:100%;border-radius:3px;transition:width .5s}
+.eb-desc{font-size:11px;color:rgba(255,255,255,.38);font-style:italic;margin-top:2px}
+
+/* FAILURE / SUCCESS */
+.fs-split{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fs-card{border-radius:5px;padding:10px;display:flex;flex-direction:column;gap:5px}
+.fs-card.fail{background:#1A1010;border:1px solid #3A1A1A}
+.fs-card.win{background:#0A1610;border:1px solid #1A3A1A}
+.fs-label{font-family:'Menlo','Monaco','Courier New',monospace;font-size:6.5px;letter-spacing:.1em;display:block;margin-bottom:3px}
+.fs-card.fail .fs-label{color:rgba(163,45,45,.6)}
+.fs-card.win .fs-label{color:rgba(15,110,86,.8)}
+.fs-text{font-size:11px;line-height:1.6}
+.fs-card.fail .fs-text{color:rgba(255,255,255,.42)}
+.fs-card.win .fs-text{color:rgba(255,255,255,.58)}
+
+/* MORAQ ACTION */
+.action-card{background:#080F0C;border:1px solid rgba(15,110,86,.2);border-left:2px solid #0F6E56;border-radius:0 6px 6px 0;padding:12px;display:flex;flex-direction:column;gap:6px}
+.ac-label{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.12em;color:#9FE1CB;display:block;margin-bottom:3px}
+.ac-item{display:flex;gap:8px;font-size:12px;color:rgba(255,255,255,.58);line-height:1.6;align-items:baseline}
+.ac-dot{width:4px;height:4px;border-radius:50%;background:#0F6E56;flex-shrink:0;margin-top:6px}
+
+/* STAGE COLORS */
+:root{
+  --s1:#0F6E56;--s2:#854F0B;--s3:#185FA5;
+  --s4:#533CB7;--s5:#3B6D11;--s6:#C8A84B;
+}
+
+/* Sense tags */
+.ss-scent{background:#0A1E14;color:#9FE1CB}
+.ss-sound{background:#08101C;color:#85B7EB}
+.ss-light{background:#160C02;color:#FAC775}
+.ss-touch{background:#0A1406;color:#C0DD97}
+.ss-visual{background:#0C0A20;color:#AFA9EC}
+.ss-emotion{background:#1A0E14;color:#F0A0C0}
+
+/* MOBILE: stack layout */
+@media(max-width:640px){
+  .journey-header{display:none}
+  .content-area{flex-direction:column}
+  .moment-list{width:100%;max-height:200px;border-right:none;border-bottom:1px solid #242220}
+  .moment-detail{flex:1}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<div class="top">
+  <div class="t-l">
+    <div class="t-brand">MORAQ</div>
+    <div class="t-sep"></div>
+    <div class="t-title">Customer Ceremony Map</div>
+  </div>
+  <div class="t-doc">CCM-001 · 6 STAGES · 26 MOMENTS</div>
+</div>
+
+<!-- STAGE SELECTOR -->
+<div class="stage-rail" id="stageRail">
+  <div class="stab on" data-s="0" style="--sc:var(--s1)"><div class="stab-num">01</div><div class="stab-lbl">DISCOVERY</div></div>
+  <div class="stab" data-s="1" style="--sc:var(--s2)"><div class="stab-num">02</div><div class="stab-lbl">ARRIVAL</div></div>
+  <div class="stab" data-s="2" style="--sc:var(--s3)"><div class="stab-num">03</div><div class="stab-lbl">IN-STORE JOURNEY</div></div>
+  <div class="stab" data-s="3" style="--sc:var(--s4)"><div class="stab-num">04</div><div class="stab-lbl">POST-PURCHASE</div></div>
+  <div class="stab" data-s="4" style="--sc:var(--s5)"><div class="stab-num">05</div><div class="stab-lbl">RETURN</div></div>
+  <div class="stab" data-s="5" style="--sc:var(--s6)"><div class="stab-num">06</div><div class="stab-lbl">ADVOCACY</div></div>
+</div>
+
+<div class="main">
+
+  <div class="content-area">
+    <!-- MOMENT LIST -->
+    <div class="moment-list" id="momentList"></div>
+    <!-- MOMENT DETAIL -->
+    <div class="moment-detail" id="momentDetail">
+      <div class="md-empty">Chọn một moment để xem chi tiết →</div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+// ── DATA ──
+const STAGES = [
+  {
+    id:0, color:'var(--s1)', label:'STAGE 01', name:'Discovery', count:'5 moments',
+    moments:[
+      {
+        time:'Ngày 0 — Online',
+        name:'Lần đầu thấy MORAQ',
+        em:'',
+        senses:['visual','emotion'],
+        emotion:{label:'Tò mò nhẹ',value:30,desc:'Scroll qua, dừng lại 2 giây. Chưa có ý định gì.'},
+        customer:[
+          {icon:'👁','text':'Nhìn thấy một post trên Instagram hoặc TikTok — <b>không phải quảng cáo, là organic content của ai đó đang dùng MORAQ.</b>'},
+          {icon:'📱','text':'Caption có chiều sâu, ảnh tối và warm. Không có chai hoàn hảo trên nền trắng. Có bàn tay người trong khung.'},
+          {icon:'❓','text':'Tự hỏi: "Đây là brand gì? Việt Nam à?" — nhưng chưa đủ tò mò để search ngay. Lưu post hoặc follow account.'},
+        ],
+        moraq:[
+          'Post phải đủ tốt để stop scroll — nhưng không phải vì aggressive, mà vì <b>genuinely interesting</b>.',
+          'Caption kết thúc bằng câu hỏi — tạo ra một thought mà người xem mang theo.',
+          'Không có CTA, không có price tag. Chỉ có một world đủ hấp dẫn để muốn biết thêm.',
+        ],
+        fail:'Post quá promotional, quá perfect, hoặc quá generic → bị scroll qua không dừng lại',
+        win:'Khách lưu post hoặc follow account — đây là signal of interest, không phải intent to buy',
+      },
+      {
+        time:'Ngày 1–7 — Research phase',
+        name:'Chủ động tìm hiểu',
+        senses:['visual','emotion'],
+        emotion:{label:'Quan tâm thật sự',value:55,desc:'Đang tìm hiểu một cách chủ động. Intent đang hình thành.'},
+        customer:[
+          {icon:'🔍','text':'Search "MORAQ fragrance", đọc captions cũ, xem tagged location, tìm review nếu có.'},
+          {icon:'📖','text':'<b>Đọc Brand Philosophy nếu có trên website.</b> Người ở giai đoạn này muốn biết "brand này là ai" trước khi đến store.'},
+          {icon:'💭','text':'Tự hỏi: "Liệu mình có phải type của họ không?" — MORAQ đã planted seed về identity match.'},
+        ],
+        moraq:[
+          'Profile Instagram phải <b>coherent và deep</b> — scroll 9 posts đầu phải cho thấy một thế giới nhất quán.',
+          'Bio không nên list products — nên articulate philosophy trong 2 câu.',
+          'Không reply DM "vâng bạn ơi shop mở 10h-21h" — reply như người của MORAQ nói chuyện.',
+        ],
+        fail:'Profile không có depth, bio quá generic, không có philosophy → không đủ để tạo thành "tôi phải đến thử"',
+        win:'Khách DM hỏi địa chỉ hoặc giờ mở cửa — đây là intent rõ ràng, sắp convert',
+      },
+      {
+        time:'Ngày 3–14 — Planning',
+        name:'Quyết định đến thử',
+        senses:['emotion'],
+        emotion:{label:'Anticipation',value:65,desc:'Đã quyết định sẽ đến. Đang plan thời gian và lý do.'},
+        customer:[
+          {icon:'📍','text':'Kiểm tra địa chỉ, giờ mở cửa. Có thể check xem ai đã đến trên Google Maps hoặc Instagram location.'},
+          {icon:'🤔','text':'Tạo ra <b>"lý do" để đi</b> — tặng quà, tìm hương mới, đơn giản là tò mò. Người ta cần một lý do hợp lý hóa việc đến một boutique nhỏ.'},
+          {icon:'👥','text':'Có thể rủ bạn bè hoặc đi một mình. <b>Solo visitor thường có intent to buy cao hơn — họ đến vì bản thân, không phải vì bạn bè muốn đi.</b>'},
+        ],
+        moraq:[
+          'Google Business profile phải accurate và có ít nhất vài reviews thật.',
+          'Nếu khách DM hỏi "có nên mang gì theo không?" — đây là golden opportunity để set expectation đúng.',
+          'Không cần hỏi "bạn thích loại hương nào?" qua DM — đó là conversation cho counter.',
+        ],
+        fail:'Địa chỉ sai trên Google Maps, giờ mở cửa không update → first bad experience trước khi đến store',
+        win:'Khách đang trên đường đến. Tất cả những gì xảy ra từ đây trở đi là real-time ceremony.',
+      },
+    ]
+  },
+  {
+    id:1, color:'var(--s2)', label:'STAGE 02', name:'Arrival', count:'4 moments',
+    moments:[
+      {
+        time:'T-5 phút — Đang đến',
+        name:'Nhìn thấy store từ xa',
+        senses:['visual','emotion'],
+        emotion:{label:'Phấn khích + hồi hộp',value:72,desc:'Sắp trải nghiệm thứ gì đó mà mình đã research. Expectation cao.'},
+        customer:[
+          {icon:'🏠','text':'Nhìn thấy store từ xa — exterior design tạo ra impression đầu tiên vật lý. <b>Facade, signage, ánh sáng từ bên trong nhìn qua cửa kính.</b>'},
+          {icon:'👁','text':'Nhìn qua cửa kính: thấy gì trong 3 giây đầu? Counter có visible không? Có đủ "luxury cue" không?'},
+          {icon:'😊','text':'Cảm giác "đây đúng rồi" hoặc "hơi khác với mình tưởng" — cả hai đều OK nếu experience sau đó tốt.'},
+        ],
+        moraq:[
+          '<b>Exterior và cửa kính phải maintained</b> — sạch, không sticker cũ, ánh sáng trong store visible từ ngoài.',
+          'Counter phải visible trong 3 giây từ cửa — đây là "visual gravity" check.',
+          'Không có sale banner, không có A-frame với discount percentage trước cửa.',
+        ],
+        fail:'Store trông "bình thường" từ ngoài — mất expectation trước khi vào',
+        win:'Khách dừng lại nhìn qua cửa kính vài giây trước khi vào — sign of genuine interest',
+      },
+      {
+        time:'T=0 — Cánh cửa',
+        name:'Tay chạm cửa, bước qua ngưỡng',
+        senses:['touch','scent','light','sound'],
+        emotion:{label:'Threshold moment',value:78,desc:'Khoảnh khắc chuyển đổi từ thế giới bên ngoài vào thế giới của MORAQ.'},
+        customer:[
+          {icon:'✋','text':'<b>Tay cầm door handle</b> — âm thanh và texture của cửa là haptic cue đầu tiên.'},
+          {icon:'👃','text':'Cửa mở: <b>làn hương Zone 1 chạm khứu giác ngay lập tức</b>. Hệ limbic xử lý trước khi ý thức nhận ra. Ấn tượng đầu tiên đã xảy ra.'},
+          {icon:'💡','text':'Mắt chuyển từ ánh sáng ngoài trời (5500K) sang 2700K warm. 2–3 giây để adjust. Counter bắt đầu hiện ra.'},
+          {icon:'🎵','text':'72–78 BPM bắt đầu thấm vào — không conscious nhưng nhịp tim đang sync.'},
+        ],
+        moraq:[
+          'Zone 1 diffuser phải active đúng giờ — <b>không có trường hợp khách vào mà không có ambient scent.</b>',
+          'Door handle phải clean. Không fingerprint, không sticker, không creak.',
+          'Staff không được rush đến ngay — 60 giây observe protocol bắt đầu.',
+        ],
+        fail:'Diffuser chưa warm up, không có scent khi khách vào → mất khoảnh khắc quan trọng nhất',
+        win:'Khách dừng lại ngay sau khi bước vào, thở sâu — đây là unconscious response to scent. Ceremony đã bắt đầu.',
+      },
+      {
+        time:'T+8s đến T+60s — Exploration',
+        name:'60 giây của riêng khách',
+        senses:['visual','scent','sound','touch'],
+        emotion:{label:'Orientation + wonder',value:80,desc:'Đang absorb không gian. Não đang xử lý và categorize: "đây là nơi như thế nào?"'},
+        customer:[
+          {icon:'👀','text':'Mắt dẫn về counter trong 3 giây (nếu layout đúng). Bắt đầu scan display từ trái sang phải — Scent Grammar order.'},
+          {icon:'✋','text':'Có thể cầm một chai lên — <b>weight, texture, nhiệt độ của glass</b>. Đây là moment của haptic luxury.'},
+          {icon:'👃','text':'Sau 30 giây, bắt đầu nhận thức được ambient scent: "ở đây có mùi dễ chịu."'},
+          {icon:'🎵','text':'Bước chân trên sàn đá/gỗ tạo âm thanh trầm. Nhạc đủ để fill silence, không đủ để distract.'},
+        ],
+        moraq:[
+          '<b>Staff không tiếp cận trong 60 giây đầu.</b> Đứng quan sát từ ≥2m. Không eye contact quá nhiều — tạo áp lực.',
+          'Tất cả visual phải sẵn sàng: planogram đúng, negative space đủ, không có chai bị lệch.',
+          'Observe xem khách dừng ở đâu — đây là data cho cuộc tư vấn tiếp theo.',
+        ],
+        fail:'Staff tiếp cận ngay hoặc nói "em chào anh/chị" to — phá vỡ 60 giây quý giá của khách',
+        win:'Khách cầm chai lên và không đặt xuống ngay — họ đang connect. Đây là tín hiệu tiếp cận.',
+      },
+    ]
+  },
+  {
+    id:2, color:'var(--s3)', label:'STAGE 03', name:'In-Store Journey', count:'7 moments',
+    moments:[
+      {
+        time:'T+60s — Tiếp cận',
+        name:'"Bạn đang tìm hương cho dịp nào?"',
+        senses:['sound','visual'],
+        emotion:{label:'Welcomed, not hunted',value:75,desc:'Cảm thấy được mời vào cuộc trò chuyện, không phải bị approach để bán hàng.'},
+        customer:[
+          {icon:'👂','text':'Nghe câu hỏi đầu tiên: <b>"Bạn đang tìm hương cho dịp nào?"</b> — câu hỏi trao quyền cho khách, không phải cho staff.'},
+          {icon:'💬','text':'Tự nhiên bắt đầu chia sẻ: dịp tặng quà, hương hàng ngày, hay chỉ tò mò. <b>Khách đang dẫn cuộc trò chuyện.</b>'},
+          {icon:'🧠','text':'Nhận ra "staff này không đang cố bán gì cho mình — họ đang thật sự hỏi." Defensive guard bắt đầu hạ xuống.'},
+        ],
+        moraq:[
+          'Câu mở đầu KHÔNG THỂ là "Em có thể giúp gì cho anh/chị không?" — không bao giờ.',
+          'Tiếp cận từ góc nhìn thấy, không đứng sau lưng. Không maintain eye contact quá 3 giây liên tục.',
+          'Nếu khách nói "chỉ xem thôi" — lui lại một bước, không đi theo. Vẫn available nhưng không hover.',
+        ],
+        fail:'Câu "Em có thể giúp gì không?" hoặc tiếp cận quá sớm → khách đặt guard lên, cả ceremony bị ảnh hưởng',
+        win:'Khách bắt đầu nói về dịp hoặc người nhận quà — đây là open door. Qualifying đã bắt đầu.',
+      },
+      {
+        time:'T+90s — Framework',
+        name:'Scent Grammar — bản đồ trước khi đi',
+        senses:['scent','sound','visual'],
+        emotion:{label:'Curiosity + learning',value:80,desc:'Đang được dạy một ngôn ngữ mới. Cảm thấy được educate, không phải được pitch.'},
+        customer:[
+          {icon:'🗺️','text':'Lần đầu tiên có một <b>framework để hiểu nước hoa</b>: Fresh → Floral → Woody → Oriental. Không phải theo tên brand, không phải theo giá.'},
+          {icon:'👃','text':'Được ngửi từng gia đình hương qua scent strip — không phải chai, để tránh preconception về design.'},
+          {icon:'💡','text':'Khoảnh khắc "aha": "À, tôi thường thích Woody — tôi chưa bao giờ biết gọi nó như vậy."'},
+        ],
+        moraq:[
+          '<b>Không skip Scent Grammar dù khách nói "biết rồi"</b> — người đã biết sẽ nhanh confirm, người chưa biết cần framework này.',
+          'Giới thiệu bằng ngôn ngữ cảm xúc và tình huống, không phải note list.',
+          'Kết thúc bằng: "Bạn đang nghe mô tả nào cảm thấy đúng với mình nhất?"',
+        ],
+        fail:'Skip Scent Grammar → khách overwhelmed với options, không có framework để quyết định',
+        win:'Khách self-locate: "Mình nghĩ mình là Woody" — họ đã có identity trong map. Tư vấn giờ dễ hơn rất nhiều.',
+      },
+      {
+        time:'T+3min — Qualifying',
+        name:'3 câu hỏi — nghe để hiểu',
+        senses:['sound','emotion'],
+        emotion:{label:'Heard and understood',value:85,desc:'Cảm giác "họ đang thực sự lắng nghe tôi" — hiếm trong retail.'},
+        customer:[
+          {icon:'💬','text':'Được hỏi 3 câu theo đúng thứ tự: dịp → hương nền → budget (khi cần). <b>Cảm thấy như cuộc trò chuyện, không phải form điền.</b>'},
+          {icon:'🧠','text':'Càng nói càng cảm thấy staff hiểu mình hơn. Điều này tạo ra trust — và trust tạo ra openness.'},
+          {icon:'⚡','text':'Khoảnh khắc "họ hiểu tôi": khi staff articulate lại điều khách vừa nói theo cách chính xác hơn khách tự mô tả.'},
+        ],
+        moraq:[
+          'Hỏi từng câu, pause để nghe, không rush qua như checklist.',
+          '<b>Lắng nghe ngôn ngữ khách dùng</b> — "tươi", "nhẹ", "ấm" — đây là vocabulary của họ, dùng lại khi recommend.',
+          'Không đề xuất bất kỳ sản phẩm cụ thể nào trước khi có đủ 3 câu trả lời.',
+        ],
+        fail:'Rush qua qualifying hoặc đề xuất quá sớm → recommendation không match → khách không mua hoặc mua sai',
+        win:'Khách nói nhiều hơn họ định nói ban đầu — sign of genuine comfort. Trust đã được establish.',
+      },
+      {
+        time:'T+5min — First tester',
+        name:'Hương lần đầu chạm da',
+        senses:['scent','touch','emotion'],
+        emotion:{label:'Intimate moment',value:88,desc:'Đây là khoảnh khắc personal nhất trong journey — hương thơm trên da của riêng mình.'},
+        customer:[
+          {icon:'✋','text':'Tester được đặt lên cổ tay hoặc inner wrist — <b>không xịt vào không khí</b>. Hương cần skin chemistry.'},
+          {icon:'👃','text':'Ngửi ngay (topnote), được hướng dẫn chờ 3 phút (heart), và 10 phút (base). <b>Ba lần ngửi là ba câu chuyện khác nhau.</b>'},
+          {icon:'🤲','text':'Coffee beans được offer để reset giữa các tester. Đây là ritual gesture — không phải just practical.'},
+        ],
+        moraq:[
+          '<b>Hướng dẫn khách cách ngửi đúng</b> — đây là education moment quan trọng, không phải chỉ đưa tester.',
+          'Không hỏi "bạn thấy thế nào?" ngay sau khi xịt — để topnote develop ít nhất 30 giây.',
+          'Maximum 3 tester trên da cùng lúc — sau đó khứu giác overwhelmed và không đáng tin cậy nữa.',
+        ],
+        fail:'Xịt vào không khí → hương không develop đúng trên da → khách không có trải nghiệm thật sự',
+        win:'Khách đưa cổ tay lên ngửi nhiều lần, tự nguyện — họ đang theo dõi sự develop của hương.',
+      },
+      {
+        time:'T+10-20min — Discovery',
+        name:'Moment quyết định — chai được giữ',
+        senses:['touch','visual','emotion'],
+        emotion:{label:'Decision approaching',value:82,desc:'Đang internal deliberation. Đây là thời điểm quan trọng nhất — không được rush.'},
+        customer:[
+          {icon:'✋','text':'<b>Cầm một chai và không đặt xuống</b> khi nhìn chai khác — unconscious sign of decision.'},
+          {icon:'💭','text':'Internal conversation: "Mình có thực sự cần không?" vs "Nhưng mình thích thật sự." Budget consideration.'},
+          {icon:'🤔','text':'Có thể nói "để tôi nghĩ thêm" — đây là hesitation, không phải rejection. Cần được handled đúng cách.'},
+        ],
+        moraq:[
+          'Nhận ra khoảnh khắc này — <b>im lặng 3-5 giây là response đúng</b>, không phải rush với thêm information.',
+          'Nếu khách do dự: "Hương này sẽ develop thêm trong 10 phút nữa — bạn muốn thử để?" → offer thêm time, không push.',
+          'Không bao giờ tạo urgency giả: "Loại này sắp hết" hoặc "Chỉ còn vài chai".',
+        ],
+        fail:'Rush khách khi họ đang deliberating → pressure tạo ra regret sau khi mua → không return',
+        win:'Khách tự nói "được, mình lấy cái này" mà không cần được suggest để quyết định.',
+      },
+      {
+        time:'T+20-25min — Packaging',
+        name:'Nghi lễ gói hàng — màn trình diễn cuối',
+        senses:['touch','sound','visual'],
+        emotion:{label:'Anticipation + delight',value:95,desc:'Peak experience của toàn bộ visit. Khách đang được witness một ritual dành riêng cho họ.'},
+        customer:[
+          {icon:'👀','text':'Xem toàn bộ quá trình gói: ribbon, knot, tissue, card — <b>không bị cho ra phòng sau</b>. Đây là performance họ được xem.'},
+          {icon:'👂','text':'Âm thanh: ribbon "swish", tissue rustle nhẹ, box close click. <b>Intentional soundscape của packaging.</b>'},
+          {icon:'✉️','text':'Nhận thank-you card viết tay — cái tên của họ, trong một vật thể có texture. Không phải sticker in, là chữ thật.'},
+        ],
+        moraq:[
+          '<b>Packaging diễn ra 100% trước mặt khách</b> — không có lý do nào để ra phòng sau.',
+          'French knot đối xứng, ribbon căng đều, tissue không crinkle — chuẩn mỗi lần, không phải "gần đúng".',
+          'Khi gói xong, đặt túi lên counter — không đẩy về phía khách ngay, để họ có moment nhìn tổng thể.',
+        ],
+        fail:'Gói ra phòng sau, gói vội, ribbon lệch → mất khoảnh khắc peak experience',
+        win:'Khách chụp ảnh túi hoặc packaging trước khi rời store — earned media bắt đầu từ đây.',
+      },
+      {
+        time:'T+25min — Farewell',
+        name:'Câu cuối cùng — không phải "cảm ơn"',
+        senses:['sound','emotion'],
+        emotion:{label:'Lingering wonder',value:90,desc:'Rời đi với một điều để suy nghĩ về — không phải chỉ một hộp nước hoa.'},
+        customer:[
+          {icon:'👂','text':'Nghe câu cuối cùng: <b>"Hương này sẽ thay đổi theo thời gian trên da bạn — điều đó khiến nó trở thành của riêng bạn."</b>'},
+          {icon:'🛍️','text':'Cầm túi — weight của nó substantial, paper texture đẹp. <b>Weight = perceived value</b>.'},
+          {icon:'💭','text':'Bước ra cửa với một ý nghĩ mới về hương thơm. Câu cuối này sẽ resonant lại khi họ mở túi ở nhà.'},
+        ],
+        moraq:[
+          'Câu cuối phải tự nhiên, eye contact, không phải đọc script.',
+          'Không: "Cảm ơn anh/chị đã ủng hộ" · Không: "Nhớ review nhé" · Không: "Follow page mình nhé".',
+          '<b>Tiễn khách bằng cách tiễn — không phải bằng transaction.</b>',
+        ],
+        fail:'Kết thúc bằng "cảm ơn anh/chị" generic → deflate toàn bộ ceremony trong 5 giây cuối',
+        win:'Khách đã ra cửa nhưng quay lại nói thêm một câu — họ chưa muốn kết thúc cuộc trò chuyện.',
+      },
+    ]
+  },
+  {
+    id:3, color:'var(--s4)', label:'STAGE 04', name:'Post-Purchase', count:'4 moments',
+    moments:[
+      {
+        time:'T+1h — Về nhà',
+        name:'Mở túi lần đầu',
+        senses:['touch','scent','visual','sound'],
+        emotion:{label:'Unwrapping delight',value:92,desc:'Lặp lại một phần của experience tại store. Packaging là time capsule.'},
+        customer:[
+          {icon:'🛍️','text':'Mở túi paper — tiếng rustle. Nhìn thấy hộp và ribbon. <b>Một mình nhưng cảm giác như đang trong store.</b>'},
+          {icon:'📝','text':'Đọc thank-you card viết tay — lần đầu đọc kỹ tên mình trên đó. Cá nhân hóa bắt đầu thấm.'},
+          {icon:'💬','text':'Cảm thấy muốn kể với ai đó về experience này — MORAQ đã plant seed của word-of-mouth.'},
+        ],
+        moraq:[
+          'Post-purchase journey card (nếu có) hướng dẫn khách ngửi hương vào 3 thời điểm: ngay lúc xịt, sau 10 phút, sau 2h.',
+          'Không include promotional material trong hộp — không voucher, không "giới thiệu bạn bè được X%".',
+          'Thank-you card là end của ceremony, không phải beginning của next sale.',
+        ],
+        fail:'Không có card, packaging không đủ đẹp khi mở lại → unboxing experience = nothing special',
+        win:'Khách post ảnh unboxing lên social → organic marketing mà không cần bất kỳ ask nào',
+      },
+      {
+        time:'T+30min — First spray',
+        name:'Lần đầu xịt tại nhà',
+        senses:['scent','touch','emotion'],
+        emotion:{label:'Personal ritual begins',value:88,desc:'Đây là lần đầu tiên hương thơm thật sự là của riêng họ.'},
+        customer:[
+          {icon:'👃','text':'Xịt lần đầu và nhận ra: <b>hương hơi khác với khi ngửi ở store</b>. Không phải xấu — khác. Vì skin chemistry.'},
+          {icon:'💭','text':'Nhớ lại câu staff nói: "Hương này sẽ thay đổi theo thời gian trên da bạn." Khoảnh khắc này validate câu đó.'},
+          {icon:'🕐','text':'30 phút sau — base note bắt đầu. Hương đã "settle". Người dùng bắt đầu hiểu tại sao MORAQ không recommend qua online.'},
+        ],
+        moraq:[
+          'Post-purchase journey card nên have this moment: "Lần đầu xịt tại nhà — hương có thể khác một chút. Đây là topnote. Chờ 30 phút."',
+          '<b>Setting đúng expectation trước = prevent buyer remorse.</b>',
+          'Không cần bất kỳ follow-up message nào vào lúc này — để khách có experience riêng của họ.',
+        ],
+        fail:'Khách thấy hương khác với ở store và nghĩ "mình mua sai" → không được set expectation',
+        win:'Khách nhắn tin hoặc comment "hương thay đổi thật!" → proof that ceremony worked',
+      },
+      {
+        time:'T+72h — Drydown period',
+        name:'Hương đã thuần hóa',
+        senses:['scent','emotion'],
+        emotion:{label:'This is mine now',value:94,desc:'Hương đã "settle" vào da. Nó bắt đầu cảm thấy như một phần của identity.'},
+        customer:[
+          {icon:'👃','text':'Topnote đã bay, base note ổn định. <b>Đây là hương của riêng họ</b> — không ai khác có hương này giống hệt như trên da họ.'},
+          {icon:'💬','text':'Ai đó hỏi "bạn dùng nước hoa gì vậy?" — khoảnh khắc này là climax của toàn bộ journey. Câu trả lời dẫn đến referral.'},
+          {icon:'💡','text':'Khách bắt đầu notice: họ thấy mình chú ý đến mùi hương của mọi thứ xung quanh nhiều hơn. MORAQ đã opened a sense.'},
+        ],
+        moraq:[
+          'Không có follow-up sales email sau 72h. Không có "bạn có thích sản phẩm không?".',
+          'Nếu có touchpoint nào, chỉ nên là educational: một bài post về skin chemistry, về drydown.',
+          '<b>Khách đang có experience riêng — đừng interrupt bằng brand noise.</b>',
+        ],
+        fail:'Nhận được email marketing "xem thêm sản phẩm của chúng tôi" sau 3 ngày → phá vỡ post-purchase romance',
+        win:'Khách tự search thêm về fragrance notes, về perfumery — MORAQ đã planted curiosity seed.',
+      },
+      {
+        time:'T+1 tuần',
+        name:'"Bạn dùng hương gì vậy?"',
+        senses:['sound','emotion'],
+        emotion:{label:'Pride of discovery',value:96,desc:'Cao nhất trong post-purchase. Khách trở thành ambassador tự nguyện.'},
+        customer:[
+          {icon:'💬','text':'Ai đó hỏi về hương thơm họ đang dùng. <b>Khách kể về MORAQ — không phải về sản phẩm, mà về experience.</b>'},
+          {icon:'📱','text':'Có thể tag MORAQ trong Instagram story, chia sẻ câu chuyện về how they found it.'},
+          {icon:'👥','text':'Đề xuất đi cùng bạn bè — "mình đưa cậu đến thử, chỗ đó hay lắm."'},
+        ],
+        moraq:[
+          'Không bao giờ cảm ơn người đã giới thiệu bằng discount — giảm đi phần "spontaneous discovery".',
+          'Nếu người được giới thiệu đến: <b>staff không biết họ "được giới thiệu"</b> — mỗi khách được treat như first-time discovery của riêng họ.',
+          'Word-of-mouth của MORAQ là organic — không có referral program, không có MLM-style incentive.',
+        ],
+        fail:'Có referral discount program → biến genuine recommendation thành transactional → mất authenticity',
+        win:'Một khách mới đến và khi hỏi "bạn biết MORAQ từ đâu?" họ nói tên một người cụ thể — đây là kết quả của ceremony map.',
+      },
+    ]
+  },
+  {
+    id:4, color:'var(--s5)', label:'STAGE 05', name:'Return', count:'4 moments',
+    moments:[
+      {
+        time:'Lần 2 — 2–8 tuần sau',
+        name:'Quyết định quay lại',
+        senses:['emotion'],
+        emotion:{label:'Intentional return',value:85,desc:'Đây không phải impulse. Họ đã nghĩ về việc quay lại và chọn MORAQ một lần nữa.'},
+        customer:[
+          {icon:'💭','text':'Không phải "tiện đường thì ghé" — là <b>chủ động đặt MORAQ vào lịch</b>. Hành vi này là loyalty signal mạnh nhất.'},
+          {icon:'🎯','text':'Có thể đã biết mình muốn gì (mua thêm hương đầu hoặc thử hương mới), hoặc chỉ muốn experience lại cái không gian.'},
+          {icon:'🧠','text':'Đã refer ít nhất 1 người trong thời gian qua — đang "accountable" với câu chuyện họ đã kể.'},
+        ],
+        moraq:[
+          'Không cần remarketing ads để kéo người này quay lại — <b>họ tự quay lại vì experience, không phải vì reminder.</b>',
+          'Interaction log từ lần 1 phải accessible: hương đã mua, điều đặc biệt về cuộc trò chuyện.',
+          'Không treat họ như "khách mới" — nhưng cũng không giả vờ nhớ nếu thật sự không nhớ.',
+        ],
+        fail:'Staff không nhận ra returning guest → restart toàn bộ từ đầu → mất cơ hội deepening relationship',
+        win:'Staff nhận ra hoặc hỏi được thông tin về lần trước trong câu đầu tiên → khách cảm thấy "họ nhớ mình".',
+      },
+      {
+        time:'Return visit — Entry',
+        name:'Bước vào lần thứ hai',
+        senses:['scent','sound','emotion'],
+        emotion:{label:'Familiarity + slight ownership',value:86,desc:'Không còn là "thế giới lạ" — là nơi họ thuộc về. Nhưng vẫn có kỳ vọng về discovery.'},
+        customer:[
+          {icon:'👃','text':'Hương Zone 1 — lần này nhận ra ngay và cảm thấy familiar. <b>Scent memory đã được tạo ra từ lần trước.</b>'},
+          {icon:'🏠','text':'Cảm giác "mình biết chỗ này" — nhưng vẫn muốn khám phá thêm. Tò mò về điều gì mới.'},
+          {icon:'👋','text':'Nếu gặp lại staff cũ: khoảnh khắc recognition — "Chào lại bạn!" — có thể là khoảnh khắc emotional nhất trong toàn bộ map.'},
+        ],
+        moraq:[
+          '"Chào lại bạn — hương đó settle thế nào sau lần trước?" — <b>câu hỏi đơn giản này thay đổi toàn bộ dynamic của visit.</b>',
+          'Nếu không nhớ hương cụ thể: không guess, hỏi tự nhiên. "Lần trước bạn lấy gì vậy?"',
+          'Không restart Scent Grammar từ đầu — dùng lần trước làm anchor point.',
+        ],
+        fail:'Treat returning guest như new guest → họ cảm thấy không được nhớ → có thể là lần cuối quay lại',
+        win:'Khách mở đầu conversation về lần trước mà không cần được prompt — họ đang continue the relationship.',
+      },
+      {
+        time:'Return visit — Consultation',
+        name:'Cuộc trò chuyện tiếp theo',
+        senses:['scent','sound','emotion'],
+        emotion:{label:'Deeper exploration',value:90,desc:'Trust đã có sẵn. Cuộc trò chuyện đi sâu hơn, personal hơn.'},
+        customer:[
+          {icon:'💬','text':'Chia sẻ thêm về lần trước: hương đã develop thế nào, ai đã hỏi, cảm giác sau 1 tuần dùng.'},
+          {icon:'🎯','text':'Có thể đã có hương muốn thử — hoặc trust staff đủ để nói "mình muốn thứ gì đó... khác, bạn recommend đi."'},
+          {icon:'🌱','text':'<b>Giai đoạn này relationship thật sự được build.</b> Không còn là transaction — là ongoing conversation về cách họ muốn smelling.'},
+        ],
+        moraq:[
+          'Với returning guest: chỉ cần 1-2 qualifying questions, không cần lại 3 câu đầy đủ.',
+          'Có thể suggest City Edition nếu applicable — "Có một hương chỉ có ở đây, bạn có muốn nghe câu chuyện của nó không?"',
+          '<b>Personalization mới:</b> "Lần này bạn muốn name-on-bottle với tên khác không?"',
+        ],
+        fail:'Không adapt conversation cho returning guest — same experience như lần 1 → wasted opportunity',
+        win:'Khách nói "Mình muốn thử hương mới lần này, bạn nghĩ cái gì phù hợp?" — full trust transferred.',
+      },
+      {
+        time:'Sau lần 3+',
+        name:'Becoming a regular',
+        senses:['emotion'],
+        emotion:{label:'Belonging',value:97,desc:'Đây không phải customer nữa — đây là người thuộc về MORAQ community.'},
+        customer:[
+          {icon:'🏠','text':'MORAQ trở thành một phần của routine: <b>họ ghé khi cần reset, khi có occasion, khi muốn tặng quà cho người đặc biệt.</b>'},
+          {icon:'👥','text':'Đã bring ít nhất 1-2 người mới đến. Tự giải thích về MORAQ cho bạn bè trước khi đến.'},
+          {icon:'🗓️','text':'Biết về City Edition, hỏi về sự kiện mới. Họ đang <b>theo dõi MORAQ như một world, không phải một store.</b>'},
+        ],
+        moraq:[
+          'Regular customers là MORAQ brand ambassadors — không cần program chính thức, chỉ cần tiếp tục remembering them.',
+          'Nếu có City Edition launch event: invite regulars first, không phải announce public first.',
+          '<b>Annual Customer Story ceremony</b> — những câu chuyện về regulars là những gì được viết xuống ở cuối năm.',
+        ],
+        fail:'Take regulars for granted — không còn remember details, treat like new customers',
+        win:'Regular mang bạn bè đến và tự giới thiệu MORAQ trước cả khi staff nói gì — ceremony đã được pass on.',
+      },
+    ]
+  },
+  {
+    id:5, color:'var(--s6)', label:'STAGE 06', name:'Advocacy', count:'3 moments',
+    moments:[
+      {
+        time:'Organic moment',
+        name:'Kể chuyện MORAQ cho người khác',
+        senses:['sound','emotion'],
+        emotion:{label:'Pride of discovery',value:95,desc:'Kể về MORAQ không phải vì được yêu cầu — mà vì họ genuinely muốn chia sẻ điều tốt đẹp.'},
+        customer:[
+          {icon:'💬','text':'Trong bữa ăn, trong một cuộc trò chuyện về lifestyle hoặc quà tặng: <b>MORAQ xuất hiện tự nhiên.</b> Không phải "mình mua ở chỗ này" mà là "có một chỗ như vậy mà mình nghĩ bạn sẽ thích."'},
+          {icon:'🎁','text':'Tặng MORAQ cho người đặc biệt — không phải vì tiện, mà vì cảm thấy MORAQ là <b>đủ thoughtful để đại diện cho mình.</b>'},
+          {icon:'📖','text':'Kể câu chuyện: "Khi mình đến, họ để mình đứng một mình 60 giây rồi mới hỏi..." — ceremony được replicated qua lời kể.'},
+        ],
+        moraq:[
+          '<b>Word-of-mouth của MORAQ là ceremony được kể lại.</b> Không phải "chỗ bán nước hoa tốt" — là "nơi có cách làm rất khác."',
+          'Không cần referral incentive — người kể câu chuyện muốn share vì genuine experience, không vì reward.',
+          'Mỗi chi tiết trong ceremony đều có thể trở thành điểm nhấn trong câu chuyện họ kể.',
+        ],
+        fail:'Experience không đủ memorable để được kể lại — không có chi tiết cụ thể để story được built around',
+        win:'Người được kể chuyện hỏi "Chỗ đó ở đâu?" — referral loop bắt đầu.',
+      },
+      {
+        time:'Social moment',
+        name:'Post và story về MORAQ',
+        senses:['visual','emotion'],
+        emotion:{label:'Curation pride',value:88,desc:'Chọn chia sẻ MORAQ lên feed là statement về identity — "đây là loại thứ tôi appreciate."'},
+        customer:[
+          {icon:'📸','text':'Chụp ảnh packaging, cầm chai, không gian store. <b>Không phải vì MORAQ ask — vì họ muốn curate feed của mình với thứ này.</b>'},
+          {icon:'✍️','text':'Caption không phải "mua tại MORAQ" — là một câu chuyện nhỏ về tại sao họ ở đây, về hương họ chọn.'},
+          {icon:'💬','text':'Friends hỏi "đây là gì?" — conversation bắt đầu. Mỗi người hỏi là một potential visitor.'},
+        ],
+        moraq:[
+          'Không bao giờ ask "bạn có thể chụp ảnh và tag chúng mình không?" — <b>khách phải tự muốn, không phải được yêu cầu.</b>',
+          'Nếu được tag: reply bằng một câu có chiều sâu, không phải "Cảm ơn bạn đã ủng hộ! 💚".',
+          'UGC được repost chỉ khi nội dung genuinely good — tần suất thấp nhưng curated.',
+        ],
+        fail:'Ask khách chụp ảnh và tag → biến genuine moment thành marketing request → awkward',
+        win:'Post nhận được comments hỏi về MORAQ từ người chưa biết → organic discovery loop đang chạy.',
+      },
+      {
+        time:'Pilgrimage moment',
+        name:'Đến MORAQ ở thành phố khác',
+        senses:['scent','touch','emotion'],
+        emotion:{label:'Completion + expansion',value:99,desc:'Khoảnh khắc cao nhất của toàn bộ journey. Khách trở thành người hành hương.'},
+        customer:[
+          {icon:'✈️','text':'Khi đến thành phố có MORAQ: <b>ghé store là một trong những điều đầu tiên trên lịch.</b> Không phải "tiện thì ghé" — là một mục đích.'},
+          {icon:'🗺️','text':'Tìm City Edition của thành phố đó — hương chỉ có ở đây, không mua được online, không mua được về nhà. <b>This is the pilgrimage.</b>'},
+          {icon:'💎','text':'"Mình đã đến MORAQ ở [thành phố] và lấy về cái này" — object mang ý nghĩa của journey, không phải chỉ là sản phẩm.'},
+        ],
+        moraq:[
+          '<b>City Edition availability: chỉ in-store, không ship, không bán online.</b> Exclusivity phải absolute.',
+          'Khi khách từ thành phố khác đến: được treat như VIP — câu đầu tiên nên acknowledge rằng họ đã đến từ xa.',
+          'City Edition có câu chuyện riêng — staff của city đó là người duy nhất kể đúng câu chuyện về hương của city mình.',
+        ],
+        fail:'City Edition available online → mất lý do để pilgrimage → mất cả ecosystem motivation',
+        win:'Khách mua City Edition của nhiều thành phố → họ đang build một collection của memories, không phải chỉ của bottles.',
+      },
+    ]
+  },
+];
+
+// ── STATE ──
+let curStage = 0;
+let curMoment = null;
+
+// ── RENDER MOMENT LIST ──
+function renderMomentList(stageIdx) {
+  const stage = STAGES[stageIdx];
+  const sc = ['var(--s1)','var(--s2)','var(--s3)','var(--s4)','var(--s5)','var(--s6)'][stageIdx];
+  const list = document.getElementById('momentList');
+  list.innerHTML = `
+    <div class="ml-stage-header">
+      <span class="mlsh-label" style="color:${sc}">${stage.label}</span>
+      <div class="mlsh-name">${stage.name}</div>
+    </div>
+  `;
+  stage.moments.forEach((m,i) => {
+    const senseHTML = (m.senses||[]).map(s => {
+      const map = {scent:'ss-scent',sound:'ss-sound',light:'ss-light',touch:'ss-touch',visual:'ss-visual',emotion:'ss-emotion'};
+      const labels = {scent:'SCENT',sound:'SOUND',light:'LIGHT',touch:'TOUCH',visual:'VISUAL',emotion:'CẢMXÚC'};
+      return `<span class="ms ${map[s]||''}">${labels[s]||s}</span>`;
+    }).join('');
+    const div = document.createElement('div');
+    div.className = 'moment-item';
+    div.style.setProperty('--sc', sc);
+    div.dataset.mi = i;
+    div.innerHTML = `
+      <div class="mi-time">${m.time}</div>
+      <div class="mi-name">${m.name}</div>
+      <div class="mi-senses">${senseHTML}</div>
+    `;
+    div.addEventListener('click', () => selectMoment(stageIdx, i));
+    list.appendChild(div);
+  });
+}
+
+// ── RENDER MOMENT DETAIL ──
+function selectMoment(stageIdx, momentIdx) {
+  curMoment = momentIdx;
+  const stage = STAGES[stageIdx];
+  const m = stage.moments[momentIdx];
+  const sc = ['var(--s1)','var(--s2)','var(--s3)','var(--s4)','var(--s5)','var(--s6)'][stageIdx];
+
+  // Update list selection
+  document.querySelectorAll('.moment-item').forEach(el => el.classList.remove('on'));
+  document.querySelectorAll('.moment-item')[momentIdx]?.classList.add('on');
+
+  const senseHTML = (m.senses||[]).map(s => {
+    const map = {scent:'ss-scent',sound:'ss-sound',light:'ss-light',touch:'ss-touch',visual:'ss-visual',emotion:'ss-emotion'};
+    const labels = {scent:'SCENT',sound:'SOUND',light:'LIGHT',touch:'TOUCH',visual:'VISUAL',emotion:'CẢM XÚC'};
+    return `<span class="ms ${map[s]||''}" style="font-size:8px;padding:2px 8px;border-radius:10px">${labels[s]||s}</span>`;
+  }).join('');
+
+  const customerRows = (m.customer||[]).map(c =>
+    `<div class="ds-row"><div class="ds-icon">${c.icon}</div><div class="ds-text">${c.text}</div></div>`
+  ).join('');
+
+  const moraqRows = (m.moraq||[]).map(a =>
+    `<div class="ac-item"><div class="ac-dot"></div><div>${a}</div></div>`
+  ).join('');
+
+  const detail = document.getElementById('momentDetail');
+  detail.innerHTML = `
+    <div class="md-content">
+      <div class="dh">
+        <div class="dh-stage" style="color:${sc}">${stage.label} · ${stage.name}</div>
+        <div class="dh-time" style="color:rgba(255,255,255,.3)">${m.time}</div>
+        <div class="dh-name">${m.name}</div>
+        <div class="dh-senses">${senseHTML}</div>
+      </div>
+
+      <div class="dsec">
+        <div class="dsec-header"><div class="dsech">CUSTOMER EXPERIENCE — HỌ ĐANG THẤY · NGHE · CẢM NHẬN</div></div>
+        <div class="dsec-body">${customerRows}</div>
+      </div>
+
+      <div class="emotion-bar" style="padding:0">
+        <div class="card-sm-eb" style="background:#1A1916;border:1px solid #2A2724;border-radius:6px;padding:12px">
+          <div style="font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:8px">EMOTIONAL STATE</div>
+          <div style="font-family:'Georgia','Times New Roman',serif;font-size:15px;color:${sc};margin-bottom:8px">${m.emotion?.label||'—'}</div>
+          <div style="height:5px;background:#242220;border-radius:3px;overflow:hidden;margin-bottom:6px">
+            <div style="width:${m.emotion?.value||0}%;height:100%;background:${sc};border-radius:3px;transition:width .6s"></div>
+          </div>
+          <div style="font-size:11px;color:rgba(255,255,255,.38);font-style:italic">${m.emotion?.desc||''}</div>
+        </div>
+      </div>
+
+      <div class="action-card">
+        <span class="ac-label">MORAQ THỰC HIỆN</span>
+        ${moraqRows}
+      </div>
+
+      <div class="fs-split">
+        <div class="fs-card fail">
+          <span class="fs-label">✗ FAILURE POINT</span>
+          <div class="fs-text">${m.fail||'—'}</div>
+        </div>
+        <div class="fs-card win">
+          <span class="fs-label">✓ SUCCESS SIGNAL</span>
+          <div class="fs-text">${m.win||'—'}</div>
+        </div>
+      </div>
+    </div>
+  `;
+  detail.scrollTop = 0;
+}
+
+// ── SWITCH STAGE ──
+function switchStage(idx) {
+  curStage = idx;
+  curMoment = null;
+  const sc = ['var(--s1)','var(--s2)','var(--s3)','var(--s4)','var(--s5)','var(--s6)'][idx];
+  document.querySelectorAll('.stab').forEach((t,i) => {
+    t.classList.toggle('on', i===idx);
+    t.style.setProperty('--sc', ['var(--s1)','var(--s2)','var(--s3)','var(--s4)','var(--s5)','var(--s6)'][i]);
+  });
+  renderMomentList(idx);
+  document.getElementById('momentDetail').innerHTML = `<div class="md-empty">Chọn một moment để xem chi tiết →</div>`;
+  document.querySelectorAll('.stab')[idx].scrollIntoView({behavior:'smooth',inline:'nearest',block:'nearest'});
+}
+
+// ── INIT ──
+document.querySelectorAll('.stab').forEach((t,i) => t.addEventListener('click', () => switchStage(i)));
+renderMomentList(0);
+
+// Swipe on moment list
+let tx=0;
+document.getElementById('momentList').addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+document.getElementById('momentList').addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>60)switchStage(dx<0?Math.min(curStage+1,5):Math.max(curStage-1,0));
+},{passive:true});
+</script>
+</body>
+</html>

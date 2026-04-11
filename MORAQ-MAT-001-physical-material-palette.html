@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MORAQ — Physical Material Palette</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1A1916;--teal:#0F6E56;--amber:#854F0B;--cream:#FAF9F6;--linen:#E8DFD0;--ink10:rgba(26,25,22,.1);--ink20:rgba(26,25,22,.2);--ink40:rgba(26,25,22,.4);--ink70:rgba(26,25,22,.7)}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth;font-size:16px}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+
+/* COVER */
+.cover{min-height:100vh;background:var(--ink);display:flex;flex-direction:column;justify-content:space-between;padding:3rem;position:relative;overflow:hidden}
+.cover::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 70%,rgba(133,79,11,.06) 0%,transparent 50%),radial-gradient(ellipse at 70% 30%,rgba(15,110,86,.05) 0%,transparent 50%);pointer-events:none}
+.cover-top,.cover-bot{display:flex;justify-content:space-between;position:relative;z-index:1}.cover-bot{align-items:flex-end}
+.cover-logo{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.2em;color:var(--linen);opacity:.6}
+.cover-meta{text-align:right;font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;color:var(--linen);opacity:.4;line-height:1.8}
+.cover-center{position:relative;z-index:1;text-align:center;padding:4rem 0}
+.cover h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(2.5rem,6vw,4.5rem);color:var(--cream);line-height:1.1;margin-bottom:1.5rem}
+.cover h1 em{font-style:italic;color:var(--linen);opacity:.7}
+.cover-sub{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.25em;text-transform:uppercase;color:var(--teal);margin-bottom:2rem}
+.cover-desc{max-width:600px;margin:0 auto;font-size:.95rem;color:var(--linen);opacity:.6;line-height:1.8}
+.cover-doc{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--linen);opacity:.3;letter-spacing:.15em;text-transform:uppercase;line-height:2}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:var(--ink);border-bottom:1px solid rgba(232,223,208,.1);padding:0 3rem;display:flex;align-items:center;gap:.5rem;overflow-x:auto}
+.nav a{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--linen);opacity:.4;text-decoration:none;padding:1rem .7rem;white-space:nowrap;border-bottom:2px solid transparent;transition:.3s}
+.nav a:hover{opacity:1;border-bottom-color:var(--teal)}
+.nav-br{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.2em;color:var(--cream);padding-right:1.5rem;border-right:1px solid rgba(232,223,208,.15);margin-right:.5rem;white-space:nowrap}
+
+/* SECTIONS */
+.S{padding:5rem 3rem;max-width:1400px;margin:0 auto}.Sd{background:var(--ink);max-width:none;color:var(--cream)}.Sl{background:var(--linen);max-width:none}
+.Si{max-width:1400px;margin:0 auto}
+.Slb{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:1rem}.Sd .Slb{color:var(--teal)}.Sl .Slb{color:var(--amber)}
+.St{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(1.8rem,3.5vw,3rem);line-height:1.15;margin-bottom:1.5rem}
+.Sld{font-size:1rem;line-height:1.8;opacity:.7;max-width:680px;margin-bottom:2.5rem}
+
+/* MATERIAL SWATCH */
+.swatch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin:2rem 0}
+.swatch{border:1px solid var(--ink10);overflow:hidden}
+.Sd .swatch{border-color:rgba(232,223,208,.1)}
+.swatch-color{height:120px;display:flex;align-items:flex-end;padding:1rem}
+.swatch-body{padding:1.5rem}
+.swatch-name{font-family:'Cormorant Garamond',serif;font-size:1.3rem;margin-bottom:.3rem}
+.swatch-role{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin-bottom:.8rem}
+.swatch-specs{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.05em;opacity:.4;line-height:2}
+.swatch-desc{font-size:.83rem;line-height:1.7;opacity:.65;margin-top:.8rem}
+
+/* PAIRING TABLE */
+.pair-grid{display:grid;grid-template-columns:140px 1fr 1fr 1fr;gap:0;margin:2rem 0;border:1px solid var(--ink10)}
+.Sd .pair-grid{border-color:rgba(232,223,208,.1)}
+.pair-cell{padding:1rem;border-bottom:1px solid var(--ink10);border-right:1px solid var(--ink10);font-size:.8rem;line-height:1.6}
+.Sd .pair-cell{border-color:rgba(232,223,208,.06)}
+.pair-cell:last-child{border-right:none}
+.pair-header{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;opacity:.4;padding:.8rem 1rem;border-bottom:1px solid var(--ink10);border-right:1px solid var(--ink10);background:var(--ink);color:var(--cream)}
+.Sd .pair-header{background:rgba(232,223,208,.05);border-color:rgba(232,223,208,.06)}
+.pair-zone{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;opacity:.5;background:rgba(26,25,22,.03)}
+.Sd .pair-zone{background:rgba(232,223,208,.03)}
+.pair-mat{font-family:'Cormorant Garamond',serif;font-size:1rem;line-height:1.3;margin-bottom:.3rem}
+.pair-spec{font-family:'DM Mono',monospace;font-size:.5rem;opacity:.35;line-height:1.8}
+
+/* AGING TIMELINE */
+.age-row{display:grid;grid-template-columns:120px repeat(4,1fr);gap:0;border-bottom:1px solid var(--ink10)}
+.Sd .age-row{border-bottom-color:rgba(232,223,208,.06)}
+.age-cell{padding:1rem;border-right:1px solid var(--ink10);font-size:.78rem;line-height:1.6}
+.Sd .age-cell{border-right-color:rgba(232,223,208,.06)}
+.age-cell:last-child{border-right:none}
+.age-mat{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;opacity:.5}
+.age-time{font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;opacity:.3;padding:.8rem 1rem;border-right:1px solid var(--ink10)}
+.Sd .age-time{border-right-color:rgba(232,223,208,.06)}
+
+/* TACTILE SPECS */
+.tact-card{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem;margin:2rem 0}
+.tact{padding:1.5rem;border:1px solid var(--ink10)}
+.Sd .tact{border-color:rgba(232,223,208,.1)}
+.tact-name{font-family:'Cormorant Garamond',serif;font-size:1.15rem;margin-bottom:.5rem}
+.tact-row{display:grid;grid-template-columns:80px 1fr;gap:.5rem;padding:.4rem 0;border-bottom:1px solid var(--ink10);font-size:.75rem}
+.Sd .tact-row{border-bottom-color:rgba(232,223,208,.05)}
+.tact-label{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.08em;text-transform:uppercase;opacity:.4}
+
+/* QUOTE */
+.qb{padding:2rem 0;margin:2rem 0;border-top:1px solid var(--ink10);border-bottom:1px solid var(--ink10)}.Sd .qb{border-color:rgba(232,223,208,.08)}
+.qt{font-family:'Cormorant Garamond',serif;font-size:clamp(1.1rem,2.2vw,1.5rem);font-style:italic;line-height:1.6;max-width:680px;opacity:.8}
+.qa{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;opacity:.3;margin-top:1rem}
+
+/* PRINCIPLE */
+.pr{display:grid;grid-template-columns:45px 1fr;gap:1rem;margin-bottom:2rem;padding-bottom:2rem;border-bottom:1px solid var(--ink10)}.Sd .pr{border-bottom-color:rgba(232,223,208,.06)}.pr:last-child,.pr.nb{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.prn{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--teal);opacity:.3;line-height:1}
+.prt{font-family:'Cormorant Garamond',serif;font-size:1.15rem;margin-bottom:.3rem;line-height:1.3}
+.prb{font-size:.85rem;line-height:1.8;opacity:.65}
+
+/* SUPPLIER BRIEF */
+.brief-box{background:var(--ink);color:var(--cream);padding:2rem;margin:2rem 0;border-left:3px solid var(--teal)}
+.Sd .brief-box{background:rgba(232,223,208,.05)}
+.brief-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;margin-bottom:1rem}
+.brief-row{display:grid;grid-template-columns:120px 1fr;gap:.8rem;padding:.5rem 0;border-bottom:1px solid rgba(232,223,208,.06);font-size:.78rem}
+.brief-label{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;opacity:.4}
+.brief-val{opacity:.7;line-height:1.6}
+
+/* FORBIDDEN */
+.forbid{background:rgba(133,79,11,.06);border-left:3px solid var(--amber);padding:1.5rem;margin:2rem 0}
+.Sd .forbid{background:rgba(133,79,11,.1)}
+.forbid-title{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--amber);margin-bottom:.8rem}
+.forbid-list{font-size:.83rem;line-height:2;opacity:.65}
+
+/* SUB */
+.sub{margin-top:3rem;padding-top:2rem;border-top:1px solid var(--ink10)}.Sd .sub{border-top-color:rgba(232,223,208,.08)}
+.subt{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:400;margin-bottom:1.5rem}
+
+/* FOOTER */
+.foot{background:var(--ink);padding:3rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.fl{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.15em;color:var(--linen);opacity:.3;text-transform:uppercase;line-height:2}
+.fr{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--cream);opacity:.5;font-style:italic}
+
+/* SAMPLE BOARD */
+.sample-board{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin:2rem 0;border:1px solid var(--ink10);min-height:80px}
+.Sd .sample-board{border-color:rgba(232,223,208,.1)}
+.sample-cell{display:flex;flex-direction:column;justify-content:flex-end;padding:.8rem;border-right:1px solid rgba(232,223,208,.06);min-height:100px}
+.sample-cell:last-child{border-right:none}
+.sample-label{font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.1em;text-transform:uppercase}
+
+/* COLOR RATIO */
+.ratio-bar{display:flex;margin:2rem 0;height:50px;overflow:hidden}
+.ratio-seg{display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.08em;text-transform:uppercase}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .cover,.S,.nav{padding-left:1.5rem;padding-right:1.5rem}
+  .pair-grid{grid-template-columns:1fr;overflow-x:auto}
+  .tact-card{grid-template-columns:1fr}
+  .age-row{grid-template-columns:1fr;overflow-x:auto}
+  .sample-board{grid-template-columns:repeat(3,1fr)}
+  .swatch-grid{grid-template-columns:1fr}
+}
+@media print{.nav{display:none}.S{page-break-inside:avoid;padding:2rem}.cover{min-height:auto;padding:3rem}}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-top"><div class="cover-logo">MORAQ</div><div class="cover-meta">PMP-001 · V1.0<br>STRICTLY CONFIDENTIAL<br>APRIL 2026</div></div>
+  <div class="cover-center">
+    <div class="cover-sub">Physical Material Palette</div>
+    <h1>Mỗi bề mặt <em>nói</em><br>một câu</h1>
+    <p class="cover-desc">Tài liệu này không phải danh sách vật liệu — mà là hệ thống: mỗi material có vai trò, có pairing rule, có cách nó già đi theo thời gian, và có spec đủ chi tiết để gửi thẳng cho supplier.</p>
+  </div>
+  <div class="cover-bot"><div class="cover-doc">EXTENDS: MSDL-001 · MSDL-001-S1<br>INFORMS: VNB-001 · SRS-001</div><div class="cover-doc">EFFECTIVE: 10/04/2026<br>REVIEW: FOUNDING COMMITTEE</div></div>
+</div>
+
+<!-- NAV -->
+<nav class="nav"><span class="nav-br">MORAQ</span><a href="#families">3 Families</a><a href="#palette">Palette</a><a href="#pairing">Pairing</a><a href="#tactile">Tactile</a><a href="#aging">Aging</a><a href="#color">Color Rules</a><a href="#supplier">Supplier Brief</a><a href="#sample">Sample Board</a></nav>
+
+<!-- ══════ CH.01 — 3 FAMILIES ══════ -->
+<section class="S" id="families">
+  <div class="Slb">PMP-001 · Chương 01</div>
+  <h2 class="St">3 Material Families —<br>mỗi family nói một điều khác</h2>
+  <p class="Sld">Mỗi zone trong store phải có đủ cả 3 families. Stone cho nền tảng, Metal cho craft, Wood cho hơi ấm. Thiếu một family → không gian cảm thấy „off" mà designer không biết tại sao.</p>
+
+  <div class="swatch-grid">
+    <div class="swatch">
+      <div class="swatch-color" style="background:linear-gradient(135deg,#3A3835,#2A2826,#1E1D1B)"><span style="font-family:'DM Mono',monospace;font-size:.5rem;color:rgba(250,249,246,.4);letter-spacing:.15em;text-transform:uppercase">FAMILY 01</span></div>
+      <div class="swatch-body">
+        <div class="swatch-name">Stone & Plaster</div>
+        <div class="swatch-role">Cold · Grounding · Permanence</div>
+        <div class="swatch-desc">Nền tảng. Nặng, mát, vĩnh cửu. Khách bước vào cảm thấy ổn định trước khi cảm thấy bất cứ thứ gì khác. Counter stone, floor stone, wall plaster, entry threshold, exposed ceiling.</div>
+        <div class="swatch-specs">SIGNAL: Archive · Permanence · Weight<br>TEMP: 19–21°C khi chạm (AC 24°C)<br>SOUND: Solid, resonant khi gõ nhẹ</div>
+      </div>
+    </div>
+
+    <div class="swatch">
+      <div class="swatch-color" style="background:linear-gradient(135deg,#2C2C2A,#1A1A18,#0E0E0D)"><span style="font-family:'DM Mono',monospace;font-size:.5rem;color:rgba(250,249,246,.4);letter-spacing:.15em;text-transform:uppercase">FAMILY 02</span></div>
+      <div class="swatch-body">
+        <div class="swatch-name">Dark Metal</div>
+        <div class="swatch-role">Industrial · Honest · Craft</div>
+        <div class="swatch-desc">Nói về craft và quá trình. Không ẩn kết cấu — phô bày. Bracket, bolt, weld visible = „xây bởi người có tay nghề". Shelving frame, track lighting, hardware, stool base, rolling cart, pipe bracket.</div>
+        <div class="swatch-specs">SIGNAL: Workshop · Craft · Honest construction<br>FINISH: Matte black · Powder coat hoặc blackened<br>KHÔNG: Chrome · Brushed nickel · Polished</div>
+      </div>
+    </div>
+
+    <div class="swatch">
+      <div class="swatch-color" style="background:linear-gradient(135deg,#5C4A38,#3E3020,#8B7560)"><span style="font-family:'DM Mono',monospace;font-size:.5rem;color:rgba(250,249,246,.4);letter-spacing:.15em;text-transform:uppercase">FAMILY 03</span></div>
+      <div class="swatch-body">
+        <div class="swatch-name">Wood — 2 Tông</div>
+        <div class="swatch-role">Warm · Human · Living Material</div>
+        <div class="swatch-desc">Hơi ấm vào không gian đá + kim loại. <strong>Tối = xương</strong> (counter base, shelf frame, risers). <strong>Sáng = da</strong> (display surface, drawer front, tester island). Tay chạm gỗ mới cảm thấy „human".</div>
+        <div class="swatch-specs">DARK: Teak · Walnut · Wenge · Matte oil<br>LIGHT: Ash · White Oak · Pine raw · Natural oil<br>KHÔNG: Varnish · Laminate · MDF visible</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="forbid">
+    <div class="forbid-title">✗ Forbidden Materials — không bao giờ</div>
+    <div class="forbid-list">Acrylic / nhựa ở bề mặt tiếp xúc · Laminate giả gỗ / giả đá · Vinyl flooring · Satin / high-gloss varnish · Chrome / brushed nickel · Tường trắng · Carpet · Drop ceiling / false ceiling · MDF visible · Stainless steel polished</div>
+  </div>
+</section>
+
+<!-- ══════ CH.02 — FULL PALETTE ══════ -->
+<section class="S Sd" id="palette">
+  <div class="Si">
+    <div class="Slb">PMP-001 · Chương 02</div>
+    <h2 class="St">Material Palette —<br>category + quality criteria</h2>
+    <p class="Sld">Theo Le Labo methodology: specify category với quality criteria, không specify exact SKU. Trong category, từng thị trường chọn vật liệu phù hợp địa phương + ngân sách.</p>
+
+    <div class="swatch-grid">
+      <div class="swatch">
+        <div class="swatch-color" style="background:linear-gradient(135deg,#D4CFC8,#A9A39B,#E8E2DA)"></div>
+        <div class="swatch-body" style="color:var(--cream)">
+          <div class="swatch-name">Counter Stone</div>
+          <div class="swatch-role">Core · Required</div>
+          <div class="swatch-specs">TYPE: Marble / Granite / Limestone<br>FINISH: Honed hoặc matte · KHÔNG polished<br>THICKNESS: ≥ 30mm<br>TEMP: Cool to touch 19–21°C<br>CRI SAFE: Trông đúng dưới 2700K<br>EDGE: Eased 3mm radius (không bullnose, không sharp)</div>
+          <div class="swatch-desc" style="color:var(--linen)">Mặt counter là bề mặt khách chạm nhiều nhất. Cool = luxury signal vô thức. Honed finish không phản sáng — spotlight tạo glow mềm thay vì glare.</div>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="swatch-color" style="background:linear-gradient(135deg,#3E3020,#2A1E14,#5C4A38)"></div>
+        <div class="swatch-body" style="color:var(--cream)">
+          <div class="swatch-name">Dark Hardwood</div>
+          <div class="swatch-role">Core · Required</div>
+          <div class="swatch-specs">SPECIES: Teak · Walnut · Wenge · Merbau<br>FINISH: Matte oil only · KHÔNG varnish<br>GRAIN: Visible, mạnh, có character<br>COLOR: Dark brown → near-black<br>SOUND: Thud nặng, solid khi gõ<br>USE: Counter base · Shelf frame · Risers · Stool</div>
+          <div class="swatch-desc" style="color:var(--linen)">„Xương" của không gian — chịu lực, định hình, hierarchy. Matte oil giữ grain visible và cho phép patina tự nhiên.</div>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="swatch-color" style="background:linear-gradient(135deg,#C8B89A,#A8977C,#E0D4C0)"></div>
+        <div class="swatch-body" style="color:var(--cream)">
+          <div class="swatch-name">Light Hardwood</div>
+          <div class="swatch-role">Core · Required</div>
+          <div class="swatch-specs">SPECIES: Ash · White Oak · Pine raw · Birch<br>FINISH: Natural oil · KHÔNG stain · KHÔNG varnish<br>GRAIN: Mịn, nhẹ<br>COLOR: Cream-tan → light brown<br>AGING: Patina đẹp hơn theo thời gian<br>USE: Display surface · Drawer front · Tester island top</div>
+          <div class="swatch-desc" style="color:var(--linen)">„Da" — nơi tay chạm, nơi làm việc. Ấm hơn marble 2-3°C, tạo contrast nhiệt = sensory richness.</div>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="swatch-color" style="background:linear-gradient(135deg,#1A1A18,#2C2C2A,#0E0E0D)"></div>
+        <div class="swatch-body" style="color:var(--cream)">
+          <div class="swatch-name">Industrial Metal</div>
+          <div class="swatch-role">Core · Required</div>
+          <div class="swatch-specs">TYPE: Blackened steel / Iron<br>FINISH: Raw hoặc matte powder coat<br>PIPE: 25mm diameter iron nếu pipe shelving<br>WELD: Visible OK · Ground smooth<br>KHÔNG: Chrome · Brass · Polished · Galvanized<br>USE: Shelf frame · Track light · Hardware · Cart</div>
+          <div class="swatch-desc" style="color:var(--linen)">Le Labo signature: hot-rolled steel fixtures. MORAQ blackened steel = cùng vocabulary nhưng darker, heavier.</div>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="swatch-color" style="background:linear-gradient(135deg,#2A2826,#1E1D1B,#3A3835)"></div>
+        <div class="swatch-body" style="color:var(--cream)">
+          <div class="swatch-name">Dark Floor Stone</div>
+          <div class="swatch-role">Core · Required</div>
+          <div class="swatch-specs">TYPE: Basalt / Slate / Dark timber<br>FINISH: Matte · KHÔNG polished · KHÔNG glossy<br>SOUND: Bước chân trầm, solid · KHÔNG „clack"<br>SLIP: R10 minimum anti-slip<br>KHÔNG: Vinyl · Ceramic tile thường · Carpet<br>USE: Floor toàn store hoặc zone transitions</div>
+          <div class="swatch-desc" style="color:var(--linen)">Âm bước chân là material identity. Đá/gỗ thật: trầm, sang. Vinyl: „clack" rẻ tiền. Transition zone có thể thay đổi vật liệu sàn.</div>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="swatch-color" style="background:linear-gradient(135deg,rgba(15,110,86,.3),rgba(15,110,86,.15),rgba(15,110,86,.4))"></div>
+        <div class="swatch-body" style="color:var(--cream)">
+          <div class="swatch-name">Local Accent Material</div>
+          <div class="swatch-role">Local · 1 per City · Approval Required</div>
+          <div class="swatch-specs">QUANTITY: Đúng 1 vật liệu per city<br>SURFACE: Max 15% total visual area<br>PLACEMENT: Giới hạn 1 zone<br>COLOR: Phải trong brand palette range<br>STORY: Người địa phương nhận ra nguồn gốc<br>DURABILITY: Min 5 năm không major replacement</div>
+          <div class="swatch-desc" style="color:var(--linen)">Aesop methodology: mỗi store 1 local story, không phải local theme. Gỗ Cẩm Lai (HCM), Giấy Dó (HN), Đá Non Nước (ĐN).</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ CH.03 — PAIRING RULES ══════ -->
+<section class="S" id="pairing">
+  <div class="Slb">PMP-001 · Chương 03</div>
+  <h2 class="St">Pairing Rules —<br>combination nào đi cùng nhau</h2>
+  <p class="Sld">Không phải material nào cũng đi với material nào. Bảng dưới specify chính xác: tại mỗi zone, element nào dùng material gì, và tại sao.</p>
+
+  <div class="pair-grid">
+    <div class="pair-header" style="border-right:none;grid-column:1/-1;text-align:center">Zone × Element × Material Pairing</div>
+
+    <div class="pair-cell pair-zone">Zone</div>
+    <div class="pair-cell pair-zone" style="text-align:center">Stone Family</div>
+    <div class="pair-cell pair-zone" style="text-align:center">Metal Family</div>
+    <div class="pair-cell pair-zone" style="text-align:center">Wood Family</div>
+
+    <div class="pair-cell pair-zone">Zone 3<br>Counter</div>
+    <div class="pair-cell"><div class="pair-mat">Counter top</div><div class="pair-spec">MARBLE/GRANITE · HONED<br>EASED EDGE 3MM<br>THICKNESS ≥30MM<br>TEMP: 19-21°C</div></div>
+    <div class="pair-cell"><div class="pair-mat">Hardware + Track</div><div class="pair-spec">MATTE BLACK PULLS<br>TRACK HEADS 2700K<br>BRACKET: BLACKENED STEEL<br>VISIBLE BOLT OK</div></div>
+    <div class="pair-cell"><div class="pair-mat">Counter base (dark)</div><div class="pair-spec">TEAK/WALNUT<br>MATTE OIL<br>GRAIN VISIBLE<br>DARK TONE</div></div>
+
+    <div class="pair-cell pair-zone">Zone 2<br>P2 Discovery</div>
+    <div class="pair-cell"><div class="pair-mat">Floor (nếu transition)</div><div class="pair-spec">CÓ THỂ GỖ SÀN SÁNG<br>HOẶC ĐÁ TIẾP TỤC<br>TRANSITION SIGNAL NẾU ĐỔI</div></div>
+    <div class="pair-cell"><div class="pair-mat">Shelf frame + Stool</div><div class="pair-spec">BLACKENED STEEL FRAME<br>PIPE 25MM NẾU PIPE SHELF<br>STOOL: CAST IRON BASE<br>ROLLING CART: STEEL+WOOD</div></div>
+    <div class="pair-cell"><div class="pair-mat">Tester island top (light)<br>Shelf surface (light)</div><div class="pair-spec">ASH / WHITE OAK<br>NATURAL OIL<br>85CM TESTER HEIGHT<br>LIGHT TONE = INVITING</div></div>
+
+    <div class="pair-cell pair-zone">Zone 1<br>Entry</div>
+    <div class="pair-cell"><div class="pair-mat">Floor + Threshold</div><div class="pair-spec">BASALT/SLATE DARK<br>ÂM BƯỚC CHÂN TRẦM<br>R10 ANTI-SLIP<br>TRANSITION TO ZONE 2</div></div>
+    <div class="pair-cell"><div class="pair-mat">Track + Pendant</div><div class="pair-spec">TRACK: MATTE BLACK<br>PENDANT: INDUSTRIAL<br>HEIGHT KHÁC ZONE 2<br>(CAO HƠN 20-30CM)</div></div>
+    <div class="pair-cell"><div class="pair-mat">Display riser (dark)</div><div class="pair-spec">TEAK RISERS 3/6/9CM<br>MATTE OIL<br>DARK TONE<br>CONTRAST VỚI CHAI</div></div>
+
+    <div class="pair-cell pair-zone">Furniture</div>
+    <div class="pair-cell"><div class="pair-mat">Museum Cabinet</div><div class="pair-spec">METAL FRAME BẮT BUỘC<br>GLASS PANELS<br>PULL-OUT DRAWERS DƯỚI<br>180-220CM CAO</div></div>
+    <div class="pair-cell"><div class="pair-mat">Rolling Cart</div><div class="pair-spec">BLACKENED STEEL FRAME<br>LOCKING CASTERS ≥10CM<br>2-3 TIERS<br>DARK WOOD SHELF</div></div>
+    <div class="pair-cell"><div class="pair-mat">Packaging Station</div><div class="pair-spec">LIGHT WOOD SURFACE<br>DARK WOOD BODY<br>RIBBON ROLL HOLDER<br>TISSUE STACK VISIBLE</div></div>
+  </div>
+
+  <div class="qb"><div class="qt">„Mỗi zone phải có đủ 3 families. Stone cho nền tảng, Metal cho cấu trúc, Wood cho hơi ấm. Counter chỉ stone + wood mà không metal hardware → thiếu craft signal, trông như bếp ăn đắt tiền thay vì atelier."</div><div class="qa">— MSDL-001-S1 · Family Interaction Rule</div></div>
+</section>
+
+<!-- ══════ CH.04 — TACTILE ══════ -->
+<section class="S Sd" id="tactile">
+  <div class="Si">
+    <div class="Slb">PMP-001 · Chương 04</div>
+    <h2 class="St">Tactile Specifications —<br>nhiệt, nhám, âm</h2>
+    <p class="Sld">Mỗi material không chỉ nhìn — còn chạm, nghe, và cảm nhận nhiệt độ. Specs dưới đây cho contractor biết kết quả cần đạt, không chỉ vật liệu cần mua.</p>
+
+    <div class="tact-card">
+      <div class="tact" style="color:var(--cream)">
+        <div class="tact-name">Counter Marble</div>
+        <div class="tact-row"><div class="tact-label">Temp</div><div>19–21°C (AC 24°C) · Mát khi chạm</div></div>
+        <div class="tact-row"><div class="tact-label">Roughness</div><div>Ra 1.0–2.0 µm · Honed, không polished</div></div>
+        <div class="tact-row"><div class="tact-label">Sound</div><div>Resonant, clear khi gõ nhẹ · Không hollow</div></div>
+        <div class="tact-row"><div class="tact-label">Gloss</div><div>10–25 GU · Matte-satin range</div></div>
+        <div class="tact-row"><div class="tact-label">Edge</div><div>Eased 3mm radius · Mềm khi tay lướt qua</div></div>
+        <div class="tact-row" style="border-bottom:none"><div class="tact-label">Seal</div><div>Impregnating sealer · Không topical coat</div></div>
+      </div>
+
+      <div class="tact" style="color:var(--cream)">
+        <div class="tact-name">Dark Wood (Teak)</div>
+        <div class="tact-row"><div class="tact-label">Temp</div><div>21–23°C · Ấm hơn marble 2-3°C</div></div>
+        <div class="tact-row"><div class="tact-label">Roughness</div><div>Ra 3.0–6.0 µm · Grain cảm nhận được</div></div>
+        <div class="tact-row"><div class="tact-label">Sound</div><div>Thud nặng, solid · Đặt chai: satisfying</div></div>
+        <div class="tact-row"><div class="tact-label">Finish</div><div>Matte oil · Osmo hoặc Rubio Monocoat</div></div>
+        <div class="tact-row"><div class="tact-label">Recoat</div><div>Mỗi 6-12 tháng tùy traffic</div></div>
+        <div class="tact-row" style="border-bottom:none"><div class="tact-label">Grain</div><div>Visible, open pore · Không filler</div></div>
+      </div>
+
+      <div class="tact" style="color:var(--cream)">
+        <div class="tact-name">Light Wood (Ash/Oak)</div>
+        <div class="tact-row"><div class="tact-label">Temp</div><div>21–23°C · Ấm, inviting</div></div>
+        <div class="tact-row"><div class="tact-label">Roughness</div><div>Ra 2.0–4.0 µm · Smooth nhưng có texture</div></div>
+        <div class="tact-row"><div class="tact-label">Sound</div><div>Lighter thud · Nhẹ hơn dark wood</div></div>
+        <div class="tact-row"><div class="tact-label">Finish</div><div>Natural oil · Không stain · Không varnish</div></div>
+        <div class="tact-row"><div class="tact-label">Aging</div><div>Honey-amber patina theo thời gian</div></div>
+        <div class="tact-row" style="border-bottom:none"><div class="tact-label">Use note</div><div>Tester island + display = tay khách chạm nhiều</div></div>
+      </div>
+    </div>
+
+    <div class="tact-card">
+      <div class="tact" style="color:var(--cream)">
+        <div class="tact-name">Blackened Steel</div>
+        <div class="tact-row"><div class="tact-label">Temp</div><div>Room temp · Neutral</div></div>
+        <div class="tact-row"><div class="tact-label">Finish</div><div>Matte powder coat hoặc wax patina</div></div>
+        <div class="tact-row"><div class="tact-label">Touch</div><div>Smooth nhưng không slick · Dry feel</div></div>
+        <div class="tact-row" style="border-bottom:none"><div class="tact-label">Sound</div><div>Metallic ring nếu gõ · „Workshop" signal</div></div>
+      </div>
+
+      <div class="tact" style="color:var(--cream)">
+        <div class="tact-name">Ribbon Satin</div>
+        <div class="tact-row"><div class="tact-label">Width</div><div>16mm · Teal #0F6E56</div></div>
+        <div class="tact-row"><div class="tact-label">Sound</div><div>„Swish" khi kéo qua ngón tay</div></div>
+        <div class="tact-row"><div class="tact-label">Feel</div><div>Smooth, cool, substantial · Không flimsy</div></div>
+        <div class="tact-row" style="border-bottom:none"><div class="tact-label">Weight</div><div>≥ 80g/m · Double-face satin</div></div>
+      </div>
+
+      <div class="tact" style="color:var(--cream)">
+        <div class="tact-name">Floor (Basalt/Slate)</div>
+        <div class="tact-row"><div class="tact-label">Sound</div><div>Bước chân: trầm, solid, resonant</div></div>
+        <div class="tact-row"><div class="tact-label">Slip</div><div>R10 minimum · Wet safe</div></div>
+        <div class="tact-row"><div class="tact-label">Feel</div><div>Solid, grounding dưới giày</div></div>
+        <div class="tact-row" style="border-bottom:none"><div class="tact-label">Avoid</div><div>Hollow sound = substrate sai · „Clack" = vinyl</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ CH.05 — AGING ══════ -->
+<section class="S Sl" id="aging">
+  <div class="Si">
+    <div class="Slb">PMP-001 · Chương 05</div>
+    <h2 class="St">Aging Protocol —<br>vật liệu thay đổi thế nào<br>và khi nào cần maintain</h2>
+    <p class="Sld">Aesop philosophy: „Ageing is a metaphor for skin — we're not hiding wrinkles, we accept it." MORAQ chấp nhận patina — nhưng phân biệt „aging đẹp" (gỗ honey-amber) vs „aging xấu" (đá ố nước).</p>
+
+    <div style="overflow-x:auto">
+    <div class="age-row" style="border-bottom:2px solid var(--ink20)">
+      <div class="age-time" style="font-weight:600;opacity:.5">Material</div>
+      <div class="age-time" style="font-weight:600;opacity:.5">6 tháng</div>
+      <div class="age-time" style="font-weight:600;opacity:.5">1 năm</div>
+      <div class="age-time" style="font-weight:600;opacity:.5">3 năm</div>
+      <div class="age-time" style="font-weight:600;opacity:.5;border-right:none">Action cần</div>
+    </div>
+
+    <div class="age-row">
+      <div class="age-cell age-mat">Counter Marble</div>
+      <div class="age-cell">Micro-scratches từ chai + tay. Vết nước nếu không seal đúng. ✓ Scratches nhẹ = character.</div>
+      <div class="age-cell">Patina nhẹ ở vùng high-traffic. Vein pattern nổi bật hơn. ✓ Đẹp hơn.</div>
+      <div class="age-cell">Etch marks nếu acid contact (nước chanh, nước hoa). ✗ Cần re-polish nếu quá nặng.</div>
+      <div class="age-cell" style="border-right:none">6M: Check seal. 12M: Re-seal nếu water beading giảm. 3Y: Professional hone nếu deep scratches. Daily: wipe spills ngay.</div>
+    </div>
+
+    <div class="age-row">
+      <div class="age-cell age-mat">Dark Wood (Teak)</div>
+      <div class="age-cell">Oil finish absorb dần. Grain nổi hơn. Vết tay ở handle areas. ✓ All good.</div>
+      <div class="age-cell">Màu deepen — dark brown → darker. Patina warm. Joints stable. ✓ Đẹp hơn đáng kể.</div>
+      <div class="age-cell">Honey-golden patina. Scratches minor blend vào grain. ✓ Peak beauty.</div>
+      <div class="age-cell" style="border-right:none">6-12M: Re-oil (Osmo/Rubio). Spot repair scratches. Hàng tuần: dry cloth wipe. KHÔNG wet mop dư.</div>
+    </div>
+
+    <div class="age-row">
+      <div class="age-cell age-mat">Light Wood (Ash)</div>
+      <div class="age-cell">Bắt đầu amber shift. Vùng nắng chiếu sẽ đổi nhanh hơn. ✓ Natural process.</div>
+      <div class="age-cell">Honey amber tone rõ rệt. Contrast với dark wood giảm nhẹ. ✓ Vẫn đẹp.</div>
+      <div class="age-cell">Rich amber. Wear marks ở tester island. ✓ Nếu đều; ✗ nếu uneven → cần sand + re-oil.</div>
+      <div class="age-cell" style="border-right:none">6M: Re-oil high-traffic surfaces. 18M: Light sand 220-grit + re-oil nếu uneven wear. Không để nước đọng.</div>
+    </div>
+
+    <div class="age-row">
+      <div class="age-cell age-mat">Blackened Steel</div>
+      <div class="age-cell">Nếu powder coat: không thay đổi. Nếu wax: patina bắt đầu. ✓ Cả hai OK.</div>
+      <div class="age-cell">Powder coat: minimal change. Wax: warm patina, slight rust ở edges. ✓ Intentional.</div>
+      <div class="age-cell">Powder coat: chip nếu va chạm → touch up. Wax: beautiful worn look. ✓ Le Labo aesthetic.</div>
+      <div class="age-cell" style="border-right:none">Powder coat: touch up chips ngay. Wax finish: re-wax 12M. Nếu rust quá mức: wire brush + re-wax. Không dùng chemical rust remover.</div>
+    </div>
+
+    <div class="age-row" style="border-bottom:none">
+      <div class="age-cell age-mat">Floor Stone</div>
+      <div class="age-cell">Wear pattern bắt đầu ở entry + counter approach. ✓ Natural traffic map.</div>
+      <div class="age-cell">Slight polish ở high-traffic = „desire path" visible. ✓ Adds character.</div>
+      <div class="age-cell">Grout may discolor. Stone itself ages well. ✓ Stone; ✗ Grout cần re-grout nếu darkened.</div>
+      <div class="age-cell" style="border-right:none">Weekly: mop neutral pH. 12M: re-seal nếu cần. Grout: check 12M, re-grout dark spots. KHÔNG acid cleaners.</div>
+    </div>
+    </div>
+
+    <div class="qb"><div class="qt">„Vật liệu nào aging đẹp: teak, walnut, wax steel, natural stone. Vật liệu nào aging xấu: laminate (bong), vinyl (nứt), chrome (ố), varnish (vàng). Đây là lý do forbidden list tồn tại — không phải vì xấu lúc mới, mà vì xấu khi cũ."</div><div class="qa">— PMP-001 · Aging Philosophy</div></div>
+  </div>
+</section>
+
+<!-- ══════ CH.06 — COLOR ON FURNITURE ══════ -->
+<section class="S Sd" id="color">
+  <div class="Si">
+    <div class="Slb">PMP-001 · Chương 06</div>
+    <h2 class="St">Color Rules —<br>màu là thông điệp,<br>không phải décor</h2>
+
+    <div class="ratio-bar">
+      <div class="ratio-seg" style="background:var(--ink);width:55%;color:rgba(250,249,246,.5)">INK ~55%</div>
+      <div class="ratio-seg" style="background:#3A3430;width:25%;color:rgba(250,249,246,.4)">DARK MAT ~25%</div>
+      <div class="ratio-seg" style="background:#5A5550;width:12%;color:rgba(250,249,246,.4)">STONE ~12%</div>
+      <div class="ratio-seg" style="background:var(--teal);width:5%;color:rgba(250,249,246,.6)">TEAL ~5%</div>
+      <div class="ratio-seg" style="background:var(--linen);width:3%;color:var(--ink)">LIGHT ~3%</div>
+    </div>
+
+    <div class="pr"><div class="prn" style="color:var(--teal)">T</div><div><div class="prt" style="color:var(--cream)">Teal #0F6E56 — chỉ trên closed storage</div><div class="prb" style="color:var(--linen)">Kệ có cửa, tủ storage, drawer cabinet. Không trên open display, counter, floor, wall. Teal trên closed = „thứ bên trong được cất giữ có chủ ý". ~5% visual — đủ nhận ra, không dominate.</div></div></div>
+    <div class="pr"><div class="prn" style="color:var(--teal)">I</div><div><div class="prt" style="color:var(--cream)">Ink #1A1916 — default cho surfaces không phải wood/stone/metal</div><div class="prb" style="color:var(--linen)">Wall paint, plaster, painted surfaces. Không pure black (#000) — Ink có warmth nhẹ của brown = „old library" thay vì „modern minimal".</div></div></div>
+    <div class="pr"><div class="prn" style="color:var(--teal)">A</div><div><div class="prt" style="color:var(--cream)">Amber #854F0B — chỉ ánh sáng, không vật liệu</div><div class="prb" style="color:var(--linen)">Amber = màu của 2700K warm white. Dùng trong lighting tone, graphic, label. Không paint furniture/wall/fabric thành Amber.</div></div></div>
+    <div class="pr"><div class="prn" style="color:var(--teal)">C</div><div><div class="prt" style="color:var(--cream)">Cream #FAF9F6 + Linen #E8DFD0 — vật liệu tự nhiên only</div><div class="prb" style="color:var(--linen)">Cream = paper, scent strip, tissue, light wood tự nhiên. Linen = giấy Dó, đá nhạt, vải thô. Không paint bề mặt nào thành Cream/Linen — phải đến từ material thật.</div></div></div>
+  </div>
+</section>
+
+<!-- ══════ CH.07 — SUPPLIER BRIEF ══════ -->
+<section class="S" id="supplier">
+  <div class="Slb">PMP-001 · Chương 07</div>
+  <h2 class="St">Supplier Brief Template —<br>gửi thẳng cho vendor</h2>
+  <p class="Sld">Template này copy + fill cho mỗi material khi sourcing tại thị trường cụ thể. Vendor chỉ cần đọc brief này + nhận sample spec.</p>
+
+  <div class="brief-box">
+    <div class="brief-title">Template — [TÊN VẬT LIỆU]</div>
+    <div class="brief-row"><div class="brief-label">Project</div><div class="brief-val">MORAQ · [City Chapter] · [Store Address]</div></div>
+    <div class="brief-row"><div class="brief-label">Material</div><div class="brief-val">[Category] — ví dụ: Natural Stone, Dark Hardwood, Blackened Steel</div></div>
+    <div class="brief-row"><div class="brief-label">Application</div><div class="brief-val">[Counter top / Floor / Shelf frame / etc.] — vị trí cụ thể trong store</div></div>
+    <div class="brief-row"><div class="brief-label">Dimensions</div><div class="brief-val">[L × W × D mm] — kích thước cần thiết, tolerance ± [X]mm</div></div>
+    <div class="brief-row"><div class="brief-label">Quantity</div><div class="brief-val">[Số lượng] + [% waste allowance — thường 10-15%]</div></div>
+    <div class="brief-row"><div class="brief-label">Finish</div><div class="brief-val">[Honed / Matte oil / Powder coat matte black / Natural oil / etc.]</div></div>
+    <div class="brief-row"><div class="brief-label">Gloss</div><div class="brief-val">[10-25 GU cho stone / Matte cho wood / Matte cho metal]</div></div>
+    <div class="brief-row"><div class="brief-label">Edge Profile</div><div class="brief-val">[Eased 3mm / Square / Chamfer 2mm] — section drawing nếu cần</div></div>
+    <div class="brief-row"><div class="brief-label">Color Range</div><div class="brief-val">[Reference Pantone/NCS nếu có] — mẫu vật lý bắt buộc trước approve</div></div>
+    <div class="brief-row"><div class="brief-label">Test dưới 2700K</div><div class="brief-val">BẮT BUỘC — mẫu phải được evaluate dưới đèn 2700K CRI95, không ánh sáng tự nhiên</div></div>
+    <div class="brief-row"><div class="brief-label">Scent Test</div><div class="brief-val">Vật liệu có toả mùi không? (gỗ tươi, sơn, composite có thể conflict ambient scent)</div></div>
+    <div class="brief-row"><div class="brief-label">Sound Test</div><div class="brief-val">Gõ nhẹ: âm solid hay hollow? Bước lên: trầm hay „clack"?</div></div>
+    <div class="brief-row"><div class="brief-label">Sample</div><div class="brief-val">Mẫu vật lý tối thiểu 20×20cm. Gửi kèm: nguồn gốc, data sheet, lead time.</div></div>
+    <div class="brief-row" style="border-bottom:none"><div class="brief-label">Approval</div><div class="brief-val">Founding Committee review trong 7 ngày. Approved / Conditions / Rejected with reason.</div></div>
+  </div>
+
+  <div class="pr"><div class="prn">!</div><div><div class="prt">Quy tắc: không approve qua ảnh</div><div class="prb">Photo không đủ. Screen khác nhau, ánh sáng chụp khác 2700K store. Mẫu vật lý là mandatory — đặt dưới đèn 2700K, chạm bằng tay, gõ nghe âm, ngửi. Đây là 4 tests mà ảnh không thay thế được.</div></div></div>
+</section>
+
+<!-- ══════ CH.08 — SAMPLE BOARD ══════ -->
+<section class="S Sd" id="sample">
+  <div class="Si">
+    <div class="Slb">PMP-001 · Chương 08</div>
+    <h2 class="St">Sample Board Format —<br>layout chuẩn khi trình<br>Founding Committee</h2>
+    <p class="Sld">Khi submit mẫu vật liệu cho review, layout theo format dưới đây. Tất cả mẫu đặt trên nền Ink-dark, dưới đèn 2700K CRI95. Không ánh sáng khác.</p>
+
+    <div class="sample-board">
+      <div class="sample-cell" style="background:#D4CFC8"><div class="sample-label" style="color:var(--ink)">01 · STONE<br>Counter Top<br>20×20cm</div></div>
+      <div class="sample-cell" style="background:#3E3020"><div class="sample-label" style="color:var(--cream)">02 · DARK WOOD<br>Counter Base<br>20×20cm</div></div>
+      <div class="sample-cell" style="background:#C8B89A"><div class="sample-label" style="color:var(--ink)">03 · LIGHT WOOD<br>Display Surface<br>20×20cm</div></div>
+      <div class="sample-cell" style="background:#1A1A18"><div class="sample-label" style="color:var(--cream)">04 · METAL<br>Steel Sample<br>15×15cm</div></div>
+      <div class="sample-cell" style="background:#2A2826;border:2px dashed rgba(15,110,86,.4)"><div class="sample-label" style="color:var(--teal)">05 · LOCAL<br>[City Material]<br>20×20cm</div></div>
+    </div>
+
+    <div style="margin-top:2rem">
+      <div class="pr"><div class="prn" style="color:var(--teal)">B1</div><div><div class="prt" style="color:var(--cream)">Đặt tất cả trên nền Ink #1A1916</div><div class="prb" style="color:var(--linen)">Fabric hoặc board sơn Ink. Tất cả sample đặt cùng nhau — evaluate pairing, không evaluate individual.</div></div></div>
+      <div class="pr"><div class="prn" style="color:var(--teal)">B2</div><div><div class="prt" style="color:var(--cream)">Chiếu đèn 2700K CRI95 từ góc 45°</div><div class="prb" style="color:var(--linen)">Giả lập store lighting. KHÔNG đánh giá dưới đèn văn phòng 4000K+ — màu sẽ sai hoàn toàn. Marble trông khác, teal trông khác, gỗ trông khác.</div></div></div>
+      <div class="pr"><div class="prn" style="color:var(--teal)">B3</div><div><div class="prt" style="color:var(--cream)">4 tests bắt buộc trước approve</div><div class="prb" style="color:var(--linen)"><strong>Nhìn:</strong> Màu đúng palette dưới 2700K? <strong>Chạm:</strong> Nhiệt độ, roughness, weight đúng spec? <strong>Nghe:</strong> Gõ — solid hay hollow? <strong>Ngửi:</strong> Toả mùi conflict ambient? → 4/4 pass mới approve.</div></div></div>
+      <div class="pr nb"><div class="prn" style="color:var(--teal)">B4</div><div><div class="prt" style="color:var(--cream)">Kèm 1-page write-up cho mỗi material</div><div class="prb" style="color:var(--linen)">Gồm: tên + nguồn gốc + supplier + câu chuyện (2-3 câu nếu local material) + vị trí đề xuất + test results. Founding Committee review 7 ngày — Approved / Conditions / Rejected with reason. Không „để xem thêm".</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="foot"><div class="fl">MORAQ · PMP-001 · V1.0<br>PHYSICAL MATERIAL PALETTE · CONFIDENTIAL · APR 2026<br>EXTENDS: MSDL-001 + MSDL-001-S1<br>NEXT REVIEW: STORE LOCATION CONFIRMATION</div><div class="fr">M</div></footer>
+
+</body>
+</html>

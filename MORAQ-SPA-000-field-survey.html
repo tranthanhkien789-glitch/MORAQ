@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>MORAQ · SPA-000 Field Survey</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1A1916;--teal:#0F6E56;--td:#085041;--tl:#E1F5EE;--tm:#5DCAA5;
+  --amber:#854F0B;--ad:#633806;--al:#FAEEDA;--am:#EF9F27;
+  --cream:#FAF9F6;--linen:#E8DFD0;--w2:#C4B49A;--w3:#8C7A62;
+  --red:#A32D2D;--rl:#FCEBEB;--green:#1a6b3a;--gl:#e8f5ee;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);-webkit-font-smoothing:antialiased;font-size:14px;padding-bottom:80px}
+
+/* HEADER */
+.doc-header{background:var(--ink);padding:16px 20px;position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.dh-left{display:flex;align-items:center;gap:12px}
+.dh-logo{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:17px;color:var(--cream);letter-spacing:.1em}
+.dh-doc{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.22);padding:2px 7px;border:1px solid rgba(255,255,255,.1)}
+.dh-score{text-align:right}
+.dh-score-num{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:26px;color:var(--tm);line-height:1}
+.dh-score-label{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.25)}
+
+/* TABS */
+.tabs{display:flex;background:var(--ink);border-top:1px solid rgba(255,255,255,.06);overflow-x:auto;-webkit-overflow-scrolling:touch;position:sticky;top:52px;z-index:49}
+.tab{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.05em;text-transform:uppercase;padding:10px 14px;color:rgba(255,255,255,.35);white-space:nowrap;cursor:pointer;border-bottom:2px solid transparent;transition:all .14s;flex-shrink:0}
+.tab.active{color:var(--tm);border-bottom-color:var(--tm)}
+.tab-section{display:none}.tab-section.active{display:block}
+
+/* SECTION */
+.section{padding:0 0 4px}
+.section-header{padding:14px 20px;background:var(--cream);border-bottom:2px solid var(--linen)}
+.sh-num{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);display:block;margin-bottom:2px}
+.sh-title{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:22px;color:var(--ink)}
+
+/* FORM ELEMENTS */
+.field-group{margin-bottom:2px;background:white;border-bottom:1px solid var(--linen)}
+.field-group:last-child{border-bottom:none}
+.fg-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--w3);display:block;padding:10px 20px 4px}
+.fg-input{width:100%;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--ink);padding:4px 20px 12px;outline:none;-webkit-appearance:none}
+.fg-input::placeholder{color:var(--w2)}
+.fg-input:focus{background:rgba(15,110,86,.03)}
+.fg-select{width:100%;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--ink);padding:4px 20px 12px;outline:none;-webkit-appearance:none;appearance:none;cursor:pointer}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--linen)}
+.fg-row .field-group{border-bottom:none;border-right:1px solid var(--linen)}
+.fg-row .field-group:last-child{border-right:none}
+.fg-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--linen)}
+.fg-row-3 .field-group{border-bottom:none;border-right:1px solid var(--linen)}
+.fg-row-3 .field-group:last-child{border-right:none}
+.fg-textarea{width:100%;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);padding:4px 20px 12px;outline:none;resize:vertical;min-height:80px}
+
+/* BLOCK SECTION */
+.block{background:white;margin:3px 0;padding:14px 20px}
+.block-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--w3);margin-bottom:12px}
+.block-desc{font-size:13px;color:var(--w3);line-height:1.55;margin-bottom:12px}
+
+/* CHECKBOX ITEMS */
+.check-list{display:flex;flex-direction:column;gap:0}
+.check-item{display:flex;align-items:flex-start;gap:12px;padding:10px 20px;background:white;border-bottom:1px solid var(--linen);cursor:pointer;transition:background .1s}
+.check-item:last-child{border-bottom:none}
+.check-item:active{background:var(--tl)}
+.ci-box{width:20px;height:20px;border:2px solid var(--linen);border-radius:3px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .14s}
+.check-item.checked .ci-box{background:var(--teal);border-color:var(--teal)}
+.ci-check{display:none;color:white;font-size:12px;font-weight:700}
+.check-item.checked .ci-check{display:block}
+.ci-content{flex:1}
+.ci-label{font-size:14px;color:var(--ink);line-height:1.4;margin-bottom:2px}
+.ci-sub{font-size:12px;color:var(--w3);line-height:1.4}
+.ci-pts{font-family:'DM Mono',monospace;font-size:9px;color:var(--teal);margin-left:auto;flex-shrink:0;padding-top:2px}
+
+/* RED FLAG ITEMS */
+.redflag-item{display:flex;align-items:flex-start;gap:12px;padding:11px 20px;background:white;border-bottom:1px solid rgba(163,45,45,.08);cursor:pointer;transition:background .1s}
+.redflag-item:last-child{border-bottom:none}
+.redflag-item.flagged{background:var(--rl)}
+.rf-box{width:20px;height:20px;border:2px solid rgba(163,45,45,.3);border-radius:3px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .14s}
+.redflag-item.flagged .rf-box{background:var(--red);border-color:var(--red)}
+.rf-x{display:none;color:white;font-size:12px;font-weight:700}
+.redflag-item.flagged .rf-x{display:block}
+.rf-label{font-size:14px;color:var(--ink);line-height:1.4;margin-bottom:2px;flex:1}
+.rf-impact{font-family:'DM Mono',monospace;font-size:9px;margin-left:auto;flex-shrink:0;color:var(--red);padding-top:2px}
+
+/* ZONE MAP */
+.zone-map{display:grid;grid-template-columns:1fr 1fr;gap:3px;margin:12px 0}
+.zone-block{background:white;border:1px solid var(--linen);padding:12px 14px}
+.zb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.zb-zone{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;text-transform:uppercase}
+.zb-name{font-size:12px;font-weight:500;color:var(--ink);margin-bottom:4px}
+.zb-req{font-size:11.5px;color:var(--w3);margin-bottom:8px;line-height:1.5}
+.zb-fit{display:flex;gap:4px}
+.fit-btn{flex:1;padding:6px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.04em;text-transform:uppercase;border:1px solid var(--linen);background:white;cursor:pointer;text-align:center;transition:all .14s;border-radius:0}
+.fit-btn.fit-yes.selected{background:var(--teal);color:white;border-color:var(--teal)}
+.fit-btn.fit-maybe.selected{background:var(--am);color:white;border-color:var(--am)}
+.fit-btn.fit-no.selected{background:var(--red);color:white;border-color:var(--red)}
+
+/* SCORE DISPLAY */
+.score-breakdown{display:flex;flex-direction:column;gap:2px;margin:12px 0}
+.sb-row{display:flex;align-items:center;gap:8px;padding:9px 14px;background:white;border-bottom:1px solid var(--linen)}
+.sb-row:last-child{border-bottom:none}
+.sb-label{flex:1;font-size:13px;color:var(--ink)}
+.sb-bar-track{flex:2;height:6px;background:var(--linen);border-radius:3px;overflow:hidden}
+.sb-bar-fill{height:6px;border-radius:3px;transition:width .3s;background:var(--teal)}
+.sb-val{font-family:'DM Mono',monospace;font-size:10px;color:var(--teal);min-width:50px;text-align:right}
+
+/* VERDICT */
+.verdict{padding:20px;margin:12px 0;text-align:center}
+.verdict-emoji{font-size:36px;margin-bottom:8px}
+.verdict-title{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:24px;margin-bottom:6px}
+.verdict-desc{font-size:13px;color:var(--w3);line-height:1.65;max-width:280px;margin:0 auto}
+
+/* PHOTO CHECKLIST */
+.photo-item{display:flex;align-items:center;gap:12px;padding:11px 20px;background:white;border-bottom:1px solid var(--linen);cursor:pointer}
+.photo-item:last-child{border-bottom:none}
+.photo-item.done .ph-box{background:var(--teal);border-color:var(--teal)}
+.ph-box{width:36px;height:36px;border:2px solid var(--linen);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;background:white;transition:all .14s}
+.ph-done{display:none;color:white;font-weight:700}
+.photo-item.done .ph-done{display:block}
+.photo-item.done .ph-icon{display:none}
+
+/* SUMMARY */
+.summary-field{padding:12px 20px;background:white;border-bottom:1px solid var(--linen);display:flex;justify-content:space-between;align-items:center}
+.sf-label{font-size:13px;color:var(--w3)}
+.sf-val{font-family:'DM Mono',monospace;font-size:12px;color:var(--ink);font-weight:500}
+
+/* SAVE BAR */
+.save-bar{position:fixed;bottom:0;left:0;right:0;background:var(--ink);padding:12px 20px;display:flex;gap:8px;z-index:100;border-top:1px solid rgba(255,255,255,.08)}
+.save-btn{flex:1;background:var(--teal);color:var(--cream);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:12px;border:none;cursor:pointer;text-align:center}
+.save-btn:active{background:var(--td)}
+.print-btn{background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:12px 16px;border:none;cursor:pointer}
+
+/* RATING STARS */
+.rating{display:flex;gap:6px;padding:8px 20px 12px}
+.star{font-size:24px;cursor:pointer;color:var(--linen);transition:color .1s}
+.star.lit{color:var(--am)}
+
+/* NOTE BOX */
+.note-box{background:rgba(15,110,86,.05);border:1px solid rgba(15,110,86,.15);padding:10px 14px;margin:8px 0;font-size:12.5px;color:var(--ink);line-height:1.6}
+.note-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);display:block;margin-bottom:4px}
+
+@media print{
+  .tabs,.save-bar,.dh-score{display:none}
+  .tab-section{display:block!important}
+  body{padding:0}
+  .doc-header{position:static}
+}
+</style>
+</head>
+<body>
+
+<div class="doc-header">
+  <div class="dh-left">
+    <span class="dh-logo">MORAQ</span>
+    <span class="dh-doc">SPA-000 · Field Survey</span>
+  </div>
+  <div class="dh-score">
+    <div class="dh-score-num" id="totalScore">0</div>
+    <div class="dh-score-label">/ 100 pts</div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-tab="info">① Info</div>
+  <div class="tab" data-tab="measure">② Dimensions</div>
+  <div class="tab" data-tab="zones">③ Zone Fit</div>
+  <div class="tab" data-tab="infra">④ Infrastructure</div>
+  <div class="tab" data-tab="redflag">⑤ Red Flags</div>
+  <div class="tab" data-tab="score">⑥ Score</div>
+  <div class="tab" data-tab="photos">⑦ Photos</div>
+  <div class="tab" data-tab="notes">⑧ Notes</div>
+</div>
+
+<!-- ① INFO -->
+<div class="tab-section active" id="tab-info">
+  <div class="section">
+    <div class="section-header">
+      <span class="sh-num">SPA-000 · Basic Information</span>
+      <div class="sh-title">Thông tin địa điểm</div>
+    </div>
+
+    <div class="field-group">
+      <span class="fg-label">Tên / Address mặt bằng</span>
+      <input class="fg-input" type="text" placeholder="Ví dụ: 45 Lê Văn Sỹ, Q.3, HCM" id="f-address">
+    </div>
+    <div class="fg-row">
+      <div class="field-group">
+        <span class="fg-label">Ngày khảo sát</span>
+        <input class="fg-input" type="date" id="f-date">
+      </div>
+      <div class="field-group">
+        <span class="fg-label">Người khảo sát</span>
+        <input class="fg-input" type="text" placeholder="Tên" id="f-surveyor">
+      </div>
+    </div>
+    <div class="fg-row">
+      <div class="field-group">
+        <span class="fg-label">Liên hệ chủ nhà</span>
+        <input class="fg-input" type="text" placeholder="Tên + SĐT" id="f-landlord">
+      </div>
+      <div class="field-group">
+        <span class="fg-label">Quận / Khu vực</span>
+        <input class="fg-input" type="text" placeholder="Quận 1, Q.3..." id="f-district">
+      </div>
+    </div>
+
+    <div class="section-header" style="margin-top:8px">
+      <span class="sh-num">Lease Terms</span>
+      <div class="sh-title">Điều khoản thuê</div>
+    </div>
+
+    <div class="fg-row">
+      <div class="field-group">
+        <span class="fg-label">Giá thuê / tháng (VND)</span>
+        <input class="fg-input" type="number" placeholder="0" id="f-rent">
+      </div>
+      <div class="field-group">
+        <span class="fg-label">Tiền đặt cọc</span>
+        <input class="fg-input" type="number" placeholder="tháng" id="f-deposit">
+      </div>
+    </div>
+    <div class="fg-row">
+      <div class="field-group">
+        <span class="fg-label">Thời hạn hợp đồng</span>
+        <input class="fg-input" type="text" placeholder="2 năm, 3 năm..." id="f-term">
+      </div>
+      <div class="field-group">
+        <span class="fg-label">Tăng giá mỗi năm</span>
+        <input class="fg-input" type="text" placeholder="%" id="f-escalation">
+      </div>
+    </div>
+    <div class="field-group">
+      <span class="fg-label">Phí dịch vụ tòa nhà / management fee</span>
+      <input class="fg-input" type="text" placeholder="Nếu có" id="f-mgmt">
+    </div>
+    <div class="field-group">
+      <span class="fg-label">Điều kiện đặc biệt từ chủ nhà</span>
+      <textarea class="fg-textarea" placeholder="Không được cải tạo, không được dùng lửa, không được khoan tường..." id="f-conditions"></textarea>
+    </div>
+
+    <div class="section-header" style="margin-top:8px">
+      <span class="sh-num">Location Quality</span>
+      <div class="sh-title">Đánh giá vị trí</div>
+    </div>
+
+    <div class="block">
+      <div class="block-title">Foot traffic quality (không phải quantity)</div>
+      <div class="block-desc">MORAQ không cần high foot traffic — cần đúng loại người đi qua: curiosity-driven, experience-seeking, not rush. Khu văn phòng giờ trưa, lifestyle khu Q.1/Q.3/Thảo Điền là phù hợp.</div>
+      <div class="rating" id="rating-traffic">
+        <div class="star" data-rating="traffic" data-val="1">★</div>
+        <div class="star" data-rating="traffic" data-val="2">★</div>
+        <div class="star" data-rating="traffic" data-val="3">★</div>
+        <div class="star" data-rating="traffic" data-val="4">★</div>
+        <div class="star" data-rating="traffic" data-val="5">★</div>
+      </div>
+    </div>
+    <div class="block">
+      <div class="block-title">Neighborhood aesthetic match</div>
+      <div class="block-desc">Khu xung quanh có cùng aesthetic không? MORAQ phù hợp với: lifestyle boutiques, specialty cafes, art spaces, independent restaurants. Không phù hợp: street food chợ, fast fashion, plastic signage phổ thông.</div>
+      <div class="rating" id="rating-neighbor">
+        <div class="star" data-rating="neighbor" data-val="1">★</div>
+        <div class="star" data-rating="neighbor" data-val="2">★</div>
+        <div class="star" data-rating="neighbor" data-val="3">★</div>
+        <div class="star" data-rating="neighbor" data-val="4">★</div>
+        <div class="star" data-rating="neighbor" data-val="5">★</div>
+      </div>
+    </div>
+    <div class="block">
+      <div class="block-title">Parking / accessibility</div>
+      <div class="block-desc">Target customer đến bằng xe máy, Grab, hoặc đi bộ. Không cần parking lot lớn. Cần: xe máy đậu gần, taxi/Grab drop-off dễ, không quá nhiều cầu thang.</div>
+      <div class="rating" id="rating-access">
+        <div class="star" data-rating="access" data-val="1">★</div>
+        <div class="star" data-rating="access" data-val="2">★</div>
+        <div class="star" data-rating="access" data-val="3">★</div>
+        <div class="star" data-rating="access" data-val="4">★</div>
+        <div class="star" data-rating="access" data-val="5">★</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ② DIMENSIONS -->
+<div class="tab-section" id="tab-measure">
+  <div class="section">
+    <div class="section-header">
+      <span class="sh-num">SPA-000 · Physical Measurements</span>
+      <div class="sh-title">Đo đạc thực tế</div>
+    </div>
+
+    <div class="note-box" style="margin:12px 20px 4px">
+      <span class="note-label">Dụng cụ cần mang theo</span>
+      Thước đo laser (Bosch GLM 30) hoặc thước cuộn 5m · Điện thoại có camera · Notepad
+    </div>
+
+    <div class="section-header" style="margin-top:8px">
+      <span class="sh-num">Overall Space</span>
+      <div class="sh-title">Tổng thể không gian</div>
+    </div>
+
+    <div class="fg-row-3">
+      <div class="field-group">
+        <span class="fg-label">Chiều dài (m)</span>
+        <input class="fg-input" type="number" step="0.1" placeholder="0.0" id="m-length" oninput="calcArea()">
+      </div>
+      <div class="field-group">
+        <span class="fg-label">Chiều rộng (m)</span>
+        <input class="fg-input" type="number" step="0.1" placeholder="0.0" id="m-width" oninput="calcArea()">
+      </div>
+      <div class="field-group">
+        <span class="fg-label">Diện tích (m²)</span>
+        <input class="fg-input" type="number" step="0.5" placeholder="auto" id="m-area" style="color:var(--teal)">
+      </div>
+    </div>
+    <div class="fg-row">
+      <div class="field-group">
+        <span class="fg-label">Chiều cao trần (m)</span>
+        <input class="fg-input" type="number" step="0.1" placeholder="min 3.0m" id="m-ceiling" oninput="checkCeiling()">
+      </div>
+      <div class="field-group">
+        <span class="fg-label">Tầng số</span>
+        <input class="fg-input" type="text" placeholder="Trệt, 1, 2..." id="m-floor">
+      </div>
+    </div>
+    <div id="ceiling-warning" style="display:none;padding:8px 20px;background:var(--rl);font-size:12.5px;color:var(--red)">⚠ Chiều cao trần &lt;3m — ảnh hưởng đến lighting installation và không gian cảm giác. Cần đánh giá thêm.</div>
+
+    <div class="block">
+      <div class="block-title">Diện tích requirement check</div>
+      <div id="area-check" style="font-size:13px;color:var(--w3);line-height:1.7">Nhập diện tích để xem assessment.</div>
+    </div>
+
+    <div class="section-header" style="margin-top:8px">
+      <span class="sh-num">Layout Constraints</span>
+      <div class="sh-title">Cột, vách, cửa</div>
+    </div>
+
+    <div class="fg-row">
+      <div class="field-group">
+        <span class="fg-label">Số cột chịu lực</span>
+        <input class="fg-input" type="number" placeholder="0" id="m-columns">
+      </div>
+      <div class="field-group">
+        <span class="fg-label">Vị trí cột (mô tả)</span>
+        <input class="fg-input" type="text" placeholder="Giữa, góc, theo trục..." id="m-col-pos">
+      </div>
+    </div>
+    <div class="fg-row">
+      <div class="field-group">
+        <span class="fg-label">Chiều rộng mặt tiền (m)</span>
+        <input class="fg-input" type="number" step="0.1" placeholder="0.0" id="m-frontage">
+      </div>
+      <div class="field-group">
+        <span class="fg-label">Cửa ra vào chính (rộng m)</span>
+        <input class="fg-input" type="number" step="0.1" placeholder="min 1.2m" id="m-door">
+      </div>
+    </div>
+    <div class="fg-row">
+      <div class="field-group">
+        <span class="fg-label">Có toilet/WC riêng?</span>
+        <select class="fg-select" id="m-wc">
+          <option value="">--</option>
+          <option value="yes-private">Có, riêng tư</option>
+          <option value="yes-shared">Có, dùng chung tòa</option>
+          <option value="no">Không</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <span class="fg-label">Có bếp / sink?</span>
+        <select class="fg-select" id="m-sink">
+          <option value="">--</option>
+          <option value="yes">Có sink</option>
+          <option value="add">Có thể thêm</option>
+          <option value="no">Không, không thể thêm</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-group">
+      <span class="fg-label">Sketch / ghi chú layout (văn bản)</span>
+      <textarea class="fg-textarea" placeholder="Cột ở vị trí nào, cửa sổ đâu, WC đâu... Phác thảo bằng chữ hoặc tham chiếu ảnh chụp." id="m-sketch" style="min-height:100px"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ③ ZONE FIT -->
+<div class="tab-section" id="tab-zones">
+  <div class="section">
+    <div class="section-header">
+      <span class="sh-num">SPA-000 · Zone Feasibility</span>
+      <div class="sh-title">6 zones có thể bố trí không?</div>
+    </div>
+    <div class="note-box" style="margin:12px 20px 4px">
+      <span class="note-label">Tổng diện tích minimum</span>
+      35m² nhỏ nhất có thể work. 45–55m² là comfortable. &gt;60m² cần tính toán cẩn thận về scent zone distribution.
+    </div>
+    <div class="zone-map" style="margin:12px 20px">
+      <div class="zone-block">
+        <div class="zb-header">
+          <span class="zb-zone" style="color:rgba(239,159,39,.7)">P1 · Arrival</span>
+        </div>
+        <div class="zb-name">Entry zone</div>
+        <div class="zb-req">Min 2–3m² · Entrance area · Wall for brand statement · Diffuser placement (high)</div>
+        <div class="zb-fit">
+          <button class="fit-btn fit-yes" onclick="setFit('P1','yes',this)">Yes</button>
+          <button class="fit-btn fit-maybe" onclick="setFit('P1','maybe',this)">?</button>
+          <button class="fit-btn fit-no" onclick="setFit('P1','no',this)">No</button>
+        </div>
+      </div>
+      <div class="zone-block">
+        <div class="zb-header">
+          <span class="zb-zone" style="color:rgba(239,159,39,.7)">P2 · Discovery</span>
+        </div>
+        <div class="zb-name">Ingredient wall</div>
+        <div class="zb-req">Min 8–10m² · Feature wall 2m+ width · Customer can browse freely</div>
+        <div class="zb-fit">
+          <button class="fit-btn fit-yes" onclick="setFit('P2','yes',this)">Yes</button>
+          <button class="fit-btn fit-maybe" onclick="setFit('P2','maybe',this)">?</button>
+          <button class="fit-btn fit-no" onclick="setFit('P2','no',this)">No</button>
+        </div>
+      </div>
+      <div class="zone-block" style="border-color:rgba(15,110,86,.3)">
+        <div class="zb-header">
+          <span class="zb-zone" style="color:var(--teal)">P3 · Counter ★</span>
+        </div>
+        <div class="zb-name">Ritual hub — Critical</div>
+        <div class="zb-req">Min 8–12m² · Counter 120×80cm · 2 stools · Back wall for display shelf · Separate from P6 airflow</div>
+        <div class="zb-fit">
+          <button class="fit-btn fit-yes" onclick="setFit('P3','yes',this)">Yes</button>
+          <button class="fit-btn fit-maybe" onclick="setFit('P3','maybe',this)">?</button>
+          <button class="fit-btn fit-no" onclick="setFit('P3','no',this)">No</button>
+        </div>
+      </div>
+      <div class="zone-block">
+        <div class="zb-header">
+          <span class="zb-zone" style="color:rgba(239,159,39,.7)">P4 · Transaction</span>
+        </div>
+        <div class="zb-name">POS + packaging</div>
+        <div class="zb-req">Min 3–4m² · Adjacent to P3 or P5 · POS counter · Packaging station · Electrical outlet</div>
+        <div class="zb-fit">
+          <button class="fit-btn fit-yes" onclick="setFit('P4','yes',this)">Yes</button>
+          <button class="fit-btn fit-maybe" onclick="setFit('P4','maybe',this)">?</button>
+          <button class="fit-btn fit-no" onclick="setFit('P4','no',this)">No</button>
+        </div>
+      </div>
+      <div class="zone-block">
+        <div class="zb-header">
+          <span class="zb-zone" style="color:rgba(239,159,39,.5)">P5 · Departure</span>
+        </div>
+        <div class="zb-name">Exit path</div>
+        <div class="zb-req">Không cần zone riêng — chỉ cần exit path rõ ràng từ P4 ra entrance</div>
+        <div class="zb-fit">
+          <button class="fit-btn fit-yes" onclick="setFit('P5','yes',this)">Yes</button>
+          <button class="fit-btn fit-maybe" onclick="setFit('P5','maybe',this)">?</button>
+          <button class="fit-btn fit-no" onclick="setFit('P5','no',this)">No</button>
+        </div>
+      </div>
+      <div class="zone-block">
+        <div class="zb-header">
+          <span class="zb-zone" style="color:rgba(239,159,39,.7)">P6 · Back-of-House</span>
+        </div>
+        <div class="zb-name">3-zone storage</div>
+        <div class="zb-req">Min 8–10m² · Closable/separate from store · Ventilation required · Sink hoặc có thể thêm · GFCI electrical</div>
+        <div class="zb-fit">
+          <button class="fit-btn fit-yes" onclick="setFit('P6','yes',this)">Yes</button>
+          <button class="fit-btn fit-maybe" onclick="setFit('P6','maybe',this)">?</button>
+          <button class="fit-btn fit-no" onclick="setFit('P6','no',this)">No</button>
+        </div>
+      </div>
+    </div>
+    <div class="field-group" style="margin:0 0 2px">
+      <span class="fg-label">Ghi chú zone fit</span>
+      <textarea class="fg-textarea" placeholder="P3 có thể đặt ở đâu? P6 là phòng riêng hay ngăn cách bằng vách?" id="z-notes"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ④ INFRASTRUCTURE -->
+<div class="tab-section" id="tab-infra">
+  <div class="section">
+    <div class="section-header">
+      <span class="sh-num">SPA-000 · Infrastructure Assessment</span>
+      <div class="sh-title">Điện · Nước · Thông gió · Internet</div>
+    </div>
+
+    <div class="block" style="background:var(--cream)">
+      <div class="block-title">Điện — Electrical</div>
+    </div>
+    <div class="check-list">
+      <div class="check-item" onclick="toggleCheck(this,4)" data-pts="4">
+        <div class="ci-box"><span class="ci-check">✓</span></div>
+        <div class="ci-content">
+          <div class="ci-label">3-phase power available (3 pha)</div>
+          <div class="ci-sub">Cần cho track lighting system + diffuser + POS. 1-phase OK nếu không có nhiều load.</div>
+        </div>
+        <span class="ci-pts">+4pts</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this,3)" data-pts="3">
+        <div class="ci-box"><span class="ci-check">✓</span></div>
+        <div class="ci-content">
+          <div class="ci-label">Electrical capacity ≥15A (có thể nâng lên)</div>
+          <div class="ci-sub">MORAQ cần ít nhất 3 circuits riêng: ambient light + counter work light + P6</div>
+        </div>
+        <span class="ci-pts">+3pts</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this,3)" data-pts="3">
+        <div class="ci-box"><span class="ci-check">✓</span></div>
+        <div class="ci-content">
+          <div class="ci-label">Cho phép sửa hệ thống điện</div>
+          <div class="ci-sub">Cần run new circuits, install dimmer — chủ nhà phải đồng ý</div>
+        </div>
+        <span class="ci-pts">+3pts</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this,2)" data-pts="2">
+        <div class="ci-box"><span class="ci-check">✓</span></div>
+        <div class="ci-content">
+          <div class="ci-label">Electrical panel accessible và trong không gian</div>
+          <div class="ci-sub">Không bị locked ở tòa nhà ngoài tầm kiểm soát</div>
+        </div>
+        <span class="ci-pts">+2pts</span>
+      </div>
+    </div>
+
+    <div class="block" style="background:var(--cream);margin-top:8px">
+      <div class="block-title">Nước — Plumbing</div>
+    </div>
+    <div class="check-list">
+      <div class="check-item" onclick="toggleCheck(this,5)" data-pts="5">
+        <div class="ci-box"><span class="ci-check">✓</span></div>
+        <div class="ci-content">
+          <div class="ci-label">Có sink / đường nước trong không gian</div>
+          <div class="ci-sub">P6 Zone C cần sink cho cleaning. WC riêng là bonus.</div>
+        </div>
+        <span class="ci-pts">+5pts</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this,3)" data-pts="3">
+        <div class="ci-box"><span class="ci-check">✓</span></div>
+        <div class="ci-content">
+          <div class="ci-label">Cho phép thêm đường nước (plumbing addition)</div>
+          <div class="ci-sub">Nếu chưa có sink, contractor có thể thêm không?</div>
+        </div>
+        <span class="ci-pts">+3pts</span>
+      </div>
+    </div>
+
+    <div class="block" style="background:var(--cream);margin-top:8px">
+      <div class="block-title">Thông gió — Ventilation</div>
+    </div>
+    <div class="check-list">
+      <div class="check-item" onclick="toggleCheck(this,5)" data-pts="5">
+        <div class="ci-box"><span class="ci-check">✓</span></div>
+        <div class="ci-content">
+          <div class="ci-label">HVAC / air conditioning system có sẵn</div>
+          <div class="ci-sub">Central AC hoặc split unit. Cần maintain 22–24°C per SEN-005.</div>
+        </div>
+        <span class="ci-pts">+5pts</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this,3)" data-pts="3">
+        <div class="ci-box"><span class="ci-check">✓</span></div>
+        <div class="ci-content">
+          <div class="ci-label">Ventilation riêng cho back area (P6)</div>
+          <div class="ci-sub">P6 Zone C cần không khí riêng để không đưa cleaning fumes vào store</div>
+        </div>
+        <span class="ci-pts">+3pts</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this,2)" data-pts="2">
+        <div class="ci-box"><span class="ci-check">✓</span></div>
+        <div class="ci-content">
+          <div class="ci-label">Cửa sổ có thể mở / natural ventilation</div>
+          <div class="ci-sub">Backup ventilation. Afternoon reset (SEN-001) cần air flow.</div>
+        </div>
+        <span class="ci-pts">+2pts</span>
+      </div>
+    </div>
+
+    <div class="block" style="background:var(--cream);margin-top:8px">
+      <div class="block-title">Internet + Connectivity</div>
+    </div>
+    <div class="check-list">
+      <div class="check-item" onclick="toggleCheck(this,3)" data-pts="3">
+        <div class="ci-box"><span class="ci-check">✓</span></div>
+        <div class="ci-content">
+          <div class="ci-label">Fiber internet available (đường cáp quang)</div>
+          <div class="ci-sub">Cần cho POS, Zalo OA, CRM, camera. Minimum 50Mbps.</div>
+        </div>
+        <span class="ci-pts">+3pts</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this,2)" data-pts="2">
+        <div class="ci-box"><span class="ci-check">✓</span></div>
+        <div class="ci-content">
+          <div class="ci-label">4G/5G signal tốt (backup nếu WiFi fail)</div>
+          <div class="ci-sub">POS card reader cần connection. Check signal tại counter position.</div>
+        </div>
+        <span class="ci-pts">+2pts</span>
+      </div>
+    </div>
+
+    <div class="field-group" style="margin-top:4px">
+      <span class="fg-label">Ghi chú infrastructure</span>
+      <textarea class="fg-textarea" placeholder="Điện bao nhiêu A? AC cũ hay mới? Sink ở đâu? ISP nào trong tòa?..." id="infra-notes"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ⑤ RED FLAGS -->
+<div class="tab-section" id="tab-redflag">
+  <div class="section">
+    <div class="section-header">
+      <span class="sh-num">SPA-000 · Red Flags</span>
+      <div class="sh-title">Tự động loại — check nếu CÓ vấn đề</div>
+    </div>
+    <div class="note-box" style="margin:12px 20px 0">
+      <span class="note-label">Hướng dẫn</span>
+      Check (tick) vào bất kỳ vấn đề nào tồn tại tại địa điểm này. Mỗi red flag là deal-breaker tiềm năng.
+    </div>
+
+    <div style="margin-top:8px">
+      <div style="padding:8px 20px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--red);background:var(--rl)">Absolute deal-breakers — không thể khắc phục</div>
+      <div class="redflag-item" onclick="toggleFlag(this)">
+        <div class="rf-box"><span class="rf-x">✗</span></div>
+        <div class="rf-label">Không gian &lt;30m² — không đủ cho P1–P6 minimal layout</div>
+        <span class="rf-impact">STOP</span>
+      </div>
+      <div class="redflag-item" onclick="toggleFlag(this)">
+        <div class="rf-box"><span class="rf-x">✗</span></div>
+        <div class="rf-label">Chủ nhà không cho phép renovation / cải tạo — không thể setup theo SPA-002 spec</div>
+        <span class="rf-impact">STOP</span>
+      </div>
+      <div class="redflag-item" onclick="toggleFlag(this)">
+        <div class="rf-box"><span class="rf-x">✗</span></div>
+        <div class="rf-label">Không thể tách biệt P6 khỏi store area — cross-contamination risk</div>
+        <span class="rf-impact">STOP</span>
+      </div>
+      <div class="redflag-item" onclick="toggleFlag(this)">
+        <div class="rf-box"><span class="rf-x">✗</span></div>
+        <div class="rf-label">Mùi hàng xóm không khắc phục được (hải sản, đồ ăn mạnh, hóa chất)</div>
+        <span class="rf-impact">STOP</span>
+      </div>
+      <div class="redflag-item" onclick="toggleFlag(this)">
+        <div class="rf-box"><span class="rf-x">✗</span></div>
+        <div class="rf-label">Tiếng ồn không khắc phục được (công trường, karaoke, đường lớn không có buffer)</div>
+        <span class="rf-impact">STOP</span>
+      </div>
+      <div class="redflag-item" onclick="toggleFlag(this)">
+        <div class="rf-box"><span class="rf-x">✗</span></div>
+        <div class="rf-label">Trần &lt;2.7m — không đủ cho track lighting và không gian cảm giác đúng</div>
+        <span class="rf-impact">STOP</span>
+      </div>
+    </div>
+
+    <div style="margin-top:8px">
+      <div style="padding:8px 20px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);background:var(--al)">Serious concerns — cần đánh giá thêm</div>
+      <div class="redflag-item" onclick="toggleFlag(this)">
+        <div class="rf-box" style="border-color:rgba(133,79,11,.4)"><span class="rf-x">✗</span></div>
+        <div class="rf-label">Giá thuê &gt;15% projected monthly revenue — không sustainable</div>
+        <span class="rf-impact" style="color:var(--amber)">RISK</span>
+      </div>
+      <div class="redflag-item" onclick="toggleFlag(this)">
+        <div class="rf-box" style="border-color:rgba(133,79,11,.4)"><span class="rf-x">✗</span></div>
+        <div class="rf-label">Hợp đồng &lt;2 năm — renovation cost không amortize được</div>
+        <span class="rf-impact" style="color:var(--amber)">RISK</span>
+      </div>
+      <div class="redflag-item" onclick="toggleFlag(this)">
+        <div class="rf-box" style="border-color:rgba(133,79,11,.4)"><span class="rf-x">✗</span></div>
+        <div class="rf-label">Không có điện 3 pha hoặc không thể nâng amperage — lighting system sẽ bị giới hạn</div>
+        <span class="rf-impact" style="color:var(--amber)">RISK</span>
+      </div>
+      <div class="redflag-item" onclick="toggleFlag(this)">
+        <div class="rf-box" style="border-color:rgba(133,79,11,.4)"><span class="rf-x">✗</span></div>
+        <div class="rf-label">Hàng xóm trực tiếp là establishment không phù hợp với MORAQ aesthetic</div>
+        <span class="rf-impact" style="color:var(--amber)">RISK</span>
+      </div>
+      <div class="redflag-item" onclick="toggleFlag(this)">
+        <div class="rf-box" style="border-color:rgba(133,79,11,.4)"><span class="rf-x">✗</span></div>
+        <div class="rf-label">Không có sink hoặc không thể thêm đường nước</div>
+        <span class="rf-impact" style="color:var(--amber)">RISK</span>
+      </div>
+      <div class="redflag-item" onclick="toggleFlag(this)">
+        <div class="rf-box" style="border-color:rgba(133,79,11,.4)"><span class="rf-x">✗</span></div>
+        <div class="rf-label">Chủ nhà yêu cầu không được thay đổi sàn / trần / tường — giới hạn SPA-002</div>
+        <span class="rf-impact" style="color:var(--amber)">RISK</span>
+      </div>
+    </div>
+    <div id="redflag-summary" style="padding:12px 20px;font-family:'DM Mono',monospace;font-size:10px;color:var(--w3);margin-top:8px">Chưa có red flags được check.</div>
+  </div>
+</div>
+
+<!-- ⑥ SCORE -->
+<div class="tab-section" id="tab-score">
+  <div class="section">
+    <div class="section-header">
+      <span class="sh-num">SPA-000 · Score Card</span>
+      <div class="sh-title">Kết quả đánh giá</div>
+    </div>
+
+    <div class="score-breakdown" id="score-breakdown" style="margin:12px 0">
+      <div class="sb-row">
+        <div class="sb-label">Zone fit (6 zones)</div>
+        <div class="sb-bar-track"><div class="sb-bar-fill" id="bar-zones" style="width:0%;background:var(--teal)"></div></div>
+        <div class="sb-val" id="val-zones">0/30</div>
+      </div>
+      <div class="sb-row">
+        <div class="sb-label">Infrastructure</div>
+        <div class="sb-bar-track"><div class="sb-bar-fill" id="bar-infra" style="width:0%;background:var(--blue)"></div></div>
+        <div class="sb-val" id="val-infra">0/35</div>
+      </div>
+      <div class="sb-row">
+        <div class="sb-label">Location quality</div>
+        <div class="sb-bar-track"><div class="sb-bar-fill" id="bar-location" style="width:0%;background:var(--amber)"></div></div>
+        <div class="sb-val" id="val-location">0/15</div>
+      </div>
+      <div class="sb-row">
+        <div class="sb-label">Dimensions</div>
+        <div class="sb-bar-track"><div class="sb-bar-fill" id="bar-dims" style="width:0%;background:var(--purple)"></div></div>
+        <div class="sb-val" id="val-dims">0/20</div>
+      </div>
+    </div>
+
+    <div id="verdict-box" style="margin:0 0 8px"></div>
+
+    <div id="stopflag-box"></div>
+
+    <div class="summary-field">
+      <span class="sf-label">Địa điểm</span>
+      <span class="sf-val" id="sum-address">—</span>
+    </div>
+    <div class="summary-field">
+      <span class="sf-label">Diện tích</span>
+      <span class="sf-val" id="sum-area">—</span>
+    </div>
+    <div class="summary-field">
+      <span class="sf-label">Giá thuê / tháng</span>
+      <span class="sf-val" id="sum-rent">—</span>
+    </div>
+    <div class="summary-field">
+      <span class="sf-label">Red flags</span>
+      <span class="sf-val" id="sum-flags" style="color:var(--red)">—</span>
+    </div>
+    <div class="summary-field" style="border-top:2px solid var(--teal)">
+      <span class="sf-label" style="font-weight:500">Tổng điểm</span>
+      <span class="sf-val" id="sum-total" style="color:var(--teal);font-size:16px">—</span>
+    </div>
+
+    <div class="field-group" style="margin-top:8px">
+      <span class="fg-label">Overall recommendation</span>
+      <textarea class="fg-textarea" placeholder="Nên tiếp tục hay không? Tại sao? Vấn đề cần negotiate thêm..." id="rec-notes" style="min-height:100px"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ⑦ PHOTOS -->
+<div class="tab-section" id="tab-photos">
+  <div class="section">
+    <div class="section-header">
+      <span class="sh-num">SPA-000 · Photo Checklist</span>
+      <div class="sh-title">Chụp đủ trước khi rời</div>
+    </div>
+    <div class="note-box" style="margin:12px 20px 0">
+      <span class="note-label">Quan trọng</span>
+      Chụp ngay khi đi xem — không thể quay lại chỉ để chụp ảnh. Tất cả ảnh ghi chú tên địa điểm và ngày.
+    </div>
+
+    <div style="margin-top:8px">
+      <div style="padding:8px 20px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--w3);background:var(--cream)">Bắt buộc chụp</div>
+      <div class="photo-item" onclick="togglePhoto(this)">
+        <div class="ph-box"><span class="ph-icon">📸</span><span class="ph-done">✓</span></div>
+        <div><div style="font-size:14px;font-weight:500">Mặt tiền + biển hiệu khu vực</div><div style="font-size:12px;color:var(--w3)">Panoramic từ đường. Hàng xóm hai bên visible.</div></div>
+      </div>
+      <div class="photo-item" onclick="togglePhoto(this)">
+        <div class="ph-box"><span class="ph-icon">📸</span><span class="ph-done">✓</span></div>
+        <div><div style="font-size:14px;font-weight:500">Toàn bộ không gian — 4 góc</div><div style="font-size:12px;color:var(--w3)">4 góc của room. Thấy ceiling, floor, walls tất cả.</div></div>
+      </div>
+      <div class="photo-item" onclick="togglePhoto(this)">
+        <div class="ph-box"><span class="ph-icon">📸</span><span class="ph-done">✓</span></div>
+        <div><div style="font-size:14px;font-weight:500">Trần nhà — điện và HVAC</div><div style="font-size:12px;color:var(--w3)">Existing lighting, A/C vents, beams, electrical conduit.</div></div>
+      </div>
+      <div class="photo-item" onclick="togglePhoto(this)">
+        <div class="ph-box"><span class="ph-icon">📸</span><span class="ph-done">✓</span></div>
+        <div><div style="font-size:14px;font-weight:500">Electrical panel</div><div style="font-size:12px;color:var(--w3)">Breaker box: bao nhiêu circuits, amperage rating.</div></div>
+      </div>
+      <div class="photo-item" onclick="togglePhoto(this)">
+        <div class="ph-box"><span class="ph-icon">📸</span><span class="ph-done">✓</span></div>
+        <div><div style="font-size:14px;font-weight:500">Cửa ra vào + entrance path</div><div style="font-size:12px;color:var(--w3)">Chiều rộng cửa, hướng mở, vỉa hè trước cửa.</div></div>
+      </div>
+      <div class="photo-item" onclick="togglePhoto(this)">
+        <div class="ph-box"><span class="ph-icon">📸</span><span class="ph-done">✓</span></div>
+        <div><div style="font-size:14px;font-weight:500">Back area / P6 potential space</div><div style="font-size:12px;color:var(--w3)">Mọi không gian kín phía sau hoặc bên cạnh store front.</div></div>
+      </div>
+      <div class="photo-item" onclick="togglePhoto(this)">
+        <div class="ph-box"><span class="ph-icon">📸</span><span class="ph-done">✓</span></div>
+        <div><div style="font-size:14px;font-weight:500">Sink / WC / plumbing</div><div style="font-size:12px;color:var(--w3)">Nếu có. Nếu không có — chụp wall area dự kiến thêm.</div></div>
+      </div>
+      <div class="photo-item" onclick="togglePhoto(this)">
+        <div class="ph-box"><span class="ph-icon">📸</span><span class="ph-done">✓</span></div>
+        <div><div style="font-size:14px;font-weight:500">Natural light conditions</div><div style="font-size:12px;color:var(--w3)">Hướng cửa sổ. Chụp giữa ngày — direct sunlight hay không?</div></div>
+      </div>
+    </div>
+
+    <div style="margin-top:8px">
+      <div style="padding:8px 20px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--w3);background:var(--cream)">Nếu có thời gian</div>
+      <div class="photo-item" onclick="togglePhoto(this)">
+        <div class="ph-box"><span class="ph-icon">📸</span><span class="ph-done">✓</span></div>
+        <div><div style="font-size:14px;font-weight:500">Khu vực parking / đậu xe</div></div>
+      </div>
+      <div class="photo-item" onclick="togglePhoto(this)">
+        <div class="ph-box"><span class="ph-icon">📸</span><span class="ph-done">✓</span></div>
+        <div><div style="font-size:14px;font-weight:500">Floor condition</div><div style="font-size:12px;color:var(--w3)">Existing floor — có thể giữ không hay cần thay?</div></div>
+      </div>
+      <div class="photo-item" onclick="togglePhoto(this)">
+        <div class="ph-box"><span class="ph-icon">📸</span><span class="ph-done">✓</span></div>
+        <div><div style="font-size:14px;font-weight:500">Tường — material và condition</div><div style="font-size:12px;color:var(--w3)">Có thể khoan không? Tile, concrete, drywall?</div></div>
+      </div>
+      <div class="photo-item" onclick="togglePhoto(this)">
+        <div class="ph-box"><span class="ph-icon">📸</span><span class="ph-done">✓</span></div>
+        <div><div style="font-size:14px;font-weight:500">View từ street — ban đêm</div><div style="font-size:12px;color:var(--w3)">Nếu có thể quay lại buổi tối. Lighting khu vực, safety.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑧ NOTES -->
+<div class="tab-section" id="tab-notes">
+  <div class="section">
+    <div class="section-header">
+      <span class="sh-num">SPA-000 · Field Notes</span>
+      <div class="sh-title">Ghi chú tự do</div>
+    </div>
+    <div class="field-group">
+      <span class="fg-label">First impression — 10 giây đầu bước vào</span>
+      <textarea class="fg-textarea" placeholder="Cảm giác đầu tiên khi bước vào? MORAQ có thể work ở đây không? Direct gut feeling." id="n-first" style="min-height:80px"></textarea>
+    </div>
+    <div class="field-group">
+      <span class="fg-label">Scent environment check</span>
+      <textarea class="fg-textarea" placeholder="Có mùi gì hiện tại? Hàng xóm có mùi gì? Không khí lưu thông như thế nào?" id="n-scent" style="min-height:80px"></textarea>
+    </div>
+    <div class="field-group">
+      <span class="fg-label">Sound environment</span>
+      <textarea class="fg-textarea" placeholder="Tiếng ồn từ đâu? Có thể kiểm soát không? Nghe thấy gì từ bên ngoài?" id="n-sound" style="min-height:80px"></textarea>
+    </div>
+    <div class="field-group">
+      <span class="fg-label">Landlord impression</span>
+      <textarea class="fg-textarea" placeholder="Chủ nhà như thế nào? Linh hoạt? Hiểu về renovation? Có vẻ cooperative không?" id="n-landlord" style="min-height:80px"></textarea>
+    </div>
+    <div class="field-group">
+      <span class="fg-label">Renovation estimate (rough)</span>
+      <textarea class="fg-textarea" placeholder="Cần làm gì? Bao nhiêu lớn? Counter, lighting, P6 separation, flooring?" id="n-reno"></textarea>
+    </div>
+    <div class="field-group">
+      <span class="fg-label">Questions to follow up</span>
+      <textarea class="fg-textarea" placeholder="Cần hỏi thêm gì từ chủ nhà? Contractor cần xem gì? Cần đo lại gì?" id="n-followup"></textarea>
+    </div>
+    <div class="field-group">
+      <span class="fg-label">Final personal assessment</span>
+      <textarea class="fg-textarea" placeholder="Nên tiến hành không? Tại sao?" id="n-final" style="min-height:100px"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- SAVE BAR -->
+<div class="save-bar">
+  <button class="save-btn" onclick="saveForm()">💾 Lưu Survey</button>
+  <button class="print-btn" onclick="window.print()">Print</button>
+</div>
+
+<script>
+// ── TAB NAVIGATION ──
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tab-section').forEach(s=>s.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('tab-'+tab.dataset.tab).classList.add('active');
+    window.scrollTo(0,0);
+    updateScore();
+  });
+});
+
+// ── RATINGS ──
+const ratings = {};
+document.querySelectorAll('.star').forEach(star => {
+  star.addEventListener('click', () => {
+    const r = star.dataset.rating;
+    const v = parseInt(star.dataset.val);
+    ratings[r] = v;
+    document.querySelectorAll(`.star[data-rating="${r}"]`).forEach(s => {
+      s.classList.toggle('lit', parseInt(s.dataset.val) <= v);
+    });
+    updateScore();
+  });
+});
+
+// ── CHECKBOXES (infrastructure) ──
+let infraScore = 0;
+function toggleCheck(el, pts) {
+  el.classList.toggle('checked');
+  const sign = el.classList.contains('checked') ? 1 : -1;
+  infraScore += sign * pts;
+  updateScore();
+}
+
+// ── RED FLAGS ──
+let stopFlags = 0, riskFlags = 0;
+function toggleFlag(el) {
+  el.classList.toggle('flagged');
+  const items = document.querySelectorAll('.redflag-item.flagged');
+  stopFlags = document.querySelectorAll('.redflag-item.flagged .rf-impact[style*="STOP"], .redflag-item.flagged .rf-impact:not([style])').length;
+  // Actually count stop vs risk
+  let stops = 0, risks = 0;
+  items.forEach(item => {
+    const impact = item.querySelector('.rf-impact');
+    if(impact && impact.textContent.includes('STOP')) stops++;
+    else risks++;
+  });
+  stopFlags = stops; riskFlags = risks;
+  const summary = document.getElementById('redflag-summary');
+  if(items.length === 0) summary.textContent = 'Không có red flags. Tốt.';
+  else summary.innerHTML = `<span style="color:var(--red)">${stops} STOP</span> · <span style="color:var(--amber)">${risks} RISK</span> flags được check.`;
+  document.getElementById('sum-flags').textContent = items.length > 0 ? `${stops} stop, ${risks} risk` : '✓ Sạch';
+  document.getElementById('sum-flags').style.color = stops > 0 ? 'var(--red)' : risks > 0 ? 'var(--amber)' : 'var(--teal)';
+  updateScore();
+}
+
+// ── ZONE FIT ──
+const zoneFit = {};
+function setFit(zone, val, btn) {
+  document.querySelectorAll(`[onclick*="'${zone}'"]`).forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  zoneFit[zone] = val;
+  updateScore();
+}
+
+// ── AREA CHECK ──
+function calcArea() {
+  const l = parseFloat(document.getElementById('m-length').value) || 0;
+  const w = parseFloat(document.getElementById('m-width').value) || 0;
+  if(l && w) document.getElementById('m-area').value = (l*w).toFixed(1);
+  checkArea();
+}
+
+function checkArea() {
+  const area = parseFloat(document.getElementById('m-area').value) || 0;
+  const el = document.getElementById('area-check');
+  if(!area){ el.textContent='Nhập diện tích để xem assessment.'; return; }
+  if(area < 30) el.innerHTML='<span style="color:var(--red)">✗ Quá nhỏ (&lt;30m²) — không khả thi cho MORAQ layout.</span>';
+  else if(area < 35) el.innerHTML='<span style="color:var(--amber)">⚠ 30–35m² — Có thể work nhưng sẽ rất tight. P6 sẽ compromise.</span>';
+  else if(area < 45) el.innerHTML='<span style="color:var(--teal)">✓ 35–45m² — Minimum viable. Cần thiết kế kỹ. OK cho Phase 1.</span>';
+  else if(area < 60) el.innerHTML='<span style="color:var(--teal)">✓✓ 45–60m² — Sweet spot. Comfortable cho tất cả 6 zones.</span>';
+  else el.innerHTML='<span style="color:var(--amber)">⚠ &gt;60m² — Rộng. Check scent distribution cost + rent value.</span>';
+  updateScore();
+}
+
+function checkCeiling() {
+  const h = parseFloat(document.getElementById('m-ceiling').value) || 0;
+  document.getElementById('ceiling-warning').style.display = (h > 0 && h < 3) ? 'block' : 'none';
+  updateScore();
+}
+
+// ── PHOTOS ──
+function togglePhoto(el) {
+  el.classList.toggle('done');
+}
+
+// ── SCORE CALCULATION ──
+function updateScore() {
+  let total = 0;
+
+  // Zone fit: 30pts (5 per zone, P3=10)
+  let zoneScore = 0;
+  const zoneWeights = {P1:4,P2:5,P3:10,P4:4,P5:2,P6:5};
+  Object.entries(zoneFit).forEach(([z,v]) => {
+    const w = zoneWeights[z] || 4;
+    if(v==='yes') zoneScore += w;
+    else if(v==='maybe') zoneScore += w*0.5;
+  });
+  zoneScore = Math.min(30, zoneScore);
+  document.getElementById('bar-zones').style.width = (zoneScore/30*100)+'%';
+  document.getElementById('val-zones').textContent = Math.round(zoneScore)+'/30';
+  total += zoneScore;
+
+  // Infrastructure: up to 35pts (from checkboxes)
+  const infraCapped = Math.min(35, infraScore);
+  document.getElementById('bar-infra').style.width = (infraCapped/35*100)+'%';
+  document.getElementById('val-infra').textContent = infraCapped+'/35';
+  total += infraCapped;
+
+  // Location: up to 15pts (from stars, 5 each)
+  const locScore = Math.min(15, Math.round(
+    ((ratings.traffic||0) + (ratings.neighbor||0) + (ratings.access||0)) / 3 * 5
+  ));
+  document.getElementById('bar-location').style.width = (locScore/15*100)+'%';
+  document.getElementById('val-location').textContent = locScore+'/15';
+  total += locScore;
+
+  // Dimensions: up to 20pts
+  const area = parseFloat(document.getElementById('m-area').value) || 0;
+  const ceiling = parseFloat(document.getElementById('m-ceiling').value) || 0;
+  let dimScore = 0;
+  if(area >= 45) dimScore += 12;
+  else if(area >= 35) dimScore += 8;
+  else if(area >= 30) dimScore += 4;
+  if(ceiling >= 3.5) dimScore += 8;
+  else if(ceiling >= 3.0) dimScore += 6;
+  else if(ceiling >= 2.7) dimScore += 3;
+  dimScore = Math.min(20, dimScore);
+  document.getElementById('bar-dims').style.width = (dimScore/20*100)+'%';
+  document.getElementById('val-dims').textContent = dimScore+'/20';
+  total += dimScore;
+
+  total = Math.round(total);
+  document.getElementById('totalScore').textContent = total;
+  document.getElementById('sum-total').textContent = total + '/100';
+
+  // Verdict
+  const vb = document.getElementById('verdict-box');
+  if(stopFlags > 0){
+    vb.innerHTML='<div class="verdict" style="background:var(--rl)"><div class="verdict-emoji">🚫</div><div class="verdict-title" style="color:var(--red)">Không tiến hành</div><div class="verdict-desc">Có '+stopFlags+' deal-breaker không thể khắc phục. Tìm địa điểm khác.</div></div>';
+  } else if(total >= 75){
+    vb.innerHTML='<div class="verdict" style="background:var(--tl)"><div class="verdict-emoji">✅</div><div class="verdict-title" style="color:var(--teal)">Tiến hành thương lượng</div><div class="verdict-desc">Điểm tốt. Địa điểm phù hợp với MORAQ spec. Lên lịch visit lần 2 với contractor.</div></div>';
+  } else if(total >= 55){
+    vb.innerHTML='<div class="verdict" style="background:var(--al)"><div class="verdict-emoji">🤔</div><div class="verdict-title" style="color:var(--amber)">Cần đánh giá thêm</div><div class="verdict-desc">Tiềm năng nhưng có vấn đề. List ra điều cần negotiate hoặc khắc phục trước khi quyết định.</div></div>';
+  } else if(total >= 35){
+    vb.innerHTML='<div class="verdict" style="background:var(--rl)"><div class="verdict-emoji">⚠️</div><div class="verdict-title">Không lý tưởng</div><div class="verdict-desc">Điểm thấp. Nhiều vấn đề cần khắc phục. Chỉ xem xét nếu không có lựa chọn nào tốt hơn.</div></div>';
+  } else if(total > 0){
+    vb.innerHTML='<div class="verdict" style="background:rgba(163,45,45,.06)"><div class="verdict-emoji">❌</div><div class="verdict-title" style="color:var(--red)">Không phù hợp</div><div class="verdict-desc">Địa điểm không đáp ứng requirements của MORAQ.</div></div>';
+  } else {
+    vb.innerHTML='<div class="verdict" style="background:var(--cream);border:1px solid var(--linen)"><div class="verdict-emoji">📋</div><div class="verdict-title" style="color:var(--w3)">Hoàn thiện đánh giá</div><div class="verdict-desc">Điền đầy đủ các tabs để xem kết quả.</div></div>';
+  }
+
+  // Summary
+  const addr = document.getElementById('f-address').value;
+  const rent = document.getElementById('f-rent').value;
+  document.getElementById('sum-address').textContent = addr || '—';
+  document.getElementById('sum-area').textContent = area ? area+'m²' : '—';
+  document.getElementById('sum-rent').textContent = rent ? parseInt(rent).toLocaleString()+' VND/tháng' : '—';
+}
+
+// ── SAVE ──
+function saveForm() {
+  const data = {
+    address: document.getElementById('f-address').value,
+    date: document.getElementById('f-date').value,
+    surveyor: document.getElementById('f-surveyor').value,
+    rent: document.getElementById('f-rent').value,
+    area: document.getElementById('m-area').value,
+    score: document.getElementById('totalScore').textContent,
+    saved: new Date().toISOString()
+  };
+  try {
+    const key = 'spa000_' + Date.now();
+    localStorage.setItem(key, JSON.stringify(data));
+    alert('✓ Survey đã lưu: ' + (data.address || 'Không tên') + '\nĐiểm: ' + data.score + '/100');
+  } catch(e) {
+    // Fallback: copy to clipboard info
+    const text = `MORAQ SPA-000 Survey\n${data.address}\nDate: ${data.date}\nArea: ${data.area}m²\nRent: ${data.rent}\nScore: ${data.score}/100`;
+    navigator.clipboard?.writeText(text).then(() => alert('✓ Copied to clipboard'));
+  }
+}
+
+// Auto-update score when inputs change
+['f-address','f-rent','m-area','m-ceiling','m-length','m-width'].forEach(id => {
+  const el = document.getElementById(id);
+  if(el) el.addEventListener('input', updateScore);
+});
+
+updateScore();
+</script>
+</body>
+</html>

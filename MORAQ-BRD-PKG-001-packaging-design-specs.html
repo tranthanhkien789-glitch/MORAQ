@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MORAQ — PKG-001 · Packaging Design Specs</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1A1916;--teal:#0F6E56;--amber:#854F0B;--cream:#FAF9F6;--linen:#E8DFD0;--stone:#C8C0B4;--wood-dk:#3E3020;--wood-lt:#B8A88C;--metal:#4A4A4A;--dim:#854F0B;--call:#0F6E56}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:#F4F3EF;color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased}
+.hdr{background:var(--ink);padding:2rem 2.5rem 1.2rem}
+.hdr-r{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.12em;color:var(--cream);opacity:.35;margin-bottom:.5rem;text-transform:uppercase}
+.hdr h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:1.5rem;color:var(--cream);line-height:1.35}
+.hdr h1 em{font-style:italic;color:var(--linen);opacity:.6}
+.hdr-d{font-size:.75rem;color:var(--linen);opacity:.4;margin-top:.4rem;max-width:760px;line-height:1.7}
+.tabs{display:flex;background:var(--ink);padding:0 2.5rem;overflow-x:auto;border-bottom:1px solid rgba(232,223,208,.08);gap:.1rem}
+.tb{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.06em;text-transform:uppercase;color:var(--cream);opacity:.45;background:none;border:none;border-bottom:2px solid transparent;padding:.6rem .7rem;cursor:pointer;transition:all .2s;white-space:nowrap}
+.tb:hover{opacity:.7}.tb.on{opacity:1;color:var(--teal);border-bottom-color:var(--teal)}
+.pnl{display:none;padding:1.4rem 2.5rem 2rem;max-width:1020px;margin:0 auto}.pnl.on{display:block}
+h2{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.25rem;margin:1.6rem 0 .6rem;padding-top:1.3rem;border-top:1px solid rgba(0,0,0,.06)}h2:first-child{border-top:none;padding-top:0}
+h3{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1rem;margin:1.1rem 0 .4rem;color:var(--teal)}
+p{font-size:.78rem;opacity:.55;margin-bottom:.55rem;line-height:1.8}p strong{opacity:1;font-weight:600}
+.dwg{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:6px;padding:1rem;margin:.7rem 0;overflow-x:auto}
+.dwg-label{font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);opacity:.3;margin-bottom:.5rem}
+.tbl{width:100%;border-collapse:collapse;margin:.5rem 0;font-size:.72rem}.tbl th{font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.06em;text-transform:uppercase;text-align:left;padding:.4rem .5rem;background:var(--ink);color:var(--cream);opacity:.6}.tbl td{padding:.35rem .5rem;border-bottom:1px solid rgba(0,0,0,.04);vertical-align:top;line-height:1.5}.tbl td:first-child{font-weight:500;width:80px}.tbl tr:nth-child(even) td{background:#FAFAF8}
+.ig{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin:.4rem 0}
+.it{background:#FAFAF8;border:1px solid rgba(0,0,0,.04);border-radius:4px;padding:.5rem .7rem}.it-n{font-family:'DM Mono',monospace;font-size:.52rem;font-weight:500;margin-bottom:.1rem;color:var(--ink)}.it-s{font-size:.66rem;opacity:.4;line-height:1.5}
+.note{background:var(--ink);color:var(--linen);padding:.5rem .8rem;border-radius:4px;margin:.5rem 0;font-size:.7rem;line-height:1.7;opacity:.7}.note strong{color:var(--cream);opacity:1}
+.warn{background:rgba(133,79,11,.06);border-left:3px solid var(--amber);padding:.45rem .75rem;margin:.5rem 0;font-size:.7rem;line-height:1.6;color:var(--ink);opacity:.55}
+.L{font-family:'DM Mono',monospace;letter-spacing:.3px}
+.ft{max-width:1020px;margin:1.2rem auto;padding:0 2.5rem;display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:.42rem;letter-spacing:.08em;opacity:.15;text-transform:uppercase}
+@media(max-width:700px){.hdr,.tabs,.pnl{padding-left:1rem;padding-right:1rem}.ig{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="hdr">
+<div class="hdr-r"><span>MORAQ</span><span>PKG-001 · V1.0 · APR 2026</span></div>
+<h1>Packaging Design Specs<br><em>Box · Tissue · Ribbon · Bag · Unboxing Sequence</em></h1>
+<div class="hdr-d">Packaging là "màn cuối" của ceremony. Khách ngồi front counter xem staff gói. Mỗi bước có mục đích. Ref: SOP-004 Counter Ritual, FDS-01 Fast-Packing.</div>
+</div>
+<div class="tabs">
+<button class="tb on" data-t="bx">Box Sizes</button>
+<button class="tb" data-t="ts">Tissue + Fold</button>
+<button class="tb" data-t="rb">Ribbon</button>
+<button class="tb" data-t="bg">Gift Bag</button>
+<button class="tb" data-t="ub">Unboxing</button>
+<button class="tb" data-t="as">Assembly SOP</button>
+</div>
+
+<!-- ═══ BOX SIZES ═══ -->
+<div class="pnl on" id="p-bx">
+<h2>Box Sizes — 4 Sizes per Bottle Type</h2>
+<p>Rigid box 2-piece (base + lid). Không magnetic. Không ribbon trên box. Exterior: Ink #1A1916 matte soft-touch. Interior: Cream #FAF9F6 uncoated.</p>
+
+<div class="dwg">
+<div class="dwg-label">4 Box Sizes · Front + Open View</div>
+<svg width="100%" viewBox="0 0 720 210" xmlns="http://www.w3.org/2000/svg">
+<!-- SIZE S -->
+<rect x="30" y="30" width="55" height="85" rx="3" fill="var(--ink)" opacity=".5" stroke="var(--ink)" stroke-width=".5"/>
+<text x="58" y="78" text-anchor="middle" style="font-family:'Cormorant Garamond',serif;font-size:7px;fill:var(--cream);opacity:.5;letter-spacing:2px">M</text>
+<text x="58" y="125" text-anchor="middle" class="L" style="font-size:7px;fill:var(--ink);font-weight:500">S</text>
+<text x="58" y="138" text-anchor="middle" class="L" style="font-size:5px;fill:var(--dim)">70×70×110</text>
+<text x="58" y="150" text-anchor="middle" class="L" style="font-size:4.5px;fill:#888">10–15ml</text>
+<text x="58" y="160" text-anchor="middle" class="L" style="font-size:4.5px;fill:#888">Travel / Sample</text>
+
+<!-- SIZE M -->
+<rect x="130" y="20" width="65" height="100" rx="3" fill="var(--ink)" opacity=".35" stroke="var(--ink)" stroke-width=".5"/>
+<text x="163" y="75" text-anchor="middle" style="font-family:'Cormorant Garamond',serif;font-size:8px;fill:var(--cream);opacity:.5;letter-spacing:2px">M</text>
+<text x="163" y="130" text-anchor="middle" class="L" style="font-size:7px;fill:var(--ink);font-weight:500">M</text>
+<text x="163" y="143" text-anchor="middle" class="L" style="font-size:5px;fill:var(--dim)">80×80×130</text>
+<text x="163" y="155" text-anchor="middle" class="L" style="font-size:4.5px;fill:#888">30ml</text>
+<text x="163" y="165" text-anchor="middle" class="L" style="font-size:4.5px;fill:#888">Standard EDP</text>
+
+<!-- SIZE L -->
+<rect x="245" y="12" width="75" height="115" rx="3" fill="var(--ink)" opacity=".4" stroke="var(--ink)" stroke-width=".5"/>
+<text x="283" y="75" text-anchor="middle" style="font-family:'Cormorant Garamond',serif;font-size:9px;fill:var(--cream);opacity:.5;letter-spacing:2px">M</text>
+<text x="283" y="138" text-anchor="middle" class="L" style="font-size:7px;fill:var(--ink);font-weight:500">L</text>
+<text x="283" y="151" text-anchor="middle" class="L" style="font-size:5px;fill:var(--dim)">90×90×150</text>
+<text x="283" y="163" text-anchor="middle" class="L" style="font-size:4.5px;fill:#888">50ml</text>
+<text x="283" y="173" text-anchor="middle" class="L" style="font-size:4.5px;fill:#888">Hero size</text>
+
+<!-- SIZE XL -->
+<rect x="375" y="5" width="85" height="125" rx="3" fill="var(--ink)" opacity=".25" stroke="var(--ink)" stroke-width=".5"/>
+<text x="418" y="72" text-anchor="middle" style="font-family:'Cormorant Garamond',serif;font-size:10px;fill:var(--cream);opacity:.5;letter-spacing:2px">M</text>
+<text x="418" y="142" text-anchor="middle" class="L" style="font-size:7px;fill:var(--ink);font-weight:500">XL</text>
+<text x="418" y="155" text-anchor="middle" class="L" style="font-size:5px;fill:var(--dim)">100×100×170</text>
+<text x="418" y="167" text-anchor="middle" class="L" style="font-size:4.5px;fill:#888">100ml</text>
+<text x="418" y="177" text-anchor="middle" class="L" style="font-size:4.5px;fill:#888">Gift / Parfum</text>
+
+<!-- OPEN VIEW (L size) -->
+<text x="590" y="8" text-anchor="middle" class="L" style="font-size:6px;fill:#888;letter-spacing:1px">OPEN VIEW · SIZE L</text>
+<!-- Base -->
+<rect x="520" y="18" width="80" height="110" rx="3" fill="var(--ink)" opacity=".2" stroke="var(--ink)" stroke-width=".5"/>
+<!-- Interior cream -->
+<rect x="524" y="22" width="72" height="102" rx="2" fill="var(--cream)" stroke="var(--linen)" stroke-width=".4"/>
+<!-- Bottle recess (foam insert) -->
+<rect x="540" y="40" width="40" height="65" rx="8" fill="var(--linen)" opacity=".5" stroke="var(--linen)" stroke-width=".4"/>
+<text x="560" y="78" text-anchor="middle" class="L" style="font-size:4.5px;fill:#999">CHAI</text>
+<!-- Card slot -->
+<rect x="530" y="108" width="50" height="10" rx="1" fill="var(--cream)" stroke="var(--linen)" stroke-width=".3"/>
+<text x="555" y="116" text-anchor="middle" class="L" style="font-size:3.5px;fill:#999">INSERT SLOT</text>
+<!-- Lid offset -->
+<rect x="515" y="135" width="82" height="12" rx="2" fill="var(--ink)" opacity=".3"/>
+<text x="556" y="143" text-anchor="middle" class="L" style="font-size:4px;fill:var(--cream);opacity:.5">LID</text>
+
+<!-- Labels -->
+<text x="610" y="45" class="L" style="font-size:5px;fill:var(--call)">CREAM INTERIOR</text>
+<text x="610" y="57" class="L" style="font-size:5px;fill:var(--call);opacity:.5">Uncoated · Soft feel</text>
+<text x="610" y="75" class="L" style="font-size:5px;fill:var(--dim)">FOAM INSERT</text>
+<text x="610" y="87" class="L" style="font-size:5px;fill:var(--dim);opacity:.5">Die-cut per bottle</text>
+<text x="610" y="108" class="L" style="font-size:5px;fill:#888">INSERT CARD</text>
+<text x="610" y="120" class="L" style="font-size:5px;fill:#888;opacity:.5">SWS-11 · Care + QR</text>
+
+<!-- Material spec bottom -->
+<text x="360" y="195" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--ink);opacity:.4">RIGID 2-PIECE · INK #1A1916 EXTERIOR · MATTE SOFT-TOUCH LAMINATE · CREAM #FAF9F6 INTERIOR</text>
+<text x="360" y="207" text-anchor="middle" class="L" style="font-size:5px;fill:var(--ink);opacity:.3">DEBOSSED MORAQ MARK · LID TOP CENTER · NO FOIL · NO GLOSS · NO RIBBON ON BOX</text>
+</svg>
+</div>
+
+<table class="tbl">
+<tr><th>Size</th><th>Interior (mm)</th><th>Exterior (mm)</th><th>Bottles</th><th>Foam insert</th></tr>
+<tr><td>S</td><td>66×66×106</td><td>70×70×110</td><td>10–15ml travel</td><td>Die-cut Ø35 × H80</td></tr>
+<tr><td>M</td><td>76×76×126</td><td>80×80×130</td><td>30ml standard</td><td>Die-cut Ø45 × H100</td></tr>
+<tr><td>L</td><td>86×86×146</td><td>90×90×150</td><td>50ml hero</td><td>Die-cut Ø50 × H120</td></tr>
+<tr><td>XL</td><td>96×96×166</td><td>100×100×170</td><td>100ml gift/parfum</td><td>Die-cut Ø55 × H140</td></tr>
+</table>
+
+<h3>Box Construction</h3>
+<div class="ig">
+<div class="it"><div class="it-n">Structure</div><div class="it-s">Rigid 2-piece (base + lid). 2mm greyboard wrapped. Lid depth 25mm. Tight fit — slight resistance khi mở.</div></div>
+<div class="it"><div class="it-n">Exterior</div><div class="it-s">Ink #1A1916 paper wrap · Matte soft-touch laminate · MORAQ debossed (blind, no foil) lid top center</div></div>
+<div class="it"><div class="it-n">Interior</div><div class="it-s">Cream #FAF9F6 uncoated paper · Foam insert die-cut per bottle shape · Insert card slot bottom</div></div>
+<div class="it"><div class="it-n">Deboss</div><div class="it-s">MORAQ · Cormorant Garamond Light · Letter-spacing 4px · Blind deboss (no ink, no foil) · Tactile only</div></div>
+</div>
+
+<div class="note"><strong>Tight fit rule:</strong> Lid phải có slight resistance khi tháo — không rơi tự do, không quá chặt cần lực. Khoảng 1–2 giây để tháo lid = đúng. Đây là "anticipation moment" trong unboxing.</div>
+</div>
+
+<!-- ═══ TISSUE + FOLD ═══ -->
+<div class="pnl" id="p-ts">
+<h2>Tissue Paper + Fold Pattern</h2>
+<p>Tissue quấn chai trước khi đặt vào box. Fold pattern cố định — staff training 1 lần, muscle memory.</p>
+
+<div class="dwg">
+<div class="dwg-label">Tissue Fold · 5-Step Sequence</div>
+<svg width="100%" viewBox="0 0 720 140" xmlns="http://www.w3.org/2000/svg">
+<!-- Step 1: Flat tissue -->
+<rect x="20" y="22" width="105" height="72" rx="2" fill="var(--linen)" opacity=".5" stroke="var(--stone)" stroke-width=".6"/>
+<text x="73" y="62" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--ink);opacity:.25">TISSUE FLAT</text>
+<circle cx="73" cy="10" r="9" fill="var(--teal)" opacity=".15" stroke="var(--teal)" stroke-width=".5"/><text x="73" y="13" text-anchor="middle" class="L" style="font-size:7px;fill:var(--teal)">1</text>
+<text x="73" y="108" text-anchor="middle" class="L" style="font-size:5px;fill:#777">Trải phẳng</text>
+<text x="73" y="118" text-anchor="middle" class="L" style="font-size:5px;fill:#777">trên counter</text>
+
+<!-- Arrow -->
+<text x="137" y="58" text-anchor="middle" class="L" style="font-size:8px;fill:var(--teal);opacity:.2">→</text>
+
+<!-- Step 2: Bottle on tissue -->
+<rect x="155" y="22" width="105" height="72" rx="2" fill="var(--linen)" opacity=".5" stroke="var(--stone)" stroke-width=".6"/>
+<rect x="192" y="30" width="22" height="55" rx="6" fill="var(--ink)" opacity=".2" stroke="var(--ink)" stroke-width=".4"/>
+<circle cx="208" cy="10" r="9" fill="var(--teal)" opacity=".15" stroke="var(--teal)" stroke-width=".5"/><text x="208" y="13" text-anchor="middle" class="L" style="font-size:7px;fill:var(--teal)">2</text>
+<text x="208" y="108" text-anchor="middle" class="L" style="font-size:5px;fill:#777">Đặt chai</text>
+<text x="208" y="118" text-anchor="middle" class="L" style="font-size:5px;fill:#777">giữa tissue</text>
+
+<text x="272" y="58" text-anchor="middle" class="L" style="font-size:8px;fill:var(--teal);opacity:.2">→</text>
+
+<!-- Step 3: Side folds in -->
+<rect x="290" y="24" width="48" height="68" rx="2" fill="var(--linen)" opacity=".55" stroke="var(--stone)" stroke-width=".6"/>
+<rect x="303" y="30" width="22" height="55" rx="6" fill="var(--ink)" opacity=".15"/>
+<!-- Left fold flap -->
+<rect x="285" y="22" width="16" height="72" rx="1" fill="var(--linen)" opacity=".35" stroke="var(--stone)" stroke-width=".3"/>
+<!-- Right fold flap -->
+<rect x="327" y="22" width="16" height="72" rx="1" fill="var(--linen)" opacity=".35" stroke="var(--stone)" stroke-width=".3"/>
+<circle cx="365" cy="10" r="9" fill="var(--teal)" opacity=".15" stroke="var(--teal)" stroke-width=".5"/><text x="365" y="13" text-anchor="middle" class="L" style="font-size:7px;fill:var(--teal)">3</text>
+<text x="365" y="108" text-anchor="middle" class="L" style="font-size:5px;fill:#777">Gập 2 bên</text>
+<text x="365" y="118" text-anchor="middle" class="L" style="font-size:5px;fill:#777">vào giữa</text>
+
+<text x="408" y="58" text-anchor="middle" class="L" style="font-size:8px;fill:var(--teal);opacity:.2">→</text>
+
+<!-- Step 4: Bottom tuck up -->
+<rect x="420" y="24" width="48" height="55" rx="2" fill="var(--linen)" opacity=".55" stroke="var(--stone)" stroke-width=".6"/>
+<!-- Bottom flap folding up -->
+<rect x="418" y="68" width="52" height="18" rx="2" fill="var(--linen)" opacity=".4" stroke="var(--stone)" stroke-width=".4"/>
+<path d="M430,68 L430,79 M444,68 L444,79 M458,68 L458,79" stroke="var(--stone)" stroke-width=".3" opacity=".3"/>
+<circle cx="495" cy="10" r="9" fill="var(--teal)" opacity=".15" stroke="var(--teal)" stroke-width=".5"/><text x="495" y="13" text-anchor="middle" class="L" style="font-size:7px;fill:var(--teal)">4</text>
+<text x="495" y="108" text-anchor="middle" class="L" style="font-size:5px;fill:#777">Gập đáy</text>
+<text x="495" y="118" text-anchor="middle" class="L" style="font-size:5px;fill:#777">cuộn lên</text>
+
+<text x="538" y="58" text-anchor="middle" class="L" style="font-size:8px;fill:var(--teal);opacity:.2">→</text>
+
+<!-- Step 5: Top twist, ready for box -->
+<rect x="555" y="30" width="42" height="48" rx="2" fill="var(--linen)" opacity=".55" stroke="var(--stone)" stroke-width=".6"/>
+<!-- Top twist -->
+<polygon points="565,30 587,30 580,16 572,16" fill="var(--linen)" opacity=".45" stroke="var(--stone)" stroke-width=".4"/>
+<line x1="576" y1="16" x2="576" y2="10" stroke="var(--stone)" stroke-width=".4" opacity=".3"/>
+<circle cx="625" cy="10" r="9" fill="var(--teal)" opacity=".15" stroke="var(--teal)" stroke-width=".5"/><text x="625" y="13" text-anchor="middle" class="L" style="font-size:7px;fill:var(--teal)">5</text>
+<text x="625" y="108" text-anchor="middle" class="L" style="font-size:5px;fill:#777">Xoắn nhẹ</text>
+<text x="625" y="118" text-anchor="middle" class="L" style="font-size:5px;fill:#777">đỉnh → Box</text>
+
+<text x="360" y="136" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--ink);opacity:.35">~15 GIÂY · KHÁCH XEM TỪ COUNTER · "CRAFT MOMENT"</text>
+</svg>
+</div>
+
+<h3>Tissue Specs</h3>
+<table class="tbl">
+<tr><th>Size</th><th>Tissue sheet (mm)</th><th>GSM</th><th>Color</th><th>For box</th></tr>
+<tr><td>S</td><td>350 × 350</td><td>17gsm</td><td>Cream #FAF9F6</td><td>S box</td></tr>
+<tr><td>M</td><td>450 × 450</td><td>17gsm</td><td>Cream #FAF9F6</td><td>M box</td></tr>
+<tr><td>L</td><td>500 × 500</td><td>17gsm</td><td>Cream #FAF9F6</td><td>L box</td></tr>
+<tr><td>XL</td><td>550 × 550</td><td>17gsm</td><td>Cream #FAF9F6</td><td>XL box</td></tr>
+</table>
+
+<div class="ig">
+<div class="it"><div class="it-n">Paper</div><div class="it-s">Acid-free tissue 17gsm · Cream #FAF9F6 · Uncoated · Fragrance-neutral (không mùi giấy)</div></div>
+<div class="it"><div class="it-n">Print</div><div class="it-s">MORAQ watermark pattern · Tonal (cream-on-cream) · Chỉ thấy khi nghiêng giấy dưới ánh sáng</div></div>
+<div class="it"><div class="it-n">Fold rule</div><div class="it-s">Cùng fold pattern cho mọi size. Staff training 1 lần. Muscle memory sau 3 ngày.</div></div>
+<div class="it"><div class="it-n">Fragrance-neutral</div><div class="it-s">Tissue PHẢI fragrance-neutral. Không tissue thơm. Không tissue có mùi giấy mạnh. Test: ngửi tissue ở 10cm = không mùi.</div></div>
+</div>
+</div>
+
+<!-- ═══ RIBBON ═══ -->
+<div class="pnl" id="p-rb">
+<h2>Ribbon — Binding the Ceremony</h2>
+
+<div class="dwg">
+<div class="dwg-label">Ribbon Application · Section + Bow Detail</div>
+<svg width="100%" viewBox="0 0 650 130" xmlns="http://www.w3.org/2000/svg">
+<!-- Box with ribbon -->
+<rect x="60" y="25" width="80" height="80" rx="3" fill="var(--ink)" opacity=".6" stroke="var(--ink)" stroke-width=".5"/>
+<!-- Ribbon horizontal -->
+<rect x="55" y="58" width="90" height="5" rx="1" fill="var(--teal)" opacity=".3"/>
+<!-- Ribbon vertical -->
+<rect x="95" y="20" width="5" height="90" rx="1" fill="var(--teal)" opacity=".6"/>
+<!-- Bow (simplified) -->
+<ellipse cx="97" cy="60" rx="12" ry="6" fill="none" stroke="var(--teal)" stroke-width=".8" opacity=".6"/>
+<ellipse cx="97" cy="60" rx="6" ry="3" fill="var(--teal)" opacity=".6"/>
+<!-- Tails -->
+<line x1="92" y1="63" x2="82" y2="80" stroke="var(--teal)" stroke-width=".8" opacity=".6"/>
+<line x1="102" y1="63" x2="112" y2="80" stroke="var(--teal)" stroke-width=".8" opacity=".6"/>
+
+<text x="100" y="120" text-anchor="middle" class="L" style="font-size:5px;fill:var(--teal)">SIMPLE BOW · KHÔNG PHỨC TẠP</text>
+
+<!-- Ribbon specs -->
+<text x="250" y="30" class="L" style="font-size:6.5px;fill:var(--ink);font-weight:500;opacity:.6">RIBBON SPECS</text>
+<text x="250" y="48" class="L" style="font-size:5.5px;fill:var(--teal)">Material: Grosgrain 15mm width</text>
+<text x="250" y="62" class="L" style="font-size:5.5px;fill:var(--teal);opacity:.6">Color: Teal #0F6E56 (primary)</text>
+<text x="250" y="76" class="L" style="font-size:5.5px;fill:var(--ink);opacity:.4">Alt: Ink #1A1916 (secondary, khi hết teal)</text>
+<text x="250" y="92" class="L" style="font-size:5.5px;fill:var(--dim)">Cut: Angled 45° both ends</text>
+<text x="250" y="106" class="L" style="font-size:5.5px;fill:var(--dim);opacity:.5">Bow: Simple single bow · 2 tails ~60mm</text>
+
+<!-- Cross-section -->
+<text x="520" y="30" text-anchor="middle" class="L" style="font-size:5px;fill:#888;letter-spacing:1px">RIBBON SECTION 1:1</text>
+<rect x="490" y="40" width="60" height="6" rx="1" fill="var(--teal)" opacity=".4" stroke="var(--teal)" stroke-width=".5"/>
+<line x1="490" y1="55" x2="550" y2="55" stroke="var(--dim)" stroke-width=".3"/>
+<text x="520" y="62" text-anchor="middle" class="L" style="font-size:5px;fill:var(--dim)">15mm width</text>
+<!-- Grosgrain texture -->
+<g opacity=".6" stroke="var(--teal)" stroke-width=".2">
+<line x1="495" y1="41" x2="495" y2="45"/><line x1="500" y1="41" x2="500" y2="45"/><line x1="505" y1="41" x2="505" y2="45"/><line x1="510" y1="41" x2="510" y2="45"/><line x1="515" y1="41" x2="515" y2="45"/><line x1="520" y1="41" x2="520" y2="45"/><line x1="525" y1="41" x2="525" y2="45"/><line x1="530" y1="41" x2="530" y2="45"/><line x1="535" y1="41" x2="535" y2="45"/><line x1="540" y1="41" x2="540" y2="45"/><line x1="545" y1="41" x2="545" y2="45"/>
+</g>
+<text x="520" y="78" text-anchor="middle" class="L" style="font-size:5px;fill:var(--teal);opacity:.5">GROSGRAIN TEXTURE</text>
+<text x="520" y="90" text-anchor="middle" class="L" style="font-size:4.5px;fill:#888">Ribbed surface · Matte · Không satin</text>
+
+<!-- End cut -->
+<text x="520" y="110" text-anchor="middle" class="L" style="font-size:5px;fill:#888;letter-spacing:1px">END CUT</text>
+<polygon points="505,118 545,118 525,128" fill="var(--teal)" opacity=".6" stroke="var(--teal)" stroke-width=".3"/>
+<text x="520" y="126" text-anchor="middle" class="L" style="font-size:4px;fill:var(--teal)">45°</text>
+</svg>
+</div>
+
+<h3>Length per Box Size</h3>
+<table class="tbl">
+<tr><th>Box</th><th>Ribbon length</th><th>Formula</th></tr>
+<tr><td>S</td><td>650mm</td><td>(70+110)×2 + 150 bow + 40 tails</td></tr>
+<tr><td>M</td><td>750mm</td><td>(80+130)×2 + 150 bow + 40 tails</td></tr>
+<tr><td>L</td><td>830mm</td><td>(90+150)×2 + 150 bow + 40 tails</td></tr>
+<tr><td>XL</td><td>930mm</td><td>(100+170)×2 + 150 bow + 40 tails</td></tr>
+</table>
+
+<div class="ig">
+<div class="it"><div class="it-n">Pre-cut</div><div class="it-s">Ribbon pre-cut per size. Xếp trong FDS-01 Drawer 1. Mỗi loại riêng. Staff rút 1 sợi đúng size.</div></div>
+<div class="it"><div class="it-n">Bow style</div><div class="it-s">Simple single bow. KHÔNG double bow, KHÔNG elaborate, KHÔNG origami. 1 bow + 2 tails = đủ.</div></div>
+</div>
+
+<div class="warn"><strong>Không satin.</strong> Satin ribbon = gift shop / wedding signal. Grosgrain = craft / intentional. Ribbed texture = tactile khi khách cầm box. 15mm width = refined, không quá bold.</div>
+</div>
+
+<!-- ═══ GIFT BAG ═══ -->
+<div class="pnl" id="p-bg">
+<h2>Gift Bag — Túi Kraft</h2>
+
+<div class="dwg">
+<div class="dwg-label">Bag Specs · Front + Side + Handle</div>
+<svg width="100%" viewBox="0 0 650 140" xmlns="http://www.w3.org/2000/svg">
+<!-- Bag front -->
+<rect x="50" y="15" width="120" height="110" rx="3" fill="var(--ink)" opacity=".12" stroke="var(--ink)" stroke-width=".8"/>
+<!-- Handle -->
+<path d="M85,15 Q85,0 110,0 Q135,0 135,15" fill="none" stroke="var(--ink)" stroke-width="1.8" opacity=".4"/>
+<!-- MORAQ mark debossed -->
+<text x="110" y="72" text-anchor="middle" style="font-family:'Cormorant Garamond',serif;font-size:10px;fill:var(--ink);opacity=.2;letter-spacing:3px">MORAQ</text>
+<!-- Bottom fold -->
+<line x1="55" y1="115" x2="165" y2="115" stroke="var(--ink)" stroke-width=".5" opacity=".2"/>
+
+<text x="110" y="138" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--ink);opacity:.4">FRONT VIEW</text>
+
+<!-- Bag side -->
+<rect x="220" y="15" width="40" height="110" rx="2" fill="var(--ink)" opacity=".1" stroke="var(--ink)" stroke-width=".6"/>
+<line x1="225" y1="115" x2="255" y2="115" stroke="var(--ink)" stroke-width=".4" opacity=".15"/>
+<text x="240" y="138" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--ink);opacity:.4">SIDE VIEW</text>
+
+<!-- Handle detail -->
+<text x="420" y="18" text-anchor="middle" class="L" style="font-size:5px;fill:#888;letter-spacing:1px">HANDLE DETAIL</text>
+<!-- Rope handle -->
+<path d="M370,35 Q370,22 400,22 Q430,22 430,35" fill="none" stroke="var(--ink)" stroke-width="2.5" opacity=".6"/>
+<path d="M372,35 Q372,24 400,24 Q428,24 428,35" fill="none" stroke="var(--linen)" stroke-width="1.5" opacity=".4"/>
+<text x="400" y="50" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--ink);opacity:.45">COTTON ROPE Ø4mm</text>
+<text x="400" y="62" text-anchor="middle" class="L" style="font-size:5px;fill:#888">Ink color · Twisted · Knotted inside</text>
+
+<!-- Specs -->
+<text x="400" y="85" text-anchor="middle" class="L" style="font-size:6px;fill:var(--ink);opacity:.5;font-weight:500">BAG SPECS</text>
+<text x="400" y="100" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--dim)">200gsm kraft · Ink #1A1916 exterior</text>
+<text x="400" y="113" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--dim);opacity:.5">Uncoated · Matte · No laminate</text>
+<text x="400" y="126" text-anchor="middle" class="L" style="font-size:5px;fill:var(--call)">MORAQ debossed front center · Same as box</text>
+</svg>
+</div>
+
+<h3>Bag Sizes</h3>
+<table class="tbl">
+<tr><th>Bag</th><th>W × D × H (mm)</th><th>Fits box</th><th>Handle drop</th></tr>
+<tr><td>Small</td><td>150 × 80 × 180</td><td>S + M box</td><td>100mm</td></tr>
+<tr><td>Large</td><td>200 × 100 × 250</td><td>L + XL box</td><td>120mm</td></tr>
+</table>
+
+<div class="ig">
+<div class="it"><div class="it-n">Material</div><div class="it-s">200gsm kraft · Ink #1A1916 exterior · Uncoated matte · No gloss laminate</div></div>
+<div class="it"><div class="it-n">Handle</div><div class="it-s">Cotton rope Ø4mm · Ink color · Twisted · Knotted inside bag</div></div>
+<div class="it"><div class="it-n">Print</div><div class="it-s">MORAQ debossed front center · Blind (no foil) · Same treatment as box</div></div>
+<div class="it"><div class="it-n">Gusset</div><div class="it-s">Side gusset + bottom gusset reinforced · Cardboard insert bottom</div></div>
+</div>
+</div>
+
+<!-- ═══ UNBOXING SEQUENCE ═══ -->
+<div class="pnl" id="p-ub">
+<h2>Unboxing Sequence — What Khách Sees</h2>
+<p><strong>Từ ngoài vào trong:</strong> Mỗi layer reveal một message. Khách mở at home = relive ceremony moment.</p>
+
+<div class="dwg">
+<div class="dwg-label">Unboxing Layers · Outside → Inside</div>
+<svg width="100%" viewBox="0 0 700 125" xmlns="http://www.w3.org/2000/svg">
+<!-- Layer 1: Bag -->
+<rect x="20" y="15" width="90" height="88" rx="4" fill="var(--ink)" opacity=".12" stroke="var(--ink)" stroke-width=".8"/>
+<path d="M45,15 Q45,5 65,5 Q85,5 85,15" fill="none" stroke="var(--ink)" stroke-width="1.5" opacity=".35"/>
+<circle cx="65" cy="2" r="8" fill="var(--teal)" opacity=".15" stroke="var(--teal)" stroke-width=".5"/><text x="65" y="5" text-anchor="middle" class="L" style="font-size:6px;fill:var(--teal)">1</text>
+<text x="65" y="58" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--ink);opacity:.25">TÚI KRAFT</text>
+<text x="65" y="118" text-anchor="middle" class="L" style="font-size:5px;fill:#777">“Mang về”</text>
+
+<!-- Layer 2: Box + Ribbon -->
+<rect x="140" y="20" width="78" height="82" rx="3" fill="var(--ink)" opacity=".35" stroke="var(--ink)" stroke-width=".6"/>
+<rect x="137" y="55" width="84" height="5" rx="1" fill="var(--teal)" opacity=".3"/>
+<circle cx="179" cy="2" r="8" fill="var(--teal)" opacity=".15" stroke="var(--teal)" stroke-width=".5"/><text x="179" y="5" text-anchor="middle" class="L" style="font-size:6px;fill:var(--teal)">2</text>
+<text x="179" y="62" text-anchor="middle" class="L" style="font-size:6px;fill:var(--cream);opacity:.6">RIBBON</text>
+<text x="179" y="73" text-anchor="middle" class="L" style="font-size:6px;fill:var(--cream);opacity:.6">+ BOX</text>
+<text x="179" y="118" text-anchor="middle" class="L" style="font-size:5px;fill:#777">“Anticipation”</text>
+
+<!-- Layer 3: Thank-you card -->
+<rect x="250" y="22" width="72" height="78" rx="3" fill="var(--ink)" opacity=".15" stroke="var(--ink)" stroke-width=".4"/>
+<rect x="254" y="26" width="64" height="70" rx="2" fill="var(--cream)" stroke="var(--linen)" stroke-width=".5"/>
+<rect x="261" y="32" width="50" height="28" rx="2" fill="var(--cream)" stroke="var(--linen)" stroke-width=".4"/>
+<text x="286" y="48" text-anchor="middle" class="L" style="font-size:4px;fill:var(--teal);opacity:.5">MORAQ</text>
+<text x="286" y="72" text-anchor="middle" class="L" style="font-size:5px;fill:var(--teal);opacity:.35">THANK-YOU</text>
+<circle cx="286" cy="2" r="8" fill="var(--teal)" opacity=".15" stroke="var(--teal)" stroke-width=".5"/><text x="286" y="5" text-anchor="middle" class="L" style="font-size:6px;fill:var(--teal)">3</text>
+<text x="286" y="118" text-anchor="middle" class="L" style="font-size:5px;fill:#777">“Personal touch”</text>
+
+<!-- Layer 4: Tissue-wrapped bottle -->
+<rect x="360" y="25" width="68" height="75" rx="2" fill="var(--cream)" stroke="var(--linen)" stroke-width=".6"/>
+<rect x="374" y="32" width="32" height="58" rx="5" fill="var(--linen)" opacity=".7" stroke="var(--stone)" stroke-width=".5"/>
+<g stroke="var(--stone)" stroke-width=".3" opacity=".25"><line x1="380" y1="40" x2="400" y2="40"/><line x1="378" y1="52" x2="402" y2="52"/><line x1="380" y1="64" x2="400" y2="64"/><line x1="378" y1="76" x2="402" y2="76"/></g>
+<text x="394" y="62" text-anchor="middle" class="L" style="font-size:4.5px;fill:var(--ink);opacity:.2">TISSUE</text>
+<circle cx="394" cy="2" r="8" fill="var(--teal)" opacity=".15" stroke="var(--teal)" stroke-width=".5"/><text x="394" y="5" text-anchor="middle" class="L" style="font-size:6px;fill:var(--teal)">4</text>
+<text x="394" y="118" text-anchor="middle" class="L" style="font-size:5px;fill:#777">“The reveal”</text>
+
+<!-- Layer 5: Bottle + Insert -->
+<rect x="470" y="30" width="28" height="58" rx="6" fill="var(--ink)" opacity=".2" stroke="var(--ink)" stroke-width=".5"/>
+<rect x="475" y="42" width="18" height="22" rx="2" fill="var(--cream)" opacity=".9" stroke="var(--linen)" stroke-width=".4"/>
+<text x="484" y="55" text-anchor="middle" class="L" style="font-size:3px;fill:var(--ink);opacity:.3">MORAQ</text>
+<rect x="510" y="48" width="38" height="25" rx="2" fill="var(--cream)" stroke="var(--linen)" stroke-width=".5"/>
+<text x="529" y="63" text-anchor="middle" class="L" style="font-size:4.5px;fill:var(--ink);opacity:.35">QR + CARE</text>
+<circle cx="515" cy="2" r="8" fill="var(--teal)" opacity=".15" stroke="var(--teal)" stroke-width=".5"/><text x="515" y="5" text-anchor="middle" class="L" style="font-size:6px;fill:var(--teal)">5</text>
+<text x="515" y="118" text-anchor="middle" class="L" style="font-size:5px;fill:#777">“Ownership”</text>
+
+<!-- Summary -->
+<line x1="580" y1="50" x2="680" y2="50" stroke="var(--teal)" stroke-width=".5" opacity=".2"/>
+<text x="630" y="40" text-anchor="middle" class="L" style="font-size:7px;fill:var(--teal);opacity:.5;font-weight:500">5 LAYERS</text>
+<text x="630" y="62" text-anchor="middle" class="L" style="font-size:6px;fill:var(--teal);opacity:.35">~30 GIÂY</text>
+<text x="630" y="75" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--teal);opacity:.3">UNBOXING</text>
+</svg>
+</div>
+
+<div class="note"><strong>Unboxing = mini-ceremony tại nhà.</strong> Khách relive store experience khi mở tại nhà. Thank-you card handwritten = personal. Tissue texture = tactile. Deboss = discover by touch. Insert QR = bridge online.</div>
+</div>
+
+<!-- ═══ ASSEMBLY SOP ═══ -->
+<div class="pnl" id="p-as">
+<h2>Assembly SOP — Staff Packaging Steps</h2>
+<p>Ceremony tại counter. Khách nhìn thấy. Mỗi bước intentional. Ref: SOP-004 Counter Ritual.</p>
+
+<h3>10-Step Packaging Ceremony (~2 phút)</h3>
+<table class="tbl">
+<tr><th>Step</th><th>Action</th><th>Time</th><th>What khách sees</th></tr>
+<tr><td>1</td><td>Rút box đúng size từ Fast-Pack (FDS-01)</td><td>3s</td><td>Staff biết chính xác size — muscle memory</td></tr>
+<tr><td>2</td><td>Mở box, đặt insert card (SWS-11) vào slot đáy</td><td>5s</td><td>Careful, deliberate placement</td></tr>
+<tr><td>3</td><td>Rút tissue, trải phẳng trên counter</td><td>3s</td><td>Tissue cream, mịn, nghe tiếng sột soạt nhẹ</td></tr>
+<tr><td>4</td><td>Đặt chai giữa tissue, fold 5 bước</td><td>15s</td><td>Craft moment — hands working precisely</td></tr>
+<tr><td>5</td><td>Đặt chai wrapped vào box, foam insert giữ</td><td>5s</td><td>Perfect fit — chai không xê dịch</td></tr>
+<tr><td>6</td><td>Viết thank-you card (SWS-10)</td><td>20s</td><td>Staff cầm bút, viết tay — personal nhất</td></tr>
+<tr><td>7</td><td>Đặt thank-you card lên trên tissue trong box</td><td>3s</td><td>Card nằm trên cùng — first thing khách thấy khi mở</td></tr>
+<tr><td>8</td><td>Đóng lid, rút ribbon, buộc bow</td><td>15s</td><td>Ribbon teal grosgrain — finishing touch</td></tr>
+<tr><td>9</td><td>Đặt box vào túi kraft</td><td>5s</td><td>Box fit snug trong túi — professional</td></tr>
+<tr><td>10</td><td>Trao cho khách bằng 2 tay</td><td>3s</td><td>Eye contact · "Cảm ơn chị/anh" · Slight bow</td></tr>
+</table>
+
+<h3>FDS-01 Fast-Packing Reference</h3>
+<div class="ig">
+<div class="it"><div class="it-n">Drawer 1</div><div class="it-s">Ribbon (pre-cut per size) · Thank-you cards · Insert cards · Tissue (pre-folded stacks)</div></div>
+<div class="it"><div class="it-n">Fast-Pack slots</div><div class="it-s">S · M · L · XL · CARD · TISSUE · File-style rút 1 giây · Ref: FDS-01 Detail C</div></div>
+<div class="it"><div class="it-n">Drawer 2</div><div class="it-s">Gift bags (Small + Large) · Extra tissue · Backup supplies</div></div>
+<div class="it"><div class="it-n">Drawer 3</div><div class="it-s">Empty bottles backup · Seasonal packaging elements (nếu có)</div></div>
+</div>
+
+<div class="warn"><strong>Training rule:</strong> Staff mới phải practice packaging ceremony 20 lần trước khi phục vụ khách thật. Practice với chai rỗng. Đạt khi hoàn thành 10 steps trong 2 phút mà không cần nhìn SOP. Ref: JCF-001 Skill 6.</div>
+</div>
+
+<div class="ft"><span>MORAQ · PKG-001 · PACKAGING DESIGN SPECS · V1.0</span><span>CONFIDENTIAL · APR 2026</span></div>
+<script>
+document.addEventListener('DOMContentLoaded',function(){var btns=document.querySelectorAll('.tb');var pnls=document.querySelectorAll('.pnl');btns.forEach(function(b){b.addEventListener('click',function(){var t=this.getAttribute('data-t');btns.forEach(function(x){x.classList.remove('on')});pnls.forEach(function(x){x.classList.remove('on')});this.classList.add('on');document.getElementById('p-'+t).classList.add('on');window.scrollTo({top:0,behavior:'smooth'});});});});
+</script>
+</body>
+</html>

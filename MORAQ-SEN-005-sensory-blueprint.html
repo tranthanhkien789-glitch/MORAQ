@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="color-scheme" content="dark">
+<title>MORAQ Sensory Blueprint</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+/* Force dark — override webview */
+html,body{background:#0C0B0A!important;color:#fff!important;height:100%}
+.shell{
+  position:fixed;inset:0;
+  background:#0C0B0A;color:#fff;
+  display:flex;flex-direction:column;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  overflow:hidden;
+}
+/* Top bar */
+.top{
+  height:50px;flex-shrink:0;
+  background:#111010;border-bottom:1px solid #242220;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;
+}
+.t-brand{font-family:'Menlo','Monaco','Courier New',monospace;font-size:10px;letter-spacing:.2em;color:#9FE1CB;opacity:.8}
+.t-sep{width:1px;height:14px;background:#2A2724}
+.t-title{font-family:'Georgia','Times New Roman',serif;font-size:13px;font-style:italic;color:rgba(255,255,255,.4)}
+.t-doc{font-family:'Menlo','Monaco','Courier New',monospace;font-size:8px;color:rgba(255,255,255,.2)}
+/* Tabs */
+.tabs{
+  height:44px;flex-shrink:0;background:#111010;
+  border-bottom:1px solid #242220;
+  display:flex;overflow-x:auto;scrollbar-width:none;
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  display:flex;align-items:center;gap:7px;
+  padding:0 16px;cursor:pointer;flex-shrink:0;
+  border-bottom:2px solid transparent;
+  transition:all .2s;user-select:none;
+}
+.tab-dot{width:6px;height:6px;border-radius:50%;opacity:.35;flex-shrink:0}
+.tab-lbl{font-family:'Menlo','Monaco','Courier New',monospace;font-size:8.5px;letter-spacing:.1em;color:rgba(255,255,255,.3);transition:color .2s}
+.tab:hover .tab-lbl{color:rgba(255,255,255,.6)}
+.tab:hover .tab-dot{opacity:.7}
+.tab.on .tab-lbl{color:#fff}
+.tab.on .tab-dot{opacity:1}
+/* Stage */
+.stage{flex:1;position:relative;overflow:hidden;background:#0C0B0A}
+.panel{
+  position:absolute;inset:0;background:#0C0B0A;
+  overflow-y:auto;overflow-x:hidden;
+  opacity:0;transform:translateY(12px);
+  transition:opacity .3s,transform .3s;
+  pointer-events:none;
+  scrollbar-width:thin;scrollbar-color:#2A2724 transparent;
+}
+.panel.on{opacity:1;transform:translateY(0);pointer-events:all}
+.pw{padding:20px;display:flex;flex-direction:column;gap:14px}
+/* Cards */
+.card{background:#1A1916;border:1px solid #2A2724;border-radius:6px;padding:14px}
+.card-sm{background:#1A1916;border:1px solid #2A2724;border-radius:6px;padding:12px}
+.lbl{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.12em;color:rgba(255,255,255,.35);display:block;margin-bottom:6px}
+.big{font-family:'Menlo','Monaco','Courier New',monospace;font-size:clamp(22px,4vw,36px);font-weight:300;line-height:1}
+.unit{font-family:'Menlo','Monaco','Courier New',monospace;font-size:8px;color:rgba(255,255,255,.35);margin-top:3px;display:block}
+.hero{font-family:'Georgia','Times New Roman',serif;font-size:clamp(26px,5vw,44px);font-weight:300;line-height:.97;color:#fff}
+.hero em{font-style:italic}
+.eyebrow{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7.5px;letter-spacing:.16em;display:block;margin-bottom:6px}
+.body{font-size:12px;color:rgba(255,255,255,.6);line-height:1.75}
+.body b{color:rgba(255,255,255,.85);font-weight:400}
+.italic{font-size:12px;color:rgba(255,255,255,.5);line-height:1.7;font-style:italic}
+.h2{font-family:'Georgia','Times New Roman',serif;font-size:clamp(17px,2.8vw,26px);font-weight:300;color:#fff;line-height:1.1}
+.h2 em{font-style:italic}
+/* Grid */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+/* Spec rows */
+.specs .row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #242220;font-size:11.5px}
+.specs .row:last-child{border-bottom:none}
+.specs .k{color:rgba(255,255,255,.55)}
+.specs .v{font-family:'Menlo','Monaco','Courier New',monospace;font-size:10px;color:rgba(255,255,255,.8)}
+/* Gauge */
+.gauge{display:flex;flex-direction:column;gap:4px}
+.g-top{display:flex;justify-content:space-between;font-family:'Menlo','Monaco','Courier New',monospace;font-size:8px;color:rgba(255,255,255,.4)}
+.g-track{height:4px;background:#2A2724;border-radius:2px;overflow:hidden}
+.g-fill{height:100%;border-radius:2px;transition:width .5s}
+/* Slider */
+input[type=range]{-webkit-appearance:none;width:100%;height:3px;background:#2A2724;border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;cursor:pointer;border:2px solid #111}
+/* Two-col */
+.tcol{display:flex;gap:12px}
+.tcol .left{flex:1;display:flex;flex-direction:column;gap:12px;min-width:0}
+.tcol .right{width:230px;flex-shrink:0;display:flex;flex-direction:column;gap:10px}
+/* Rule box */
+.rb{border-left:2px solid;border-radius:0 6px 6px 0;padding:12px 14px;display:flex;flex-direction:column;gap:5px}
+.rb .rl{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.12em;margin-bottom:3px;display:block}
+.rb .rt{font-size:11.5px;color:rgba(255,255,255,.55);line-height:1.7;font-style:italic}
+.rb .rt b{color:rgba(255,255,255,.8);font-weight:400;font-style:normal}
+/* Floor plan */
+.fp{border-radius:6px;overflow:hidden;background:#111;flex-shrink:0}
+.fp svg{display:block;width:100%;height:auto}
+/* Tag */
+.tag{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.07em;padding:2px 7px;border-radius:2px;display:inline-block}
+/* Zone card */
+.zc{background:#1A1916;border:1px solid #2A2724;border-radius:6px;padding:12px;display:flex;flex-direction:column;gap:7px}
+.zc.bad{background:#1C1010;border-color:#3A1A1A}
+.zn{font-family:'Georgia','Times New Roman',serif;font-size:15px;color:rgba(255,255,255,.85)}
+.zb{font-size:11px;color:rgba(255,255,255,.55);line-height:1.65}
+.zs{font-family:'Menlo','Monaco','Courier New',monospace;font-size:8.5px;letter-spacing:.03em;line-height:1.7}
+/* Sequence */
+.seq{position:relative}
+.seq::before{content:'';position:absolute;left:49px;top:0;bottom:0;width:1px;background:#242220}
+.si{display:flex;gap:12px;padding:11px 6px;border-bottom:1px solid #1A1918;cursor:pointer;border-radius:4px;transition:background .15s}
+.si:last-child{border-bottom:none}
+.si:hover{background:#141210}
+.si.on{background:#1C1008}
+.si-t{font-family:'Menlo','Monaco','Courier New',monospace;font-size:9px;color:rgba(255,255,255,.25);min-width:48px;flex-shrink:0;padding-top:2px;text-align:right}
+.si.on .si-t{color:#F09595}
+.si-dot{width:10px;height:10px;border-radius:50%;background:#2A2724;border:1px solid #3A3730;flex-shrink:0;margin-top:2px;position:relative;z-index:1;transition:all .2s}
+.si.on .si-dot{background:#A32D2D;border-color:#A32D2D;box-shadow:0 0 8px rgba(163,45,45,.35)}
+.si-body{flex:1;min-width:0}
+.si-ev{font-family:'Georgia','Times New Roman',serif;font-size:15px;color:rgba(255,255,255,.65);line-height:1.3;margin-bottom:3px;transition:color .15s}
+.si:hover .si-ev,.si.on .si-ev{color:#fff}
+.si-det{font-size:11px;color:rgba(255,255,255,.45);line-height:1.68;max-width:460px}
+.si-det b{color:rgba(255,255,255,.7);font-weight:400}
+.si-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}
+.sit{font-family:'Menlo','Monaco','Courier New',monospace;font-size:6.5px;padding:2px 6px;border-radius:2px}
+/* Color palette for senses */
+/* SCENT */
+#p-scent .eyebrow,.s-scent{color:#9FE1CB}
+#p-scent .big{color:#9FE1CB}
+#p-scent .g-fill{background:#0F6E56}
+#p-scent .rb{border-color:#0F6E56;background:#080F0C}
+#p-scent .rl{color:#9FE1CB}
+#p-scent .zs{color:#9FE1CB}
+#p-scent .tag-ok{background:#0A1E14;color:#9FE1CB;border:1px solid #1A4028}
+#p-scent input::-webkit-slider-thumb{background:#0F6E56}
+/* SOUND */
+#p-sound .eyebrow,.s-sound{color:#85B7EB}
+#p-sound .big{color:#85B7EB}
+#p-sound .g-fill{background:#185FA5}
+#p-sound .rb{border-color:#185FA5;background:#060C14}
+#p-sound .rl{color:#85B7EB}
+#p-sound .tag-ok{background:#080E18;color:#85B7EB;border:1px solid #1A3060}
+#p-sound input::-webkit-slider-thumb{background:#185FA5}
+/* LIGHT */
+#p-light .eyebrow,.s-light{color:#FAC775}
+#p-light .big{color:#FAC775}
+#p-light .g-fill{background:#854F0B}
+#p-light .rb{border-color:#854F0B;background:#110900}
+#p-light .rl{color:#FAC775}
+#p-light .tag-ok{background:#160C02;color:#FAC775;border:1px solid #3A2008}
+#p-light input::-webkit-slider-thumb{background:#854F0B}
+/* TOUCH */
+#p-touch .eyebrow,.s-touch{color:#C0DD97}
+#p-touch .big{color:#C0DD97}
+#p-touch .g-fill{background:#3B6D11}
+#p-touch .rb{border-color:#3B6D11;background:#080E04}
+#p-touch .rl{color:#C0DD97}
+#p-touch .tag-ok{background:#0A1406;color:#C0DD97;border:1px solid #284010}
+/* VISUAL */
+#p-visual .eyebrow,.s-visual{color:#AFA9EC}
+#p-visual .big{color:#AFA9EC}
+#p-visual .g-fill{background:#533CB7}
+#p-visual .rb{border-color:#533CB7;background:#090814}
+#p-visual .rl{color:#AFA9EC}
+#p-visual .tag-ok{background:#0C0A20;color:#AFA9EC;border:1px solid #2A2060}
+/* SEQUENCE */
+#p-seq .eyebrow{color:#F09595}
+.sit-sc{background:#0A1E14;color:#9FE1CB}
+.sit-so{background:#080E18;color:#85B7EB}
+.sit-li{background:#160C02;color:#FAC775}
+.sit-to{background:#0A1406;color:#C0DD97}
+.sit-vi{background:#0C0A20;color:#AFA9EC}
+/* Seq right */
+.sq-card{background:#1A1916;border:1px solid #2A2724;border-radius:6px;padding:12px}
+.sq-lbl{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:6px;display:block}
+/* Responsive */
+@media(max-width:620px){
+  .tcol{flex-direction:column}
+  .tcol .right{width:100%}
+  .g4{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<div class="top">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="t-brand">MORAQ</div>
+    <div class="t-sep"></div>
+    <div class="t-title">Sensory Blueprint</div>
+  </div>
+  <div class="t-doc">SB-001 · V1.0</div>
+</div>
+
+<div class="tabs" id="tabs">
+  <div class="tab on" data-s="scent"><div class="tab-dot" style="background:#0F6E56"></div><div class="tab-lbl">SCENT</div></div>
+  <div class="tab" data-s="sound"><div class="tab-dot" style="background:#185FA5"></div><div class="tab-lbl">SOUND</div></div>
+  <div class="tab" data-s="light"><div class="tab-dot" style="background:#854F0B"></div><div class="tab-lbl">LIGHT</div></div>
+  <div class="tab" data-s="touch"><div class="tab-dot" style="background:#3B6D11"></div><div class="tab-lbl">TOUCH</div></div>
+  <div class="tab" data-s="visual"><div class="tab-dot" style="background:#533CB7"></div><div class="tab-lbl">VISUAL</div></div>
+  <div class="tab" data-s="seq"><div class="tab-dot" style="background:#A32D2D"></div><div class="tab-lbl">SEQUENCE</div></div>
+</div>
+
+<div class="stage">
+
+<!-- SCENT -->
+<div class="panel on" id="p-scent">
+<div class="pw">
+  <div><span class="eyebrow s-scent">HƯƠNG THƠM · OLFACTORY ARCHITECTURE</span>
+  <div class="hero">Không gian phải có<br><em>chữ ký riêng</em> —<br>trước khi khách thấy gì.</div></div>
+  <div class="g3">
+    <div class="card"><span class="lbl">WARM-UP</span><div class="big">20</div><span class="unit">PHÚT TRƯỚC MỞ CỬA</span></div>
+    <div class="card"><span class="lbl">INTENSITY</span><div class="big">3/5</div><span class="unit">NGÀY THƯỜNG</span></div>
+    <div class="card"><span class="lbl">FILL MIN</span><div class="big">70%</div><span class="unit">TRƯỚC MỖI CA</span></div>
+  </div>
+  <div class="card">
+    <span class="lbl">INTENSITY CALIBRATOR</span>
+    <div style="display:flex;align-items:center;gap:10px;margin:6px 0">
+      <input type="range" id="si" min="1" max="5" value="3" step="1">
+      <span id="si-v" style="font-family:'Menlo','Monaco','Courier New',monospace;font-size:11px;color:#9FE1CB;min-width:28px">3/5</span>
+    </div>
+    <div id="si-d" style="font-size:11px;color:rgba(255,255,255,.6);padding:8px 10px;background:#080F0C;border-radius:4px;border-left:2px solid #0F6E56;line-height:1.6">
+      Ngày thường. Khách không nhận ra có diffuser — chỉ cảm thấy "không khí dễ chịu".
+    </div>
+  </div>
+  <div class="tcol">
+    <div class="left">
+      <span class="eyebrow s-scent">3 SCENT ZONES</span>
+      <div class="zc"><div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><span class="tag tag-ok">ZONE 1 · ENTRY</span><div class="zn">MORAQ Signature Accord</div></div><div class="zb">Hương chào đón nhẹ, mời gọi. Khách chưa nhận thức được — nhưng cơ thể đã cảm nhận qua olfactory system.</div><div class="zs">INTENSITY: 2/5 · HEIGHT: 1.5m · KHÔNG trùng SKU trưng bày</div></div>
+      <div class="zc"><div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><span class="tag tag-ok">ZONE 2 · DISCOVERY</span><div class="zn">Clean Air + Coffee Reset</div></div><div class="zb">Vùng trung tính. Coffee beans để reset khứu giác giữa các tester — "palette cleanser".</div><div class="zs">DIFFUSION: ZERO · Coffee beans thay mỗi 3 ngày</div></div>
+      <div class="zc"><div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><span class="tag tag-ok">ZONE 3 · COUNTER</span><div class="zn">Clean Air Only</div></div><div class="zb">Vùng sạch tuyệt đối. Không khuếch tán bất kỳ hương nào ngoài tester trực tiếp trên da.</div><div class="zs">ARTIFICIAL SCENT: ZERO · Staff: Không nước hoa cá nhân</div></div>
+      <div class="rb" style="border-color:#0F6E56;background:#080F0C">
+        <span class="rl" style="color:#9FE1CB">GOLDEN RULE</span>
+        <div class="rt"><b>Khách không nên nhận ra có diffuser.</b> Nếu họ nói "mùi thơm quá" — intensity cao hơn cần thiết. Đích đến là "ở đây dễ chịu" mà không biết tại sao.</div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="fp">
+        <svg viewBox="0 0 200 290" xmlns="http://www.w3.org/2000/svg">
+          <rect width="200" height="290" fill="#0A0908"/>
+          <rect x="10" y="10" width="180" height="270" fill="none" stroke="#242220" stroke-width="1" rx="3"/>
+          <rect x="10" y="218" width="180" height="62" fill="#0A1C12"/>
+          <text x="100" y="242" font-family="monospace" font-size="6.5" fill="#9FE1CB" text-anchor="middle">ZONE 1 · ENTRY</text>
+          <text x="100" y="253" font-family="monospace" font-size="5.5" fill="rgba(159,225,203,.5)" text-anchor="middle">SIGNATURE · 2/5</text>
+          <rect x="10" y="134" width="180" height="82" fill="#0A120E"/>
+          <text x="100" y="172" font-family="monospace" font-size="6.5" fill="rgba(255,255,255,.3)" text-anchor="middle">ZONE 2 · DISCOVERY</text>
+          <text x="100" y="183" font-family="monospace" font-size="5.5" fill="rgba(255,255,255,.18)" text-anchor="middle">CLEAN AIR</text>
+          <rect x="10" y="10" width="180" height="122" fill="#0A0E0C"/>
+          <rect x="30" y="96" width="140" height="30" rx="2" fill="#0D1E14" stroke="#1A3A22" stroke-width="1"/>
+          <text x="100" y="110" font-family="monospace" font-size="6.5" fill="rgba(255,255,255,.4)" text-anchor="middle">ZONE 3 · COUNTER</text>
+          <text x="100" y="120" font-family="monospace" font-size="5.5" fill="rgba(255,255,255,.2)" text-anchor="middle">ZERO DIFFUSION</text>
+          <line x1="10" y1="133" x2="190" y2="133" stroke="#2A2724" stroke-width=".5" stroke-dasharray="3,3"/>
+          <line x1="10" y1="217" x2="190" y2="217" stroke="#2A2724" stroke-width=".5" stroke-dasharray="3,3"/>
+          <path d="M45 256 Q52 240 45 224" fill="none" stroke="rgba(15,110,86,.4)" stroke-width="1.2"/>
+          <path d="M100 260 Q108 243 100 226" fill="none" stroke="rgba(15,110,86,.35)" stroke-width="1.2"/>
+          <path d="M155 256 Q163 240 155 224" fill="none" stroke="rgba(15,110,86,.3)" stroke-width="1.2"/>
+          <rect x="75" y="277" width="50" height="5" rx="1" fill="rgba(15,110,86,.3)"/>
+          <text x="100" y="289" font-family="monospace" font-size="5.5" fill="rgba(255,255,255,.2)" text-anchor="middle">ENTRY ↑</text>
+          <text x="100" y="130" font-family="monospace" font-size="5.5" fill="rgba(255,255,255,.15)" text-anchor="middle">≥ 1.5m BUFFER</text>
+          <text x="100" y="214" font-family="monospace" font-size="5.5" fill="rgba(255,255,255,.15)" text-anchor="middle">≥ 1.5m BUFFER</text>
+        </svg>
+      </div>
+      <div class="card-sm specs">
+        <span class="lbl">REFRESH SCHEDULE</span>
+        <div class="row"><div class="k">Đầu ca</div><div class="v" style="color:#9FE1CB">Log + bật</div></div>
+        <div class="row"><div class="k">Mỗi 4h</div><div class="v">Check intensity</div></div>
+        <div class="row"><div class="k">Cuối ca</div><div class="v">Tắt + ghi lượng</div></div>
+        <div class="row"><div class="k">Dưới 30%</div><div class="v" style="color:#FAC775">Bình mới</div></div>
+        <div class="row"><div class="k">Coffee beans</div><div class="v">Thay 3 ngày</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- SOUND -->
+<div class="panel" id="p-sound">
+<div class="pw">
+  <div><span class="eyebrow s-sound">ÂM THANH · ACOUSTIC ARCHITECTURE</span>
+  <div class="hero">Âm nhạc không được <em>nghe thấy</em><br>— chỉ cảm thấy.</div></div>
+  <div class="g4">
+    <div class="card"><span class="lbl">BPM RANGE</span><div class="big">72–78</div><span class="unit">BEATS/PHÚT</span></div>
+    <div class="card"><span class="lbl">MAX COUNTER</span><div class="big">45</div><span class="unit">dB TẠI QUẦY</span></div>
+    <div class="card"><span class="lbl">ENTRY</span><div class="big">42</div><span class="unit">dB</span></div>
+    <div class="card"><span class="lbl">DISCOVERY</span><div class="big">38</div><span class="unit">dB P2</span></div>
+  </div>
+  <div class="card">
+    <span class="lbl">dB MAP THEO ZONE</span>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+      <div class="gauge"><div class="g-top"><span style="color:#85B7EB">ENTRY</span><span>42 dB</span></div><div class="g-track"><div class="g-fill" style="width:68%"></div></div></div>
+      <div class="gauge"><div class="g-top"><span style="color:#85B7EB">DISCOVERY P2</span><span>38 dB</span></div><div class="g-track"><div class="g-fill" style="width:55%"></div></div></div>
+      <div class="gauge"><div class="g-top"><span style="color:#85B7EB">COUNTER</span><span>45 dB max</span></div><div class="g-track"><div class="g-fill" style="width:78%"></div></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <span class="lbl">BPM CALIBRATION</span>
+    <div style="display:flex;align-items:center;gap:10px;margin:6px 0">
+      <input type="range" id="bpm" min="50" max="120" value="75" step="1">
+      <span id="bpm-v" style="font-family:'Menlo','Monaco','Courier New',monospace;font-size:11px;color:#85B7EB;min-width:32px">75</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
+      <div id="bpm-dot" style="width:10px;height:10px;border-radius:50%;background:#185FA5;flex-shrink:0;transition:transform .1s,opacity .1s"></div>
+      <div id="bpm-d" style="font-size:11px;color:rgba(255,255,255,.55);font-style:italic">Ngưỡng chuẩn MORAQ — resting heartbeat zone</div>
+    </div>
+  </div>
+  <div class="tcol">
+    <div class="left">
+      <span class="eyebrow s-sound">APPROVED / REJECTED</span>
+      <div class="g2">
+        <div class="zc"><span class="tag tag-ok" style="margin-bottom:5px">✓ APPROVED</span><div class="zn" style="font-size:14px">Ambient Instrumental</div><div class="zb">Lo-fi jazz, neo-soul không lời, acoustic nhẹ. Không beat rõ, không bass nặng.</div></div>
+        <div class="zc"><span class="tag tag-ok" style="margin-bottom:5px">✓ APPROVED</span><div class="zn" style="font-size:14px">Slow Jazz / Bossa</div><div class="zb">Phù hợp ritual pace. Vocals tiếng Anh/Pháp nhẹ OK. Không V-Pop lời rõ.</div></div>
+        <div class="zc bad"><span class="tag" style="background:#200A0A;color:#F09595;border:1px solid #3A1A1A;margin-bottom:5px">✗ KHÔNG DÙNG</span><div class="zn" style="font-size:14px;color:rgba(255,100,100,.6)">Pop / EDM</div><div class="zb">BPM quá cao. Khách cảm thấy rushed, không inviting.</div></div>
+        <div class="zc bad"><span class="tag" style="background:#200A0A;color:#F09595;border:1px solid #3A1A1A;margin-bottom:5px">✗ KHÔNG DÙNG</span><div class="zn" style="font-size:14px;color:rgba(255,100,100,.6)">V-Pop lời rõ</div><div class="zb">Khách theo dõi lời bài hát thay vì tập trung vào hương thơm.</div></div>
+      </div>
+      <div class="rb" style="border-color:#185FA5;background:#060C14">
+        <span class="rl" style="color:#85B7EB">WHY 72–78 BPM</span>
+        <div class="rt"><b>72–78 BPM là vùng "resting heartbeat".</b> Cơ thể sync với nhịp nhạc → thư giãn và trust. Làm chậm pace di chuyển của khách, tăng dwell time trung bình 23%. Le Labo dùng dải này tại tất cả flagship.</div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="card-sm specs">
+        <span class="lbl">TECHNICAL SPECS</span>
+        <div class="row"><div class="k">Speaker</div><div class="v">4 góc + 1 trung tâm</div></div>
+        <div class="row"><div class="k">Bass &lt;80Hz</div><div class="v">Giảm 60%</div></div>
+        <div class="row"><div class="k">Crossfade</div><div class="v">≥ 3s</div></div>
+        <div class="row"><div class="k">Silence gap</div><div class="v">Zero — loop</div></div>
+        <div class="row"><div class="k">Volume check</div><div class="v">Đầu ca + mỗi 2h</div></div>
+      </div>
+      <div class="card-sm">
+        <span class="lbl">FOOTSTEP SOUND</span>
+        <div class="body">Vật liệu sàn ảnh hưởng âm bước chân. <b>Đá/gỗ: âm trầm, sang.</b> Tránh vinyl phát tiếng "clack" — phá vỡ tone luxury.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- LIGHT -->
+<div class="panel" id="p-light">
+<div class="pw">
+  <div><span class="eyebrow s-light">ÁNH SÁNG · PHOTOMETRIC ARCHITECTURE</span>
+  <div class="hero">Ánh sáng không chiếu sản phẩm.<br><em>Ánh sáng tạo ra cảm xúc.</em></div></div>
+  <div class="g3">
+    <div class="card"><span class="lbl">SPOTLIGHT</span><div class="big">2700K</div><span class="unit">WARM WHITE</span></div>
+    <div class="card"><span class="lbl">LUX TẠI QUẦY</span><div class="big">900</div><span class="unit">RANGE 800–1000</span></div>
+    <div class="card"><span class="lbl">CRI TỐI THIỂU</span><div class="big">≥95</div><span class="unit">COLOR RENDERING</span></div>
+  </div>
+  <div class="card">
+    <span class="lbl">LUX MAP THEO ZONE</span>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+      <div class="gauge"><div class="g-top"><span style="color:#FAC775">COUNTER · SPOTLIGHT</span><span>800–1000 lux</span></div><div class="g-track"><div class="g-fill" style="width:90%"></div></div></div>
+      <div class="gauge"><div class="g-top"><span style="color:#FAC775">DISCOVERY ZONE</span><span>300–500 lux</span></div><div class="g-track"><div class="g-fill" style="width:45%"></div></div></div>
+      <div class="gauge"><div class="g-top"><span style="color:#FAC775">ENTRY AMBIENT</span><span>200–300 lux</span></div><div class="g-track"><div class="g-fill" style="width:28%"></div></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <span class="lbl">LUX CALIBRATION</span>
+    <div style="display:flex;align-items:center;gap:10px;margin:6px 0">
+      <input type="range" id="lux" min="100" max="1200" value="900" step="50">
+      <span id="lux-v" style="font-family:'Menlo','Monaco','Courier New',monospace;font-size:11px;color:#FAC775;min-width:36px">900</span>
+    </div>
+    <div id="lux-d" style="font-size:11px;color:rgba(255,255,255,.6);padding:8px 10px;background:#110900;border-radius:4px;border-left:2px solid #854F0B;line-height:1.6">
+      Chuẩn counter. Chai bắt sáng rõ, màu teal trông sâu và sang, shadow geometry đẹp.
+    </div>
+  </div>
+  <div class="tcol">
+    <div class="left">
+      <span class="eyebrow s-light">COLOR TEMPERATURE ZONES</span>
+      <div class="g2">
+        <div class="zc"><span class="tag tag-ok" style="margin-bottom:5px">2700K — PRODUCT</span><div class="zn" style="font-size:14px">Spotlight Counter</div><div class="zb">Tất cả spotlight product phải 2700K. Không dùng neutral hay daylight.</div><div class="zs" style="color:#FAC775">CRI ≥ 95 · Flicker &lt;1%</div></div>
+        <div class="zc"><span class="tag tag-ok" style="margin-bottom:5px">3000K — AMBIENT</span><div class="zn" style="font-size:14px">Entry / Circulation</div><div class="zb">Neutral warm cho entry và paths. Không lạnh (4000K+), không quá vàng (2200K-).</div><div class="zs" style="color:#FAC775">200–300 lux zone</div></div>
+        <div class="zc bad"><span class="tag" style="background:#200A0A;color:#F09595;border:1px solid #3A1A1A;margin-bottom:5px">✗ 4000K+</span><div class="zn" style="font-size:14px;color:rgba(255,100,100,.6)">Cool / Daylight</div><div class="zb">Làm chai trông "clinical". Màu teal bị desaturate. Mất cảm giác luxury.</div></div>
+        <div class="zc bad"><span class="tag" style="background:#200A0A;color:#F09595;border:1px solid #3A1A1A;margin-bottom:5px">✗ FLICKER</span><div class="zn" style="font-size:14px;color:rgba(255,100,100,.6)">Flicker Rate &gt;3%</div><div class="zb">Không nhìn thấy nhưng mắt cảm nhận — gây mệt mỏi sau 30 phút exposure.</div></div>
+      </div>
+      <div class="rb" style="border-color:#854F0B;background:#110900">
+        <span class="rl" style="color:#FAC775">WHY CRI ≥ 95</span>
+        <div class="rt">CRI đo mức độ ánh sáng tái tạo màu thật. <b>CRI 95+ giúp màu Teal #0F6E56 trông đúng với thực tế.</b> CRI 80 làm teal thành màu xanh lá nhạt bệt — chai trông rẻ hơn thực tế dù không thay gì.</div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="card-sm specs">
+        <span class="lbl">SPOTLIGHT POSITIONING</span>
+        <div class="row"><div class="k">Beam angle</div><div class="v">24–36°</div></div>
+        <div class="row"><div class="k">Khoảng cách</div><div class="v">1.8–2.2m sàn</div></div>
+        <div class="row"><div class="k">Aim point</div><div class="v">1/3 trên chai</div></div>
+        <div class="row"><div class="k">Shadow check</div><div class="v">45° + 90°</div></div>
+        <div class="row"><div class="k">Calibration</div><div class="v">Mỗi tuần</div></div>
+      </div>
+      <div class="card-sm">
+        <span class="lbl">CONTROLLED ENVIRONMENT</span>
+        <div class="body">Store MORAQ không thay đổi ánh sáng theo ngày. <b>Rèm kéo đủ nếu có cửa sổ trực tiếp</b> — ánh sáng ngoài trời (5500K) phá vỡ 2700K atmosphere.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- TOUCH -->
+<div class="panel" id="p-touch">
+<div class="pw">
+  <div><span class="eyebrow s-touch">XÚC GIÁC · HAPTIC ARCHITECTURE</span>
+  <div class="hero">Mỗi bề mặt khách chạm vào<br><em>đều nói về thương hiệu.</em></div></div>
+  <div class="g3">
+    <div class="card"><span class="lbl">MARBLE COUNTER</span><div class="big">19–21°C</div><span class="unit">MÁT KHI CHẠM</span></div>
+    <div class="card"><span class="lbl">CHAI WEIGHT</span><div class="big">150–180g</div><span class="unit">SUBSTANTIAL</span></div>
+    <div class="card"><span class="lbl">WELCOME TOWEL</span><div class="big">16–18°C</div><span class="unit">REFRESH TEMP</span></div>
+  </div>
+  <div class="tcol">
+    <div class="left">
+      <span class="eyebrow s-touch">MATERIAL HAPTIC SPECS</span>
+      <div class="zc"><div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:6px"><span class="tag tag-ok">COUNTER SURFACE</span><div class="zn">Marble / Stone</div></div><div class="zb">Marble duy trì 19–21°C trong AC. Cảm giác mát khi tay chạm = luxury subconscious signal. Não associate cool surfaces với chất lượng cao.</div><div class="zs" style="color:#C0DD97">KHÔNG: Acrylic, nhựa (ấm + rỗng khi gõ) · Không glass counter (phản chiếu)</div></div>
+      <div class="zc"><div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:6px"><span class="tag tag-ok">BOTTLE</span><div class="zn">Glass — Weight + Texture</div></div><div class="zb">150–180g tạo cảm giác substantial khi cầm. Dưới 100g cảm thấy empty và cheap. Cap metal click-close = satisfying sound.</div><div class="zs" style="color:#C0DD97">Chai ở nhiệt độ phòng (22–24°C) · Không để dưới spotlight quá gần</div></div>
+      <div class="zc"><div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:6px"><span class="tag tag-ok">RIBBON</span><div class="zn">Satin Teal — 16mm width</div></div><div class="zb">Ribbon satin tạo âm "swish" khi kéo — phần của packaging performance. Tissue 28gsm tạo rustle nhẹ khi mở hộp = unboxing ritual sound.</div><div class="zs" style="color:#C0DD97">RIBBON WIDTH: 16mm · BOX: Đóng vừa vặn, không lỏng</div></div>
+      <div class="zc"><div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:6px"><span class="tag tag-ok">RISER / TRAY</span><div class="zn">Teak Wood — Warm, Natural</div></div><div class="zb">Gỗ tếch ấm hơn marble 2–3°C. Contrast nhiệt độ tạo "sensory richness". Finish matte oil — không satin varnish (phản sáng).</div><div class="zs" style="color:#C0DD97">SOUND: Âm đục khi đặt chai = satisfying</div></div>
+      <div class="rb" style="border-color:#3B6D11;background:#080E04">
+        <span class="rl" style="color:#C0DD97">HAPTIC HIERARCHY — 6 ĐIỂM TIẾP XÚC</span>
+        <div class="rt">1. <b>Tay cầm cửa</b> → 2. <b>Sàn dưới chân</b> → 3. <b>Counter marble</b> → 4. <b>Chai thủy tinh</b> → 5. <b>Hộp + ribbon</b> → 6. <b>Túi giấy lúc ra về</b>. Mỗi điểm tiếp xúc là một câu trong câu chuyện.</div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="card-sm specs">
+        <span class="lbl">STAFF UNIFORM HAPTIC</span>
+        <div class="row"><div class="k">Chất liệu</div><div class="v">Cotton / Linen</div></div>
+        <div class="row"><div class="k">Không dùng</div><div class="v">Polyester</div></div>
+        <div class="row"><div class="k">Vì sao</div><div class="v">Synthetic tạo tiếng sột soạt = cheap sound</div></div>
+      </div>
+      <div class="card-sm specs">
+        <span class="lbl">FLOOR MATERIAL</span>
+        <div class="row"><div class="k">Preferred</div><div class="v">Đá, gỗ thật</div></div>
+        <div class="row"><div class="k">Sound quality</div><div class="v">Âm trầm, solid</div></div>
+        <div class="row"><div class="k">Tránh</div><div class="v">Vinyl, nhựa</div></div>
+      </div>
+      <div class="card-sm">
+        <span class="lbl">WELCOME TOWEL SPEC</span>
+        <div class="body"><b>16–18°C</b> khi phục vụ. Thay mỗi 2h. Dùng khăn terry cotton trắng — không vải microfiber (cảm giác dính). Cuộn, không gấp.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- VISUAL -->
+<div class="panel" id="p-visual">
+<div class="pw">
+  <div><span class="eyebrow s-visual">THỊ GIÁC · VISUAL RHYTHM ARCHITECTURE</span>
+  <div class="hero">Negative space là <em>thiết kế chủ động,</em><br>không phải chỗ trống.</div></div>
+  <div class="g3">
+    <div class="card"><span class="lbl">NEGATIVE SPACE</span><div class="big">40%</div><span class="unit">DISPLAY PHẢI TRỐNG</span></div>
+    <div class="card"><span class="lbl">EYE-LEVEL</span><div class="big">1.2m</div><span class="unit">CHIỀU CAO QUẦY</span></div>
+    <div class="card"><span class="lbl">COUNTER VISIBLE</span><div class="big">3s</div><span class="unit">TỪ CỬA VÀO</span></div>
+  </div>
+  <div class="tcol">
+    <div class="left">
+      <span class="eyebrow s-visual">5 VISUAL RULES</span>
+      <div class="zc"><span class="tag tag-ok" style="margin-bottom:5px">RULE 01</span><div class="zn" style="font-size:15px">40% Display Phải Là Khoảng Trống</div><div class="zb">Overcrowded display = market stall. Khoảng trống = curated = luxury. Tối đa 12 SKU cùng lúc — không hơn.</div></div>
+      <div class="zc"><span class="tag tag-ok" style="margin-bottom:5px">RULE 02</span><div class="zn" style="font-size:15px">Counter Phải Visible Từ Entry Trong 3 Giây</div><div class="zb">"Visual gravity" — không cần biển chỉ dẫn. Nếu phải dùng biển → layout chưa đúng.</div></div>
+      <div class="zc"><span class="tag tag-ok" style="margin-bottom:5px">RULE 03</span><div class="zn" style="font-size:15px">Price Không Visible Từ Entry</div><div class="zb">Khách phải đến gần mới thấy giá. Giá visible từ xa chuyển từ "exploration" sang "budget evaluation". Discovery trước, decision sau.</div></div>
+      <div class="zc"><span class="tag tag-ok" style="margin-bottom:5px">RULE 04</span><div class="zn" style="font-size:15px">Brand Palette Only — 5 Màu</div><div class="zb">Mọi thứ trong store chỉ dùng 5 màu trong palette. Kể cả vật phẩm trưng bày, props, văn phòng phẩm. Màu ngoài palette → không được phép.</div></div>
+      <div class="zc"><span class="tag tag-ok" style="margin-bottom:5px">RULE 05</span><div class="zn" style="font-size:15px">Riser Tạo Depth — Thấp Trước, Cao Sau</div><div class="zb">3cm/6cm/9cm. Mắt cảm nhận không gian 3D thay vì flat. Không thể đảo ngược thứ tự.</div></div>
+      <div class="rb" style="border-color:#533CB7;background:#090814">
+        <span class="rl" style="color:#AFA9EC">LESS IS MORE</span>
+        <div class="rt"><b>Không gian trống là hàng hóa đắt nhất.</b> Le Labo có hàng chục hương nhưng không trưng bày tất cả. Restraint = confidence = luxury.</div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="fp">
+        <svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+          <rect width="200" height="260" fill="#0A0908"/>
+          <rect x="10" y="10" width="180" height="240" fill="none" stroke="#242220" stroke-width="1" rx="3"/>
+          <rect x="26" y="22" width="156" height="32" rx="2" fill="#14102A" stroke="#2A2060" stroke-width="1"/>
+          <text x="104" y="40" font-family="monospace" font-size="6.5" fill="rgba(175,169,236,.7)" text-anchor="middle">COUNTER · FOCAL</text>
+          <rect x="26" y="66" width="156" height="14" rx="1" fill="#111" stroke="#242220" stroke-width=".5"/>
+          <text x="104" y="78" font-family="monospace" font-size="6" fill="rgba(255,255,255,.25)" text-anchor="middle">DISPLAY SHELF</text>
+          <rect x="26" y="90" width="64" height="36" fill="#0C0A1A" stroke="#1A1650" stroke-width=".5" stroke-dasharray="3,2"/>
+          <text x="58" y="110" font-family="monospace" font-size="6" fill="rgba(175,169,236,.3)" text-anchor="middle">NEGATIVE</text>
+          <text x="58" y="120" font-family="monospace" font-size="6" fill="rgba(175,169,236,.3)" text-anchor="middle">SPACE 40%</text>
+          <rect x="102" y="94" width="8" height="24" rx="1" fill="#9FE1CB" opacity=".6"/>
+          <rect x="114" y="90" width="9" height="28" rx="1" fill="#0F6E56" opacity=".7"/>
+          <rect x="127" y="96" width="8" height="22" rx="1" fill="#085041" opacity=".7"/>
+          <rect x="140" y="92" width="10" height="26" rx="1" fill="#04342C" opacity=".7"/>
+          <rect x="155" y="88" width="9" height="30" rx="1" fill="#1A1916" opacity=".6"/>
+          <rect x="26" y="142" width="156" height="52" fill="#0A0A0C" stroke="#1A1A22" stroke-width=".5" stroke-dasharray="3,2"/>
+          <text x="104" y="170" font-family="monospace" font-size="6.5" fill="rgba(255,255,255,.2)" text-anchor="middle">P2 DISCOVERY ZONE</text>
+          <rect x="70" y="242" width="60" height="8" rx="1" fill="rgba(83,60,183,.25)"/>
+          <text x="104" y="256" font-family="monospace" font-size="5.5" fill="rgba(255,255,255,.2)" text-anchor="middle">ENTRY ↑</text>
+          <line x1="104" y1="250" x2="104" y2="54" stroke="rgba(175,169,236,.2)" stroke-width=".7" stroke-dasharray="4,3"/>
+          <polygon points="100,54 104,46 108,54" fill="rgba(175,169,236,.25)"/>
+          <text x="152" y="168" font-family="monospace" font-size="5.5" fill="rgba(175,169,236,.4)" text-anchor="middle">3s SIGHT</text>
+          <text x="152" y="177" font-family="monospace" font-size="5.5" fill="rgba(175,169,236,.3)" text-anchor="middle">LINE</text>
+        </svg>
+      </div>
+      <div class="card-sm">
+        <span class="lbl">BRAND PALETTE — STORE ONLY</span>
+        <div style="display:flex;flex-direction:column;gap:5px;margin-top:4px">
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:16px;height:16px;border-radius:2px;background:#1A1916;border:1px solid #2A2724;flex-shrink:0"></div><div style="font-family:monospace;font-size:9px;color:rgba(255,255,255,.5)">INK #1A1916</div></div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:16px;height:16px;border-radius:2px;background:#0F6E56;flex-shrink:0"></div><div style="font-family:monospace;font-size:9px;color:rgba(255,255,255,.5)">TEAL #0F6E56</div></div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:16px;height:16px;border-radius:2px;background:#854F0B;flex-shrink:0"></div><div style="font-family:monospace;font-size:9px;color:rgba(255,255,255,.5)">AMBER #854F0B</div></div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:16px;height:16px;border-radius:2px;background:#FAF9F6;border:1px solid #333;flex-shrink:0"></div><div style="font-family:monospace;font-size:9px;color:rgba(255,255,255,.5)">CREAM #FAF9F6</div></div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:16px;height:16px;border-radius:2px;background:#E8DFD0;flex-shrink:0"></div><div style="font-family:monospace;font-size:9px;color:rgba(255,255,255,.5)">LINEN #E8DFD0</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- SEQUENCE -->
+<div class="panel" id="p-seq">
+<div class="pw">
+  <div><span class="eyebrow" style="color:#F09595">THE SENSORY SEQUENCE · HÀNH TRÌNH GIÂY-BY-GIÂY</span>
+  <div class="hero">Từ lúc cửa mở<br>đến lúc <em>khách nghĩ về MORAQ suốt tuần sau.</em></div></div>
+  <div class="body" style="max-width:500px">Bấm vào từng moment để xem chi tiết. Mỗi khoảnh khắc đều có chủ ý — không có giây nào bị bỏ ngỏ.</div>
+  <div class="tcol">
+    <div class="left">
+      <div class="seq" id="seq">
+        <div class="si on" data-m="0"><div class="si-t">0s</div><div class="si-dot"></div><div class="si-body"><div class="si-ev">Cửa mở — làn hương đầu tiên chạm khứu giác</div><div class="si-det">Zone 1 ở intensity 2/5. Khách chưa nhận thức được nhưng hypothalamus đã xử lý. <b>Hương đi thẳng vào limbic system</b> — trước cả thị giác.</div><div class="si-tags"><span class="sit sit-sc">SCENT</span></div></div></div>
+        <div class="si" data-m="1"><div class="si-t">3s</div><div class="si-dot"></div><div class="si-body"><div class="si-ev">Mắt điều chỉnh — counter visible từ entry</div><div class="si-det">Ánh sáng ngoài (5500K) chuyển sang 2700K warm. Mắt mất 2–3s để điều chỉnh. Counter phải visible ngay khi mắt đã adjust.</div><div class="si-tags"><span class="sit sit-li">LIGHT</span><span class="sit sit-vi">VISUAL</span></div></div></div>
+        <div class="si" data-m="2"><div class="si-t">8s</div><div class="si-dot"></div><div class="si-body"><div class="si-ev">Bước chân đầu tiên — âm sàn + nhạc nền bắt đầu sync</div><div class="si-det">Footstep trên đá/gỗ: trầm, solid. Nhạc 72–78 BPM ở 42dB bắt đầu sync với nhịp tim. Staff quan sát từ 2m. <b>60 giây này là của khách.</b></div><div class="si-tags"><span class="sit sit-so">SOUND</span><span class="sit sit-to">TOUCH</span></div></div></div>
+        <div class="si" data-m="3"><div class="si-t">30s</div><div class="si-dot"></div><div class="si-body"><div class="si-ev">Scent conscious recognition — "ở đây dễ chịu nhỉ"</div><div class="si-det">Sau ~30 giây, khách nhận thức được hương thơm tổng thể. Intensity 2/5 đủ nhận ra, không đủ identify specific scent.</div><div class="si-tags"><span class="sit sit-sc">SCENT</span></div></div></div>
+        <div class="si" data-m="4"><div class="si-t">60s</div><div class="si-dot"></div><div class="si-body"><div class="si-ev">Staff tiếp cận — câu mở đầu đúng chuẩn</div><div class="si-det">Chỉ khi khách phát tín hiệu sẵn sàng. <b>"Bạn đang tìm hương cho dịp nào?"</b> — không "Em giúp gì không?".</div><div class="si-tags"><span class="sit sit-so">SOUND</span><span class="sit sit-vi">VISUAL</span></div></div></div>
+        <div class="si" data-m="5"><div class="si-t">2 min</div><div class="si-dot"></div><div class="si-body"><div class="si-ev">Scent Grammar intro — hành trình từ nhẹ đến đậm</div><div class="si-det">4 gia đình hương trong 2 phút. Trái → phải: Fresh → Floral → Woody → Oriental. Scent strip mới mỗi family. Coffee beans reset giữa tester.</div><div class="si-tags"><span class="sit sit-sc">SCENT</span><span class="sit sit-to">TOUCH</span></div></div></div>
+        <div class="si" data-m="6"><div class="si-t">5 min</div><div class="si-dot"></div><div class="si-body"><div class="si-ev">First tester on skin — hương nói chuyện với cơ thể</div><div class="si-det">Tester trên cổ tay. Không xịt vào không khí. <b>Hương cần skin chemistry để develop đúng.</b> Ngửi: 30s (top), 3 phút (heart), 10 phút (base).</div><div class="si-tags"><span class="sit sit-sc">SCENT</span><span class="sit sit-to">TOUCH</span></div></div></div>
+        <div class="si" data-m="7"><div class="si-t">15 min</div><div class="si-dot"></div><div class="si-body"><div class="si-ev">Decision moment — chai được giữ, không đặt xuống</div><div class="si-det">Khi khách cầm một chai và không đặt xuống khi nhìn chai khác — họ đã quyết định. <b>Đây là khoảnh khắc im lặng đúng lúc.</b></div><div class="si-tags"><span class="sit sit-to">TOUCH</span><span class="sit sit-vi">VISUAL</span></div></div></div>
+        <div class="si" data-m="8"><div class="si-t">20 min</div><div class="si-dot"></div><div class="si-body"><div class="si-ev">Packaging ritual — trước mặt khách, không ra sau</div><div class="si-det">Ribbon Teal, French knot, tissue fold, thank-you card viết tay. <b>Âm thanh ribbon "swish", tissue rustle, box click</b> — tất cả là intentional sound design.</div><div class="si-tags"><span class="sit sit-to">TOUCH</span><span class="sit sit-so">SOUND</span><span class="sit sit-vi">VISUAL</span></div></div></div>
+        <div class="si" data-m="9"><div class="si-t">25 min</div><div class="si-dot"></div><div class="si-body"><div class="si-ev">Câu cuối — không phải "cảm ơn" mà là điều để nhớ</div><div class="si-det"><b>"Hương này sẽ thay đổi theo thời gian trên da bạn — điều đó khiến nó trở thành của riêng bạn."</b> Khách ra về với một ý nghĩ mới, không chỉ một hộp.</div><div class="si-tags"><span class="sit sit-so">SOUND</span><span class="sit sit-sc">SCENT</span></div></div></div>
+        <div class="si" data-m="10"><div class="si-t">Days after</div><div class="si-dot"></div><div class="si-body"><div class="si-ev">Skin chemistry làm việc — hương thuần hóa theo người dùng</div><div class="si-det">Topnote bay, base note còn lại là signature của người đó. <b>Đây là lý do MORAQ bán trải nghiệm, không phải sản phẩm.</b> Cùng chai hương khác trên mỗi người.</div><div class="si-tags"><span class="sit sit-sc">SCENT</span></div></div></div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="sq-card">
+        <span class="sq-lbl">MOMENT ĐANG XEM</span>
+        <div id="sq-moment" style="font-family:'Georgia','Times New Roman',serif;font-size:16px;color:rgba(255,255,255,.7);font-style:italic;line-height:1.35">0 giây — Cửa mở</div>
+      </div>
+      <div class="sq-card">
+        <span class="sq-lbl">SENSE MIX</span>
+        <div style="display:flex;flex-direction:column;gap:7px;margin-top:2px" id="sq-mix">
+          <div class="gauge"><div class="g-top"><span style="color:#9FE1CB">SCENT</span><span id="pct-sc">90%</span></div><div class="g-track"><div class="g-fill" id="f-sc" style="width:90%;background:#0F6E56"></div></div></div>
+          <div class="gauge"><div class="g-top"><span style="color:#85B7EB">SOUND</span><span id="pct-so">0%</span></div><div class="g-track"><div class="g-fill" id="f-so" style="width:0%;background:#185FA5"></div></div></div>
+          <div class="gauge"><div class="g-top"><span style="color:#FAC775">LIGHT</span><span id="pct-li">0%</span></div><div class="g-track"><div class="g-fill" id="f-li" style="width:0%;background:#854F0B"></div></div></div>
+          <div class="gauge"><div class="g-top"><span style="color:#C0DD97">TOUCH</span><span id="pct-to">0%</span></div><div class="g-track"><div class="g-fill" id="f-to" style="width:0%;background:#3B6D11"></div></div></div>
+          <div class="gauge"><div class="g-top"><span style="color:#AFA9EC">VISUAL</span><span id="pct-vi">0%</span></div><div class="g-track"><div class="g-fill" id="f-vi" style="width:0%;background:#533CB7"></div></div></div>
+        </div>
+      </div>
+      <div class="sq-card">
+        <span class="sq-lbl">DWELL TIME TARGET</span>
+        <div style="font-family:'Menlo','Monaco','Courier New',monospace;font-size:32px;color:#F09595;line-height:1;margin:4px 0">20–30</div>
+        <div style="font-family:'Menlo','Monaco','Courier New',monospace;font-size:8px;color:rgba(255,255,255,.3)">PHÚT · ĐẶC TRƯNG RITUAL</div>
+      </div>
+      <div class="sq-card">
+        <span class="sq-lbl">CONVERSION INSIGHT</span>
+        <div class="italic">Khách ở 20+ phút có conversion rate cao hơn 4x so với dưới 5 phút. Mỗi phút trong ritual là investment — không phải lost time.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+</div><!-- stage -->
+</div><!-- shell -->
+
+<script>
+// ── TAB NAVIGATION ──
+const PANELS={scent:'p-scent',sound:'p-sound',light:'p-light',touch:'p-touch',visual:'p-visual',seq:'p-seq'};
+let active='scent';
+document.getElementById('tabs').querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    const s=t.dataset.s;if(s===active)return;
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('on'));
+    t.classList.add('on');
+    document.getElementById(PANELS[s]).classList.add('on');
+    document.getElementById(PANELS[s]).scrollTop=0;
+    active=s;
+  });
+  // set tab border color
+  const colors={scent:'#0F6E56',sound:'#185FA5',light:'#854F0B',touch:'#3B6D11',visual:'#533CB7',seq:'#A32D2D'};
+  t._color=colors[t.dataset.s];
+});
+
+// ── SCENT INTENSITY ──
+const SI_DESC={
+  1:'Quá nhẹ. Không ai cảm nhận được ambient scent nào. Dùng khi "reset" sau sự kiện.',
+  2:'Zone 1 Entry standard. Khách cảm thấy "không khí dễ chịu" mà không identify mùi cụ thể.',
+  3:'Daily standard. Hương được nhận ra là có mặt nhưng không áp đảo. "Ở đây thơm nhỉ." ← MORAQ DEFAULT',
+  4:'Sự kiện / launch. Scent rõ hơn để tạo ấn tượng mạnh trong thời gian ngắn.',
+  5:'QUÁ CAO. Khách identify diffuser, cảm thấy overwhelmed. Không bao giờ sử dụng.'
+};
+document.getElementById('si').addEventListener('input',function(){
+  document.getElementById('si-v').textContent=this.value+'/5';
+  document.getElementById('si-d').textContent=SI_DESC[this.value];
+});
+
+// ── BPM METRONOME ──
+let bpmTimer=null;
+function startBpm(bpm){
+  clearInterval(bpmTimer);
+  const dot=document.getElementById('bpm-dot');
+  const desc=document.getElementById('bpm-d');
+  if(bpm<65)desc.textContent='Quá chậm — không phù hợp retail.';
+  else if(bpm<=78)desc.textContent='✓ Vùng MORAQ chuẩn — resting heartbeat, dwell time tăng.';
+  else if(bpm<=95)desc.textContent='Hơi nhanh — tạo urgency nhẹ, không phải ritual.';
+  else desc.textContent='Quá nhanh — khách cảm thấy rushed, rời đi sớm hơn.';
+  const ms=Math.round(60000/bpm);
+  bpmTimer=setInterval(()=>{
+    dot.style.transform='scale(1.5)';dot.style.opacity='1';
+    setTimeout(()=>{dot.style.transform='scale(1)';dot.style.opacity='0.5';},100);
+  },ms);
+}
+document.getElementById('bpm').addEventListener('input',function(){
+  document.getElementById('bpm-v').textContent=this.value;
+  startBpm(parseInt(this.value));
+});
+startBpm(75);
+
+// ── LUX CALIBRATOR ──
+const LUX_DESC={
+  100:'100 lux — Candlelight. Quá tối để đọc nhãn chai.',
+  200:'200 lux — Dim lounge. Không đủ sáng cho display.',
+  300:'300 lux — Ambient lounge. Comfortable nhưng chai không nổi bật.',
+  500:'500 lux — Office level. Đủ sáng nhưng thiếu drama luxury.',
+  700:'700 lux — Gần chuẩn. Chai bắt đầu nổi bật, màu teal đúng hơn.',
+  800:'800 lux — Trong chuẩn. Chai bắt sáng tốt, màu sắc accurate.',
+  900:'900 lux ← MORAQ STANDARD. Chai bắt sáng rõ, teal sâu và sang, shadow geometry đẹp.',
+  1000:'1000 lux — Vẫn OK. Rất nổi bật, phù hợp hero display spotlight.',
+  1100:'1100 lux — Hơi cao. Bắt đầu mất warmth.',
+  1200:'1200 lux — Quá sáng. Mất luxe feeling, trông như showroom.'
+};
+document.getElementById('lux').addEventListener('input',function(){
+  const v=parseInt(this.value);
+  document.getElementById('lux-v').textContent=v;
+  const steps=[100,200,300,500,700,800,900,1000,1100,1200];
+  const near=steps.reduce((a,b)=>Math.abs(b-v)<Math.abs(a-v)?b:a);
+  document.getElementById('lux-d').textContent=LUX_DESC[near]||v+' lux';
+});
+
+// ── SEQUENCE MOMENTS ──
+const MOMENTS=[
+  {t:'0 giây',sc:90,so:0,li:20,to:0,vi:0},
+  {t:'3 giây',sc:20,so:10,li:90,to:0,vi:80},
+  {t:'8 giây',sc:30,so:80,li:40,to:70,vi:30},
+  {t:'30 giây',sc:90,so:40,li:30,to:0,vi:20},
+  {t:'60 giây',sc:20,so:80,li:30,to:30,vi:70},
+  {t:'2 phút',sc:90,so:50,li:50,to:70,vi:60},
+  {t:'5 phút',sc:100,so:30,li:40,to:80,vi:20},
+  {t:'15 phút',sc:40,so:10,li:30,to:90,vi:70},
+  {t:'20 phút',sc:30,so:75,li:50,to:100,vi:90},
+  {t:'25 phút',sc:50,so:80,li:40,to:70,vi:40},
+  {t:'Days after',sc:90,so:0,li:0,to:0,vi:0}
+];
+function setSenseMix(m){
+  const d=MOMENTS[m];
+  ['sc','so','li','to','vi'].forEach(k=>{
+    document.getElementById('f-'+k).style.width=d[k]+'%';
+    document.getElementById('pct-'+k).textContent=d[k]+'%';
+  });
+  document.getElementById('sq-moment').textContent=d.t;
+}
+document.getElementById('seq').querySelectorAll('.si').forEach((el,i)=>{
+  el.addEventListener('click',()=>{
+    document.querySelectorAll('.si').forEach(x=>x.classList.remove('on'));
+    el.classList.add('on');
+    setSenseMix(i);
+  });
+});
+setSenseMix(0);
+
+// ── SWIPE ──
+const SENSE_ORDER=['scent','sound','light','touch','visual','seq'];
+let tx=0;
+document.querySelector('.stage').addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+document.querySelector('.stage').addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)<60)return;
+  const idx=SENSE_ORDER.indexOf(active);
+  const next=dx<0?Math.min(idx+1,5):Math.max(idx-1,0);
+  if(next!==idx)document.querySelectorAll('.tab')[next].click();
+},{passive:true});
+</script>
+</body>
+</html>

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MORAQ — PLN-001 · Display Planogram</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1A1916;--teal:#0F6E56;--amber:#854F0B;--cream:#FAF9F6;--linen:#E8DFD0;--stone:#C8C0B4;--wood-dk:#3E3020;--wood-lt:#B8A88C;--metal:#4A4A4A;--dim:#854F0B;--call:#0F6E56;--fr:#5B8C6F;--fl:#8B6B8F;--wo:#8B7355;--or:#A0704A}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:#F4F3EF;color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased}
+.hdr{background:var(--ink);padding:2rem 2.5rem 1.2rem}
+.hdr-r{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.12em;color:var(--cream);opacity:.35;margin-bottom:.5rem;text-transform:uppercase}
+.hdr h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:1.5rem;color:var(--cream);line-height:1.35}
+.hdr h1 em{font-style:italic;color:var(--linen);opacity:.6}
+.hdr-d{font-size:.75rem;color:var(--linen);opacity:.4;margin-top:.4rem;max-width:760px;line-height:1.7}
+.tabs{display:flex;background:var(--ink);padding:0 2.5rem;overflow-x:auto;border-bottom:1px solid rgba(232,223,208,.08);gap:.1rem}
+.tb{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.06em;text-transform:uppercase;color:var(--cream);opacity:.45;background:none;border:none;border-bottom:2px solid transparent;padding:.6rem .7rem;cursor:pointer;transition:all .2s;white-space:nowrap}
+.tb:hover{opacity:.7}.tb.on{opacity:1;color:var(--teal);border-bottom-color:var(--teal)}
+.pnl{display:none;padding:1.4rem 2.5rem 2rem;max-width:1060px;margin:0 auto}.pnl.on{display:block}
+h2{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.25rem;margin:1.6rem 0 .6rem;padding-top:1.3rem;border-top:1px solid rgba(0,0,0,.06)}h2:first-child{border-top:none;padding-top:0}
+h3{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1rem;margin:1.1rem 0 .4rem;color:var(--teal)}
+p{font-size:.78rem;opacity:.55;margin-bottom:.55rem;line-height:1.8}p strong{opacity:1;font-weight:600}
+.dwg{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:6px;padding:1rem;margin:.7rem 0;overflow-x:auto}
+.dwg-label{font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);opacity:.3;margin-bottom:.5rem}
+.tbl{width:100%;border-collapse:collapse;margin:.5rem 0;font-size:.72rem}.tbl th{font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.06em;text-transform:uppercase;text-align:left;padding:.4rem .5rem;background:var(--ink);color:var(--cream);opacity:.6}.tbl td{padding:.35rem .5rem;border-bottom:1px solid rgba(0,0,0,.04);vertical-align:top;line-height:1.5}.tbl td:first-child{font-weight:500;width:45px}.tbl tr:nth-child(even) td{background:#FAFAF8}
+.ig{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin:.4rem 0}
+.it{background:#FAFAF8;border:1px solid rgba(0,0,0,.04);border-radius:4px;padding:.5rem .7rem}.it-n{font-family:'DM Mono',monospace;font-size:.52rem;font-weight:500;margin-bottom:.1rem;color:var(--ink)}.it-s{font-size:.66rem;opacity:.4;line-height:1.5}
+.note{background:var(--ink);color:var(--linen);padding:.5rem .8rem;border-radius:4px;margin:.5rem 0;font-size:.7rem;line-height:1.7;opacity:.7}.note strong{color:var(--cream);opacity:1}
+.warn{background:rgba(133,79,11,.06);border-left:3px solid var(--amber);padding:.45rem .75rem;margin:.5rem 0;font-size:.7rem;line-height:1.6;color:var(--ink);opacity:.55}
+.L{font-family:'DM Mono',monospace;letter-spacing:.3px}
+.ft{max-width:1060px;margin:1.2rem auto;padding:0 2.5rem;display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:.42rem;letter-spacing:.08em;opacity:.15;text-transform:uppercase}
+@media(max-width:700px){.hdr,.tabs,.pnl{padding-left:1rem;padding-right:1rem}.ig{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="hdr">
+<div class="hdr-r"><span>MORAQ</span><span>PLN-001 · V1.0 · APR 2026</span></div>
+<h1>Display Planogram<br><em>Exact Bottle Positions · Rotation Rules · Scent Grammar Order</em></h1>
+<div class="hdr-d">Vị trí chính xác từng chai trên từng bề mặt display. Scent Grammar L→R: Fresh → Floral → Woody → Oriental. Ref: FDS-001, FDS-004, FDS-005, FDS-009.</div>
+</div>
+<div class="tabs">
+<button class="tb on" data-t="ti">Tester Island</button>
+<button class="tb" data-t="aw">Archive Wall</button>
+<button class="tb" data-t="ws">Wall Shelf 12</button>
+<button class="tb" data-t="ro">Rotation Rules</button>
+<button class="tb" data-t="re">Restock Protocol</button>
+</div>
+
+<!-- ═══ TESTER ISLAND ═══ -->
+<div class="pnl on" id="p-ti">
+<h2>FDS-04 · Tester Island — 12 Fixed Positions</h2>
+<p><strong>3-second rule.</strong> Khách nhìn thấy ngay khi vào Zone 2. Mỗi vị trí cố định — không bao giờ xáo trộn thứ tự. Scent Grammar L→R.</p>
+
+<div class="dwg">
+<div class="dwg-label">Tester Island · Plan View · 12 Positions</div>
+<svg width="100%" viewBox="0 0 750 195" xmlns="http://www.w3.org/2000/svg">
+<!-- Island surface -->
+<rect x="40" y="20" width="670" height="70" rx="4" fill="var(--wood-lt)" opacity=".15" stroke="var(--wood-lt)" stroke-width=".8"/>
+
+<!-- Family zone separators -->
+<line x1="210" y1="22" x2="210" y2="88" stroke="var(--ink)" stroke-width=".3" stroke-dasharray="3 2" opacity=".08"/>
+<line x1="380" y1="22" x2="380" y2="88" stroke="var(--ink)" stroke-width=".3" stroke-dasharray="3 2" opacity=".08"/>
+<line x1="550" y1="22" x2="550" y2="88" stroke="var(--ink)" stroke-width=".3" stroke-dasharray="3 2" opacity=".08"/>
+
+<!-- Family labels (above surface) -->
+<text x="125" y="14" text-anchor="middle" class="L" style="font-size:7px;fill:var(--fr);font-weight:500;letter-spacing:2px">FRESH</text>
+<text x="295" y="14" text-anchor="middle" class="L" style="font-size:7px;fill:var(--fl);font-weight:500;letter-spacing:2px">FLORAL</text>
+<text x="465" y="14" text-anchor="middle" class="L" style="font-size:7px;fill:var(--wo);font-weight:500;letter-spacing:2px">WOODY</text>
+<text x="625" y="14" text-anchor="middle" class="L" style="font-size:7px;fill:var(--or);font-weight:500;letter-spacing:2px">ORIENTAL</text>
+
+<!-- 12 positions: recess circle (outer) + bottle dot (inner) -->
+<!-- cx positions: 75, 130, 185 | 240, 300, 360 | 415, 470, 525 | 580, 635, 685 -->
+<g>
+<!-- Fresh 1-3 -->
+<circle cx="75" cy="55" r="13" fill="none" stroke="var(--fr)" stroke-width=".7" opacity=".35"/><circle cx="75" cy="55" r="6" fill="var(--fr)" opacity=".2"/>
+<circle cx="130" cy="55" r="13" fill="none" stroke="var(--fr)" stroke-width=".7" opacity=".35"/><circle cx="130" cy="55" r="6" fill="var(--fr)" opacity=".2"/>
+<circle cx="185" cy="55" r="13" fill="none" stroke="var(--fr)" stroke-width=".7" opacity=".35"/><circle cx="185" cy="55" r="6" fill="var(--fr)" opacity=".2"/>
+<!-- Floral 4-6 -->
+<circle cx="240" cy="55" r="13" fill="none" stroke="var(--fl)" stroke-width=".7" opacity=".35"/><circle cx="240" cy="55" r="6" fill="var(--fl)" opacity=".18"/>
+<circle cx="300" cy="55" r="13" fill="none" stroke="var(--fl)" stroke-width=".7" opacity=".35"/><circle cx="300" cy="55" r="6" fill="var(--fl)" opacity=".18"/>
+<circle cx="360" cy="55" r="13" fill="none" stroke="var(--fl)" stroke-width=".7" opacity=".35"/><circle cx="360" cy="55" r="6" fill="var(--fl)" opacity=".18"/>
+<!-- Woody 7-9 -->
+<circle cx="415" cy="55" r="13" fill="none" stroke="var(--wo)" stroke-width=".7" opacity=".35"/><circle cx="415" cy="55" r="6" fill="var(--wo)" opacity=".15"/>
+<circle cx="470" cy="55" r="13" fill="none" stroke="var(--wo)" stroke-width=".7" opacity=".35"/><circle cx="470" cy="55" r="6" fill="var(--wo)" opacity=".15"/>
+<circle cx="525" cy="55" r="13" fill="none" stroke="var(--wo)" stroke-width=".7" opacity=".35"/><circle cx="525" cy="55" r="6" fill="var(--wo)" opacity=".15"/>
+<!-- Oriental 10-12 -->
+<circle cx="580" cy="55" r="13" fill="none" stroke="var(--or)" stroke-width=".7" opacity=".35"/><circle cx="580" cy="55" r="6" fill="var(--or)" opacity=".12"/>
+<circle cx="635" cy="55" r="13" fill="none" stroke="var(--or)" stroke-width=".7" opacity=".35"/><circle cx="635" cy="55" r="6" fill="var(--or)" opacity=".12"/>
+<circle cx="685" cy="55" r="13" fill="none" stroke="var(--or)" stroke-width=".7" opacity=".35"/><circle cx="685" cy="55" r="6" fill="var(--or)" opacity=".12"/>
+</g>
+
+<!-- Numbers inside bottles -->
+<g class="L" style="font-size:5px;fill:#fff" text-anchor="middle">
+<text x="75" y="57">1</text><text x="130" y="57">2</text><text x="185" y="57">3</text>
+<text x="240" y="57">4</text><text x="300" y="57">5</text><text x="360" y="57">6</text>
+<text x="415" y="57">7</text><text x="470" y="57">8</text><text x="525" y="57">9</text>
+<text x="580" y="57">10</text><text x="635" y="57">11</text><text x="685" y="57">12</text>
+</g>
+
+<!-- Names row (below surface, clean grid) -->
+<g class="L" style="font-size:5.5px;fill:var(--ink);opacity:.45" text-anchor="middle">
+<text x="75" y="100">Citrus Dawn</text>
+<text x="130" y="100">Green Monsoon</text>
+<text x="185" y="100">Aqua Mist</text>
+<text x="240" y="100">White Blossom</text>
+<text x="300" y="100">Midnight Garden</text>
+<text x="360" y="100">Rose Absolute</text>
+<text x="415" y="100">Cedar Rain</text>
+<text x="470" y="100">Oud Temple</text>
+<text x="525" y="100">Vetiver Earth</text>
+<text x="580" y="100">Saigon Dusk</text>
+<text x="635" y="100">Amber Night</text>
+<text x="685" y="100">Musk Ritual</text>
+</g>
+
+<!-- Type row -->
+<g class="L" style="font-size:4px;fill:var(--ink);opacity:.25" text-anchor="middle">
+<text x="75" y="110">EDT</text><text x="130" y="110">EDT</text><text x="185" y="110">EDT</text>
+<text x="240" y="110">EDP</text><text x="300" y="110">EDP</text><text x="360" y="110">EDP</text>
+<text x="415" y="110">EDP</text><text x="470" y="110">EDP</text><text x="525" y="110">EDP</text>
+<text x="580" y="110">EDP</text><text x="635" y="110">Parfum</text><text x="685" y="110">Parfum</text>
+</g>
+
+<!-- Gradient direction -->
+<line x1="50" y1="125" x2="710" y2="125" stroke="var(--teal)" stroke-width=".5" opacity=".15"/>
+<text x="375" y="135" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--teal);opacity:.35;letter-spacing:2px">FRESH → LIGHT → DEEP → RICH → ORIENTAL</text>
+
+<!-- Specs row -->
+<text x="100" y="155" class="L" style="font-size:5.5px;fill:var(--dim)">SPACING: ~80mm c/c</text>
+<text x="280" y="155" class="L" style="font-size:5.5px;fill:var(--call)">RECESS: Ø50 × 3mm deep</text>
+<text x="500" y="155" class="L" style="font-size:5.5px;fill:#888">COFFEE BEANS JAR: center island</text>
+
+<!-- Width -->
+<line x1="40" y1="172" x2="710" y2="172" stroke="var(--dim)" stroke-width=".4"/>
+<line x1="40" y1="167" x2="40" y2="177" stroke="var(--dim)" stroke-width=".3"/>
+<line x1="710" y1="167" x2="710" y2="177" stroke="var(--dim)" stroke-width=".3"/>
+<text x="375" y="188" text-anchor="middle" class="L" style="font-size:7px;fill:var(--dim)">1200–1500mm</text>
+</svg>
+</div>
+
+<table class="tbl">
+<tr><th>Pos</th><th>Scent Name</th><th>Family</th><th>Type</th><th>Notes</th></tr>
+<tr><td>1</td><td>Citrus Dawn</td><td>Fresh</td><td>EDT</td><td>Entry point · Lightest · Accessible</td></tr>
+<tr><td>2</td><td>Green Monsoon</td><td>Fresh</td><td>EDT</td><td>Herbal green · Unisex</td></tr>
+<tr><td>3</td><td>Aqua Mist</td><td>Fresh</td><td>EDT</td><td>Marine note · Seasonal hero mùa hè</td></tr>
+<tr><td>4</td><td>White Blossom</td><td>Floral</td><td>EDP</td><td>Jasmine-forward · Nữ tính</td></tr>
+<tr><td>5</td><td>Midnight Garden</td><td>Floral</td><td>EDP</td><td>Dark floral · Complex · Top seller</td></tr>
+<tr><td>6</td><td>Rose Absolute</td><td>Floral</td><td>EDP</td><td>Classic rose · Gift hero</td></tr>
+<tr><td>7</td><td>Cedar Rain</td><td>Woody</td><td>EDP</td><td>Light woody · Bridge từ floral</td></tr>
+<tr><td>8</td><td>Oud Temple</td><td>Woody</td><td>EDP</td><td>Vietnamese oud · Hero product</td></tr>
+<tr><td>9</td><td>Vetiver Earth</td><td>Woody</td><td>EDP</td><td>Earthy · Masculine lean</td></tr>
+<tr><td>10</td><td>Saigon Dusk</td><td>Oriental</td><td>EDP</td><td>Signature · Store hero · Deepest bridge</td></tr>
+<tr><td>11</td><td>Amber Night</td><td>Oriental</td><td>Parfum</td><td>Rich amber · Evening · Premium</td></tr>
+<tr><td>12</td><td>Musk Ritual</td><td>Oriental</td><td>Parfum</td><td>Heaviest · Anchoring scent · Close journey</td></tr>
+</table>
+
+<div class="note"><strong>Position rule:</strong> Thứ tự KHÔNG BAO GIỜ thay đổi. Khi thêm scent mới → swap vào vị trí cùng family, đẩy scent cũ lên Archive Wall. Không bao giờ xáo trộn L→R gradient.</div>
+</div>
+
+<!-- ═══ ARCHIVE WALL ═══ -->
+<div class="pnl" id="p-aw">
+<h2>FDS-05 · Archive Wall — Bay-by-Bay Layout</h2>
+<p>4 bays = 4 Scent Grammar families. 3 shelf rows + 1 refill row. <strong>Negative space ≥40%.</strong></p>
+
+<div class="dwg">
+<div class="dwg-label">Archive Wall · Full Planogram · Scale 1:30</div>
+<svg width="100%" viewBox="0 0 780 220" xmlns="http://www.w3.org/2000/svg">
+<!-- Frame -->
+<rect x="30" y="10" width="620" height="170" fill="none" stroke="var(--metal)" stroke-width="1.2" opacity=".35"/>
+<!-- Uprights -->
+<rect x="30" y="10" width="5" height="170" fill="var(--metal)" opacity=".25"/>
+<rect x="185" y="10" width="4" height="170" fill="var(--metal)" opacity=".18"/>
+<rect x="340" y="10" width="4" height="170" fill="var(--metal)" opacity=".18"/>
+<rect x="495" y="10" width="4" height="170" fill="var(--metal)" opacity=".18"/>
+<rect x="645" y="10" width="5" height="170" fill="var(--metal)" opacity=".25"/>
+
+<!-- Bay labels -->
+<text x="108" y="8" text-anchor="middle" class="L" style="font-size:6.5px;fill:var(--fr);font-weight:500;letter-spacing:2px">FRESH</text>
+<text x="263" y="8" text-anchor="middle" class="L" style="font-size:6.5px;fill:var(--fl);font-weight:500;letter-spacing:2px">FLORAL</text>
+<text x="418" y="8" text-anchor="middle" class="L" style="font-size:6.5px;fill:var(--wo);font-weight:500;letter-spacing:2px">WOODY</text>
+<text x="570" y="8" text-anchor="middle" class="L" style="font-size:6.5px;fill:var(--or);font-weight:500;letter-spacing:2px">ORIENTAL</text>
+
+<!-- Shelf 1 -->
+<rect x="37" y="46" width="606" height="5" rx="1" fill="var(--wood-lt)" opacity=".4"/>
+<!-- Shelf 2 -->
+<rect x="37" y="88" width="606" height="5" rx="1" fill="var(--wood-lt)" opacity=".4"/>
+<!-- Shelf 3 -->
+<rect x="37" y="130" width="606" height="5" rx="1" fill="var(--wood-lt)" opacity=".4"/>
+
+<!-- Row labels (right side - clearly inside viewBox) -->
+<text x="670" y="32" class="L" style="font-size:6px;fill:var(--dim);font-weight:500">ROW A</text>
+<text x="670" y="42" class="L" style="font-size:5px;fill:var(--dim);opacity:.5">Signature</text>
+<text x="670" y="72" class="L" style="font-size:6px;fill:var(--dim);font-weight:500">ROW B</text>
+<text x="670" y="82" class="L" style="font-size:5px;fill:var(--dim);opacity:.5">Curated</text>
+<text x="670" y="114" class="L" style="font-size:6px;fill:var(--dim);font-weight:500">ROW C</text>
+<text x="670" y="124" class="L" style="font-size:5px;fill:var(--dim);opacity:.5">Seasonal</text>
+
+<!-- ── BAY 1: FRESH ── Row A -->
+<g opacity=".35">
+<rect x="48" y="20" width="13" height="25" rx="3" fill="var(--fr)"/><rect x="74" y="23" width="13" height="22" rx="3" fill="var(--fr)"/><rect x="100" y="18" width="13" height="27" rx="3" fill="var(--fr)"/>
+<rect x="140" y="22" width="13" height="23" rx="3" fill="var(--fr)"/>
+</g>
+<!-- Row B -->
+<g opacity=".25"><rect x="55" y="62" width="13" height="25" rx="3" fill="var(--fr)"/><rect x="100" y="65" width="13" height="22" rx="3" fill="var(--fr)"/></g>
+
+<!-- ── BAY 2: FLORAL ── Row A -->
+<g opacity=".35">
+<rect x="200" y="20" width="13" height="25" rx="3" fill="var(--fl)"/><rect x="226" y="23" width="13" height="22" rx="3" fill="var(--fl)"/><rect x="252" y="18" width="13" height="27" rx="3" fill="var(--fl)"/>
+<rect x="278" y="22" width="13" height="23" rx="3" fill="var(--fl)"/><rect x="304" y="20" width="13" height="25" rx="3" fill="var(--fl)"/>
+</g>
+<!-- Row B -->
+<g opacity=".25"><rect x="208" y="62" width="13" height="25" rx="3" fill="var(--fl)"/><rect x="248" y="65" width="13" height="22" rx="3" fill="var(--fl)"/><rect x="298" y="63" width="13" height="24" rx="3" fill="var(--fl)"/></g>
+<!-- Row C -->
+<g opacity=".15"><rect x="240" y="108" width="13" height="21" rx="3" fill="var(--fl)"/></g>
+
+<!-- ── BAY 3: WOODY ── Row A -->
+<g opacity=".35">
+<rect x="355" y="20" width="13" height="25" rx="3" fill="var(--wo)"/><rect x="381" y="18" width="13" height="27" rx="3" fill="var(--wo)"/><rect x="407" y="22" width="13" height="23" rx="3" fill="var(--wo)"/>
+<rect x="450" y="20" width="13" height="25" rx="3" fill="var(--wo)"/>
+</g>
+<!-- Row B -->
+<g opacity=".25"><rect x="362" y="65" width="13" height="22" rx="3" fill="var(--wo)"/><rect x="415" y="62" width="13" height="25" rx="3" fill="var(--wo)"/></g>
+
+<!-- ── BAY 4: ORIENTAL ── Row A -->
+<g opacity=".35">
+<rect x="510" y="20" width="13" height="25" rx="3" fill="var(--or)"/><rect x="536" y="18" width="13" height="27" rx="3" fill="var(--or)"/><rect x="562" y="22" width="13" height="23" rx="3" fill="var(--or)"/>
+<rect x="615" y="20" width="13" height="25" rx="3" fill="var(--or)"/>
+</g>
+<!-- Row B -->
+<g opacity=".25"><rect x="518" y="62" width="13" height="25" rx="3" fill="var(--or)"/><rect x="570" y="65" width="13" height="22" rx="3" fill="var(--or)"/><rect x="612" y="63" width="13" height="24" rx="3" fill="var(--or)"/></g>
+<!-- Row C -->
+<g opacity=".15"><rect x="545" y="108" width="13" height="21" rx="3" fill="var(--or)"/></g>
+
+<!-- Refill drawers bottom -->
+<rect x="37" y="140" width="150" height="25" rx="2" fill="var(--wood-dk)" opacity=".12"/>
+<rect x="191" y="140" width="148" height="25" rx="2" fill="var(--wood-dk)" opacity=".12"/>
+<rect x="344" y="140" width="148" height="25" rx="2" fill="var(--wood-dk)" opacity=".12"/>
+<rect x="499" y="140" width="144" height="25" rx="2" fill="var(--wood-dk)" opacity=".12"/>
+<text x="340" y="158" text-anchor="middle" class="L" style="font-size:5px;fill:var(--wood-dk);opacity:.35">REFILL DRAWERS · Staff refill không cần BOH</text>
+
+<!-- Negative space annotation -->
+<text x="340" y="192" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--teal);opacity:.5;letter-spacing:1px">NEGATIVE SPACE ≥ 40% · ROW C CHỦ YẾU TRỐNG · "THƯ VIỆN" KHÔNG PHẢI "KỆ HÀNG"</text>
+
+<!-- Width -->
+<line x1="30" y1="205" x2="650" y2="205" stroke="var(--dim)" stroke-width=".4"/>
+<line x1="30" y1="200" x2="30" y2="210" stroke="var(--dim)" stroke-width=".3"/>
+<line x1="650" y1="200" x2="650" y2="210" stroke="var(--dim)" stroke-width=".3"/>
+<text x="340" y="218" text-anchor="middle" class="L" style="font-size:6px;fill:var(--dim)">FULL WALL · 2000–4000mm · MODULAR ~600mm/BAY</text>
+</svg>
+</div>
+
+<h3>Bottle Count per Bay</h3>
+<table class="tbl">
+<tr><th>Bay</th><th>Row A (Signature)</th><th>Row B (Curated)</th><th>Row C (Seasonal)</th><th>Total</th><th>Fill %</th></tr>
+<tr><td>Fresh</td><td>4</td><td>2</td><td>0</td><td>6</td><td>~45%</td></tr>
+<tr><td>Floral</td><td>5</td><td>3</td><td>1</td><td>9</td><td>~55%</td></tr>
+<tr><td>Woody</td><td>4</td><td>2</td><td>0</td><td>6</td><td>~45%</td></tr>
+<tr><td>Oriental</td><td>4</td><td>3</td><td>1</td><td>8</td><td>~50%</td></tr>
+</table>
+
+<div class="warn"><strong>Fill rule:</strong> Floral bay nhiều nhất (hero family). Seasonal row chỉ dùng khi có limited edition. Khi thêm chai mới, dời chai cũ xuống Row B/C hoặc retire về BOH. KHÔNG bao giờ fill &gt;60%.</div>
+</div>
+
+<!-- ═══ WALL SHELF 12 ═══ -->
+<div class="pnl" id="p-ws">
+<h2>FDS-09 · Wall Shelf 12 — Behind Back Counter</h2>
+<p>Staff quay lưng lấy chai pre-blended. 12 vị trí cố định = 12 tester positions mirror.</p>
+
+<div class="dwg">
+<div class="dwg-label">Wall Shelf · Front View · 12 Positions Mirror Tester Island</div>
+<svg width="100%" viewBox="0 0 750 90" xmlns="http://www.w3.org/2000/svg">
+<!-- Shelf -->
+<rect x="30" y="42" width="690" height="8" rx="1" fill="var(--wood-dk)" opacity=".35" stroke="var(--wood-dk)" stroke-width=".5"/>
+<!-- LED -->
+<rect x="34" y="50" width="682" height="3" rx="1" fill="var(--amber)" opacity=".25"/>
+
+<!-- Family zones -->
+<rect x="32" y="12" width="170" height="30" rx="2" fill="var(--fr)" opacity=".03"/>
+<rect x="202" y="12" width="175" height="30" rx="2" fill="var(--fl)" opacity=".03"/>
+<rect x="377" y="12" width="175" height="30" rx="2" fill="var(--wo)" opacity=".03"/>
+<rect x="552" y="12" width="166" height="30" rx="2" fill="var(--or)" opacity=".03"/>
+
+<!-- 12 bottles (same order as Tester) -->
+<g opacity=".35">
+<rect x="52" y="16" width="12" height="25" rx="2" fill="var(--ink)"/><text x="58" y="8" text-anchor="middle" class="L" style="font-size:4px;fill:var(--fr);opacity:.6">1</text>
+<rect x="98" y="18" width="12" height="23" rx="2" fill="var(--ink)"/><text x="104" y="8" text-anchor="middle" class="L" style="font-size:4px;fill:var(--fr);opacity:.6">2</text>
+<rect x="148" y="16" width="12" height="25" rx="2" fill="var(--ink)"/><text x="154" y="8" text-anchor="middle" class="L" style="font-size:4px;fill:var(--fr);opacity:.6">3</text>
+<rect x="222" y="18" width="12" height="23" rx="2" fill="var(--ink)"/><text x="228" y="8" text-anchor="middle" class="L" style="font-size:4px;fill:var(--fl);opacity:.6">4</text>
+<rect x="278" y="16" width="12" height="25" rx="2" fill="var(--ink)"/><text x="284" y="8" text-anchor="middle" class="L" style="font-size:4px;fill:var(--fl);opacity:.6">5</text>
+<rect x="334" y="18" width="12" height="23" rx="2" fill="var(--ink)"/><text x="340" y="8" text-anchor="middle" class="L" style="font-size:4px;fill:var(--fl);opacity:.6">6</text>
+<rect x="398" y="16" width="12" height="25" rx="2" fill="var(--ink)"/><text x="404" y="8" text-anchor="middle" class="L" style="font-size:4px;fill:var(--wo);opacity:.6">7</text>
+<rect x="454" y="18" width="12" height="23" rx="2" fill="var(--ink)"/><text x="460" y="8" text-anchor="middle" class="L" style="font-size:4px;fill:var(--wo);opacity:.6">8</text>
+<rect x="510" y="16" width="12" height="25" rx="2" fill="var(--ink)"/><text x="516" y="8" text-anchor="middle" class="L" style="font-size:4px;fill:var(--wo);opacity:.6">9</text>
+<rect x="572" y="18" width="12" height="23" rx="2" fill="var(--ink)"/><text x="578" y="8" text-anchor="middle" class="L" style="font-size:4px;fill:var(--or);opacity:.6">10</text>
+<rect x="628" y="16" width="12" height="25" rx="2" fill="var(--ink)"/><text x="634" y="8" text-anchor="middle" class="L" style="font-size:4px;fill:var(--or);opacity:.6">11</text>
+<rect x="684" y="18" width="12" height="23" rx="2" fill="var(--ink)"/><text x="690" y="8" text-anchor="middle" class="L" style="font-size:4px;fill:var(--or);opacity:.6">12</text>
+</g>
+
+<!-- LED label -->
+<text x="375" y="62" text-anchor="middle" class="L" style="font-size:5px;fill:var(--amber);opacity:.5">LED 2700K CRI≥95 · "GLOWING SHELF"</text>
+<!-- Engraved labels -->
+<text x="117" y="70" text-anchor="middle" class="L" style="font-size:5px;fill:var(--fr);opacity:.4">FRESH</text>
+<text x="289" y="70" text-anchor="middle" class="L" style="font-size:5px;fill:var(--fl);opacity:.4">FLORAL</text>
+<text x="465" y="70" text-anchor="middle" class="L" style="font-size:5px;fill:var(--wo);opacity:.4">WOODY</text>
+<text x="640" y="70" text-anchor="middle" class="L" style="font-size:5px;fill:var(--or);opacity:.4">ORIENTAL</text>
+<!-- Note -->
+<text x="375" y="84" text-anchor="middle" class="L" style="font-size:5px;fill:var(--call);opacity:.4">MIRROR TESTER ISLAND · CÙNG THỨ TỰ · STAFF MUSCLE MEMORY</text>
+</svg>
+</div>
+
+<div class="note"><strong>Mirror rule:</strong> Position 1–12 trên Wall Shelf = Position 1–12 trên Tester Island. Staff nhìn Tester → quay lưng → lấy đúng chai không cần nghĩ. Muscle memory sau 1 tuần.</div>
+</div>
+
+<!-- ═══ ROTATION RULES ═══ -->
+<div class="pnl" id="p-ro">
+<h2>Rotation Rules — Khi nào swap, khi nào retire</h2>
+
+<h3>Tester Island — Fixed Core + 2 Flex Slots</h3>
+<div class="ig">
+<div class="it"><div class="it-n">Fixed (10 slots)</div><div class="it-s">10 scents cố định = core BST. Chỉ thay khi discontinue. Không thay theo mùa.</div></div>
+<div class="it"><div class="it-n">Flex (2 slots)</div><div class="it-s">Slot 3 (Fresh) + Slot 12 (Oriental) = seasonal rotation. Thay mỗi 3–4 tháng hoặc khi launch mới.</div></div>
+</div>
+
+<h3>Archive Wall — Quarterly Review</h3>
+<div class="ig">
+<div class="it"><div class="it-n">Row A</div><div class="it-s">Signature scents. Thay khi discontinue hoặc khi có scent mới cùng family.</div></div>
+<div class="it"><div class="it-n">Row B</div><div class="it-s">Curated selection. Review mỗi quý. Scent bán chậm → retire về BOH. Scent mới → thêm vào.</div></div>
+<div class="it"><div class="it-n">Row C</div><div class="it-s">Seasonal / Limited. Chỉ dùng khi có LE launch. Trống = đúng. Đầy = sai.</div></div>
+<div class="it"><div class="it-n">Refill drawers</div><div class="it-s">Refill khi chai display xuống &lt;30% level. Staff check mỗi sáng mở cửa.</div></div>
+</div>
+
+<h3>Wall Shelf 12 — Always Mirror Tester</h3>
+<p>Khi swap slot trên Tester Island → swap cùng slot trên Wall Shelf 12. Luôn 1:1 mirror. Không bao giờ lệch.</p>
+
+<h3>Seasonal Calendar</h3>
+<table class="tbl">
+<tr><th>Q</th><th>Season</th><th>Flex slot bias</th><th>Archive Row C</th></tr>
+<tr><td>Q1</td><td>Tết / Spring</td><td>Fresh citrus · Floral light</td><td>Tết LE nếu có</td></tr>
+<tr><td>Q2</td><td>Summer</td><td>Aquatic · Green · Light</td><td>Summer LE</td></tr>
+<tr><td>Q3</td><td>Autumn</td><td>Woody · Spicy warm</td><td>Trống OK</td></tr>
+<tr><td>Q4</td><td>Year-end / Gift</td><td>Oriental · Rich · Gift-worthy</td><td>Holiday LE</td></tr>
+</table>
+</div>
+
+<!-- ═══ RESTOCK PROTOCOL ═══ -->
+<div class="pnl" id="p-re">
+<h2>Restock Protocol — Daily + Weekly</h2>
+
+<h3>Daily Morning (trước mở cửa)</h3>
+<div class="ig">
+<div class="it"><div class="it-n">1 · Visual scan</div><div class="it-s">Đi qua tất cả display surfaces. Check: chai đúng vị trí, đủ level, label hướng đúng (logo trước).</div></div>
+<div class="it"><div class="it-n">2 · Top-up</div><div class="it-s">Chai display &lt;30% → refill từ Archive refill drawer hoặc BOH. Không để chai gần cạn trên display.</div></div>
+<div class="it"><div class="it-n">3 · Scent cards</div><div class="it-s">Check scent cards còn nguyên, sạch, đúng vị trí. Thay card bị ố/nhăn.</div></div>
+<div class="it"><div class="it-n">4 · Coffee beans</div><div class="it-s">Check date label (SWS-18). Thay nếu &gt;3 ngày. Jar luôn đầy ¾.</div></div>
+</div>
+
+<h3>Weekly (Thứ 2 mỗi tuần)</h3>
+<div class="ig">
+<div class="it"><div class="it-n">5 · Deep clean</div><div class="it-s">Lau tất cả chai, recess, shelves. Kiểm tra bottle integrity (nắp chặt, không leak).</div></div>
+<div class="it"><div class="it-n">6 · Inventory count</div><div class="it-s">Đếm chai mỗi vị trí. So sánh với POS data. Flag discrepancy.</div></div>
+</div>
+
+<h3>Quarterly (đầu mỗi quý)</h3>
+<div class="ig">
+<div class="it"><div class="it-n">7 · Rotation review</div><div class="it-s">Review flex slots + Archive Row B/C. Swap theo seasonal calendar. Document changes.</div></div>
+<div class="it"><div class="it-n">8 · Planogram photo</div><div class="it-s">Chụp ảnh planogram thực tế. So sánh với PLN-001. Fix sai lệch.</div></div>
+</div>
+
+<h3>Label Orientation Rule</h3>
+<div class="dwg">
+<div class="dwg-label">Bottle Facing · Label Always Forward</div>
+<svg width="100%" viewBox="0 0 500 70" xmlns="http://www.w3.org/2000/svg">
+<!-- Correct -->
+<rect x="60" y="8" width="30" height="50" rx="5" fill="var(--ink)" opacity=".15" stroke="var(--ink)" stroke-width=".4"/>
+<rect x="65" y="20" width="20" height="22" rx="2" fill="var(--cream)" opacity=".8" stroke="var(--linen)" stroke-width=".4"/>
+<text x="75" y="33" text-anchor="middle" class="L" style="font-size:3px;fill:var(--ink);opacity:.5">MORAQ</text>
+<text x="75" y="68" text-anchor="middle" class="L" style="font-size:6px;fill:var(--teal);font-weight:500">✓ ĐÚNG</text>
+<text x="130" y="35" class="L" style="font-size:5.5px;fill:var(--teal)">Label hướng ra phía khách</text>
+<text x="130" y="48" class="L" style="font-size:5px;fill:var(--teal);opacity:.5">Logo trước · Scent name đọc được</text>
+
+<!-- Wrong -->
+<rect x="320" y="8" width="30" height="50" rx="5" fill="var(--ink)" opacity=".15" stroke="var(--ink)" stroke-width=".4"/>
+<rect x="325" y="20" width="20" height="22" rx="2" fill="var(--cream)" opacity=".4" stroke="var(--linen)" stroke-width=".4"/>
+<text x="335" y="68" text-anchor="middle" class="L" style="font-size:6px;fill:#C75050;font-weight:500">✗ SAI</text>
+<text x="385" y="35" class="L" style="font-size:5.5px;fill:#C75050">Label quay bên / quay sau</text>
+<text x="385" y="48" class="L" style="font-size:5px;fill:#C75050;opacity:.5">Staff fix ngay khi phát hiện</text>
+</svg>
+</div>
+
+<div class="note"><strong>EOD check:</strong> Trước khi đóng cửa, last staff on shift chụp 1 ảnh Tester Island + Archive Wall. Upload EOD Report. Đảm bảo sáng hôm sau mở cửa = planogram chuẩn.</div>
+</div>
+
+<div class="ft"><span>MORAQ · PLN-001 · DISPLAY PLANOGRAM · V1.0</span><span>CONFIDENTIAL · APR 2026</span></div>
+<script>
+document.addEventListener('DOMContentLoaded',function(){var btns=document.querySelectorAll('.tb');var pnls=document.querySelectorAll('.pnl');btns.forEach(function(b){b.addEventListener('click',function(){var t=this.getAttribute('data-t');btns.forEach(function(x){x.classList.remove('on')});pnls.forEach(function(x){x.classList.remove('on')});this.classList.add('on');document.getElementById('p-'+t).classList.add('on');window.scrollTo({top:0,behavior:'smooth'});});});});
+</script>
+</body>
+</html>

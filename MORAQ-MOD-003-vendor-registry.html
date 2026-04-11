@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MORAQ · MOD-003 Vendor Registry</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1A1916;--teal:#0F6E56;--td:#085041;--tl:#E1F5EE;--tm:#5DCAA5;--amber:#854F0B;--al:#FAEEDA;--am:#EF9F27;--cream:#FAF9F6;--linen:#E8DFD0;--w2:#C4B49A;--w3:#8C7A62;--red:#A32D2D;--rl:#FCEBEB;--purple:#534AB7;--pl:#EEEDFE;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);-webkit-font-smoothing:antialiased;font-size:13px;display:flex;flex-direction:column}
+
+.topbar{background:var(--ink);padding:0 24px;height:52px;min-height:52px;display:flex;align-items:center;gap:16px;flex-shrink:0}
+.tb-logo{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:17px;color:var(--cream);letter-spacing:.1em}
+.tb-doc{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.22);padding:2px 7px;border:1px solid rgba(255,255,255,.1)}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.tb-stat{font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.25)}
+.tb-btn{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.05em;text-transform:uppercase;padding:5px 12px;border:1px solid rgba(255,255,255,.15);background:none;color:rgba(255,255,255,.45);cursor:pointer}
+.tb-btn.primary{background:var(--teal);border-color:var(--teal);color:var(--cream)}
+
+/* CAT TABS */
+.cattabs{background:var(--ink);display:flex;gap:2px;padding:0 2px 2px;flex-shrink:0;overflow-x:auto}
+.cattab{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:.05em;text-transform:uppercase;padding:8px 14px;color:rgba(255,255,255,.3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .14s}
+.cattab.active{color:var(--tm);border-bottom-color:var(--tm)}
+.cattab:hover{color:rgba(255,255,255,.6)}
+
+/* FILTERS */
+.filters{padding:8px 24px;border-bottom:1px solid var(--linen);background:var(--cream);display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0}
+.f-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:var(--w3)}
+.f-chip{font-family:'DM Mono',monospace;font-size:8px;padding:3px 9px;border:1px solid var(--linen);background:white;cursor:pointer;color:var(--w3);transition:all .12s}
+.f-chip:hover{border-color:var(--teal);color:var(--teal)}
+.f-chip.active{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+.f-search{font-family:'DM Mono',monospace;font-size:9px;padding:3px 9px;border:1px solid var(--linen);background:white;color:var(--ink);outline:none;width:180px}
+.f-search:focus{border-color:var(--teal)}
+.f-count{font-family:'DM Mono',monospace;font-size:8px;color:var(--w3);margin-left:auto}
+
+/* TABLE */
+.table-wrap{flex:1;overflow-y:auto;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead{position:sticky;top:0;z-index:10}
+thead tr{background:var(--ink)}
+th{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);padding:9px 14px;text-align:left;border-right:1px solid rgba(255,255,255,.05)}
+th:last-child{border-right:none}
+tbody tr{border-bottom:1px solid var(--linen);transition:background .1s}
+tbody tr:hover{background:rgba(15,110,86,.03)}
+tbody tr.hidden{display:none}
+td{padding:9px 14px;vertical-align:top;border-right:1px solid var(--linen);line-height:1.5}
+td:last-child{border-right:none}
+.cat-row td{background:#111;color:rgba(255,255,255,.45);padding:7px 14px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase}
+
+.v-name{font-weight:500;color:var(--ink)}
+.v-sub{font-size:11.5px;color:var(--w3);margin-top:1px}
+.v-type{font-family:'DM Mono',monospace;font-size:8px;padding:2px 7px;border-radius:2px;white-space:nowrap;display:inline-block}
+.t-local{background:var(--tl);color:var(--td)}
+.t-import{background:var(--pl);color:var(--purple)}
+.t-online{background:var(--al);color:var(--amber)}
+.t-service{background:rgba(255,255,255,.08);color:var(--w3)}
+.status-sel{font-family:'DM Mono',monospace;font-size:8px;border:1px solid var(--linen);padding:3px 6px;background:white;color:var(--w3);outline:none;cursor:pointer;width:100%}
+.status-sel:focus{border-color:var(--teal)}
+.v-contact{font-family:'DM Mono',monospace;font-size:9px;color:var(--teal)}
+.v-note{font-size:11.5px;color:var(--w3);font-style:italic;line-height:1.45}
+.priority-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;display:inline-block;margin-right:4px}
+.pri-p0{background:var(--red)}
+.pri-p1{background:var(--am)}
+.pri-p2{background:var(--teal)}
+.cat-chip{font-family:'DM Mono',monospace;font-size:8px;padding:2px 7px;border-radius:2px;white-space:nowrap;background:rgba(250,249,246,.06);color:var(--w2);border:1px solid var(--linen)}
+
+.footer{padding:12px 24px;border-top:2px solid var(--linen);background:white;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;flex-wrap:wrap;gap:8px}
+.footer-note{font-family:'DM Mono',monospace;font-size:8px;color:var(--w3);line-height:1.7}
+.add-btn{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.05em;text-transform:uppercase;padding:7px 14px;border:1px solid var(--teal);background:white;color:var(--teal);cursor:pointer}
+.add-btn:hover{background:var(--teal);color:white}
+
+/* ADD FORM MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:white;width:520px;max-width:95vw;max-height:80vh;overflow-y:auto}
+.modal-head{padding:16px 20px;border-bottom:1px solid var(--linen);display:flex;justify-content:space-between;align-items:center}
+.modal-title{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:22px}
+.modal-close{font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;color:var(--w3)}
+.modal-body{padding:16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mf-full{grid-column:1/-1}
+.mf label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:var(--w3);display:block;margin-bottom:4px}
+.mf input,.mf select,.mf textarea{width:100%;border:1px solid var(--linen);padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);outline:none;background:white}
+.mf input:focus,.mf select:focus,.mf textarea:focus{border-color:var(--teal)}
+.mf textarea{resize:vertical;min-height:60px}
+.modal-foot{padding:12px 20px;border-top:1px solid var(--linen);display:flex;gap:8px;justify-content:flex-end}
+.mf-btn{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.05em;text-transform:uppercase;padding:7px 16px;border:1px solid var(--linen);background:white;color:var(--w3);cursor:pointer}
+.mf-btn.save{background:var(--teal);border-color:var(--teal);color:white}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="tb-logo">MORAQ</span>
+  <span class="tb-doc">MOD-003 · Vendor Registry</span>
+  <div class="tb-right">
+    <span class="tb-stat" id="tbStat">— vendors</span>
+    <button class="tb-btn" onclick="exportData()">↓ Export</button>
+    <button class="tb-btn primary" onclick="openModal()">+ Thêm vendor</button>
+  </div>
+</div>
+
+<div class="cattabs" id="cattabs"></div>
+
+<div class="filters">
+  <span class="f-label">Loại</span>
+  <button class="f-chip active" data-filter="type" data-val="all">Tất cả</button>
+  <button class="f-chip" data-filter="type" data-val="local">Local</button>
+  <button class="f-chip" data-filter="type" data-val="import">Import</button>
+  <button class="f-chip" data-filter="type" data-val="online">Online</button>
+  <button class="f-chip" data-filter="type" data-val="service">Service</button>
+  <div style="width:1px;height:20px;background:var(--linen)"></div>
+  <span class="f-label">Priority</span>
+  <button class="f-chip active" data-filter="pri" data-val="all">Tất cả</button>
+  <button class="f-chip" data-filter="pri" data-val="P0" style="color:var(--red)">P0</button>
+  <button class="f-chip" data-filter="pri" data-val="P1">P1</button>
+  <input class="f-search" type="text" placeholder="Tìm vendor..." oninput="applyFilters()">
+  <span class="f-count" id="itemCount"></span>
+</div>
+
+<div class="table-wrap">
+  <table id="vendorTable">
+    <thead>
+      <tr>
+        <th style="width:180px">Vendor / Nhà cung cấp</th>
+        <th style="width:80px">Loại</th>
+        <th style="width:140px">Danh mục</th>
+        <th style="width:160px">Liên hệ</th>
+        <th style="width:110px">Lead time est.</th>
+        <th style="width:70px">Priority</th>
+        <th style="width:120px">Trạng thái</th>
+        <th>Ghi chú / Quote</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<div class="footer">
+  <div class="footer-note">MOD-003 · Vendor & Supplier Registry · v1.0<br>Tham chiếu FFE-001/002/003 và SEN-001/002/004. Cập nhật khi có contact mới.</div>
+  <button class="add-btn" onclick="openModal()">+ Thêm vendor mới</button>
+</div>
+
+<!-- ADD VENDOR MODAL -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">Thêm Vendor</span>
+      <span class="modal-close" onclick="closeModal()">✕ Đóng</span>
+    </div>
+    <div class="modal-body">
+      <div class="mf mf-full">
+        <label>Tên vendor *</label>
+        <input type="text" id="mf-name" placeholder="Tên công ty / cá nhân">
+      </div>
+      <div class="mf">
+        <label>Loại *</label>
+        <select id="mf-type">
+          <option value="local">Local (VN)</option>
+          <option value="import">Import</option>
+          <option value="online">Online platform</option>
+          <option value="service">Service provider</option>
+        </select>
+      </div>
+      <div class="mf">
+        <label>Priority</label>
+        <select id="mf-pri">
+          <option value="P0">P0 · Cần ngay</option>
+          <option value="P1">P1 · Trước opening</option>
+          <option value="P2">P2 · Sau opening</option>
+        </select>
+      </div>
+      <div class="mf mf-full">
+        <label>Danh mục (cung cấp cho)</label>
+        <input type="text" id="mf-cat" placeholder="Furniture, Lighting, Ingredients, Content...">
+      </div>
+      <div class="mf">
+        <label>Liên hệ (tên)</label>
+        <input type="text" id="mf-contact" placeholder="Nguyễn Văn A">
+      </div>
+      <div class="mf">
+        <label>SĐT / Zalo</label>
+        <input type="text" id="mf-phone" placeholder="09xx xxx xxx">
+      </div>
+      <div class="mf mf-full">
+        <label>Email / Website</label>
+        <input type="text" id="mf-email" placeholder="email@domain.com hoặc website">
+      </div>
+      <div class="mf">
+        <label>Lead time</label>
+        <input type="text" id="mf-lt" placeholder="2–4 tuần">
+      </div>
+      <div class="mf">
+        <label>Trạng thái</label>
+        <select id="mf-status">
+          <option value="prospect">Chưa liên hệ</option>
+          <option value="contacted">Đã liên hệ</option>
+          <option value="quoting">Đang lấy quote</option>
+          <option value="quoted">Có quote</option>
+          <option value="approved">Approved</option>
+          <option value="ordered">Đã order</option>
+        </select>
+      </div>
+      <div class="mf mf-full">
+        <label>Ghi chú / Quote info</label>
+        <textarea id="mf-note" placeholder="Giá quote, MOQ, điều kiện, review..."></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="mf-btn" onclick="closeModal()">Hủy</button>
+      <button class="mf-btn save" onclick="addVendor()">Lưu vendor</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STATUS_LABELS = {prospect:'Chưa liên hệ',contacted:'Đã liên hệ',quoting:'Đang quote',quoted:'Có quote',approved:'Approved',ordered:'Đã order'};
+const TYPE_LABELS = {local:'Local',import:'Import',online:'Online',service:'Service'};
+
+// ══ INITIAL VENDOR DATA ══
+let VENDORS = [
+  // FURNITURE & FIXTURES
+  {id:1,name:'Xưởng mộc nội thất tùy chỉnh HCM',type:'local',cat:'Furniture Custom',contact:'Liên hệ trực tiếp',phone:'',email:'Tìm qua Cốc Cốc: xưởng mộc nội thất HCM',lt:'4–8 tuần',pri:'P0',status:'prospect',note:'Cho counter P3+P4 custom, kệ P2 ingredient wall. Cần xem portfolio trước. Budget ~15–25M/counter. Yêu cầu: dark oak, công nghệ CNC, finish đúng spec.'},
+  {id:2,name:'Nội thất Hoàn Mỹ / Hiện Đại',type:'local',cat:'Furniture Stock',contact:'Showroom',phone:'',email:'noidathoanmy.vn',lt:'1–2 tuần',pri:'P1',status:'prospect',note:'Back office furniture (bàn, ghế, tủ). Stock items không cần custom. Tìm thêm: JYSK, Home Center, Index Living Mall.'},
+  {id:3,name:'Thi công nội thất (general contractor)',type:'service',cat:'Interior Construction',contact:'Cần 3 quotes',phone:'',email:'',lt:'Đàm phán',pri:'P0',status:'prospect',note:'Cần lấy ít nhất 3 quotes từ contractors khác nhau. Đánh giá theo: portfolio, timeline, khả năng hiểu spec kỹ thuật. Budget renovation: ~200–400M.'},
+  // STONE & MATERIALS
+  {id:4,name:'Công ty đá tự nhiên / Travertine Vietnam',type:'local',cat:'Stone · Travertine',contact:'',phone:'',email:'Tìm: đá travertine HCM',lt:'2–4 tuần',pri:'P0',status:'prospect',note:'Counter top material. Cần: Travertine hoặc Concrete-look stone. Kích thước: 120×80cm × 3cm thickness. Sample trước khi order.'},
+  {id:5,name:'Concrete casting / bê tông mỹ thuật',type:'local',cat:'Concrete · Custom',contact:'',phone:'',email:'Tìm: bê tông mỹ thuật HCM',lt:'3–5 tuần',pri:'P1',status:'prospect',note:'Alternative cho travertine — cast concrete counter top. Lighter, cheaper, cần seal treatment. Display pedestals P2.'},
+  // LIGHTING
+  {id:6,name:'Rạng Đông / Điện Quang',type:'local',cat:'Lighting · LED',contact:'Đại lý',phone:'',email:'rangdong.com.vn',lt:'1–2 tuần',pri:'P0',status:'prospect',note:'LED track spots. Cần: 2700K CRI≥90 cho ambient, 4000K CRI≥95 cho counter. Kiểm tra spec trước khi mua — không phải model nào cũng đạt CRI≥90.'},
+  {id:7,name:'Lutron Vietnam (dimmer)',type:'local',cat:'Lighting Control',contact:'Đại lý chính hãng',phone:'',email:'lutron.com',lt:'2–4 tuần',pri:'P0',status:'prospect',note:'Smart dimmer system. Lutron Caseta hoặc Diva series. Cần verify compatible với LED track lighting đã chọn trước khi order.'},
+  {id:8,name:'Shopee/Lazada (LED strip)',type:'online',cat:'Lighting · LED Strip',contact:'Platform',phone:'',email:'shopee.vn',lt:'3–7 ngày',pri:'P1',status:'prospect',note:'LED strip 2700K cho kệ P2/P3. Filter: CRI≥90, 24V DC, có aluminium profile với diffuser. Brand: Philips Hue strip, Govee, hoặc local quality brand.'},
+  // FRAGRANCE EQUIPMENT
+  {id:9,name:'Prolitec Vietnam / Đại lý',type:'import',cat:'Diffuser · Commercial',contact:'',phone:'',email:'prolitec.com',lt:'3–6 tuần',pri:'P0',status:'prospect',note:'Cold-air nebulizing diffuser. Không có đại lý chính thức tại VN — cần liên hệ trực tiếp hoặc qua distributor Singapore/HCM. Alt: Scent Air, Aromair.'},
+  {id:10,name:'Aromair Vietnam',type:'local',cat:'Diffuser · Commercial',contact:'',phone:'',email:'Tìm: commercial diffuser Vietnam',lt:'2–4 tuần',pri:'P0',status:'prospect',note:'Local option cho commercial diffuser. Cần xác nhận: cold-air nebulizing technology (không phải ultrasonic), programmable intensity, coverage 50m².'},
+  {id:11,name:'Thư Hương / Nhà cung cấp nguyên liệu',type:'local',cat:'Fragrance Ingredients',contact:'',phone:'',email:'Tìm: nguyên liệu nước hoa HCM',lt:'1–2 tuần',pri:'P0',status:'prospect',note:'Base materials, carrier oils, aromatic compounds. Cần: IFRA certified, có COA (Certificate of Analysis), MSDS available. Loại: Jojoba oil, Fractionated coconut, Isopropyl myristate.'},
+  {id:12,name:'Givaudan / Firmenich VN distributor',type:'import',cat:'Fragrance · Aromatic',contact:'',phone:'',email:'',lt:'2–6 tuần',pri:'P1',status:'prospect',note:'Premium aromatic compounds. Cho bespoke formula. Cần distributor tại VN. Alternate: local perfumery suppliers, Chemi Nuances.'},
+  // PACKAGING
+  {id:13,name:'Bao bì Sơn Long / Minh Long',type:'local',cat:'Packaging · Bottles',contact:'',phone:'',email:'Tìm: bao bì thủy tinh HCM',lt:'2–4 tuần',pri:'P0',status:'prospect',note:'Glass bottles 10ml và 50ml. Cần: clear glass, matte hoặc frosted finish, compatible với spray pump/dropper. MOQ thường 500–1000 units. So sánh giá 3 nhà.'},
+  {id:14,name:'In ấn túi giấy custom',type:'local',cat:'Packaging · Bags',contact:'',phone:'',email:'Tìm: in túi giấy theo yêu cầu',lt:'3–4 tuần',pri:'P0',status:'prospect',note:'Brand bags S/M/L. Spec: matte paper hoặc cotton, Ink/Cream color, MORAQ wordmark print. MOQ ~500 units/size. Cần file artwork để gửi.'},
+  {id:15,name:'In nhãn VDP (label printing)',type:'local',cat:'Packaging · Labels',contact:'',phone:'',email:'',lt:'1–2 tuần',pri:'P0',status:'prospect',note:'VDP label stock cho DYMO/Brother printer. Cần: label khổ đúng với bottle, chất liệu water-resistant, không peel trong điều kiện ẩm. Tìm local supplier VN.'},
+  // TECHNOLOGY
+  {id:16,name:'Apple Store / Apple Premium Reseller',type:'local',cat:'Technology · Apple',contact:'SaigonSouth / ACKO',phone:'',email:'apple.com/vn',lt:'Có sẵn',pri:'P0',status:'prospect',note:'iPad Pro cho POS. Có thể mua trả góp 0% qua ngân hàng. Warranty chính hãng 1 năm. Cần case bảo vệ và screen protector.'},
+  {id:17,name:'KiotViet / Sapo POS',type:'service',cat:'Technology · POS',contact:'Support',phone:'',email:'kiotviet.vn hoặc sapo.vn',lt:'1–2 tuần setup',pri:'P0',status:'prospect',note:'POS subscription. KiotViet: ~300K/tháng hoặc 3M/năm. Sapo: tương đương. Test demo trước khi commit. Cần: inventory management, sales report, Zalo integration.'},
+  {id:18,name:'Zalo Official Account',type:'service',cat:'Technology · Zalo OA',contact:'Zalo Business',phone:'',email:'oa.zalo.me',lt:'2–4 tuần (approval)',pri:'P0',status:'prospect',note:'Apply sớm — approval process 2–4 tuần. Cần business registration. ZNS template submission separate. Free OA, pay per ZNS message. Contact: Zalo business team.'},
+  {id:19,name:'VNPAY / Momo merchant',type:'service',cat:'Technology · Payment',contact:'Bank partner',phone:'',email:'vnpay.vn',lt:'1–3 tuần setup',pri:'P0',status:'prospect',note:'Card reader và QR payment. Cần tài khoản doanh nghiệp. VNPAY: qua ngân hàng partner. Momo business: apply trực tiếp. Commission: 1.5–2.5%/transaction.'},
+  // AUDIO
+  {id:20,name:'Sonos / Klipsch (qua Dienmayxanh)',type:'local',cat:'Audio · Speakers',contact:'Dienmayxanh',phone:'',email:'dienmayxanh.com',lt:'1–3 ngày',pri:'P0',status:'prospect',note:'Ceiling hoặc bookshelf speakers. Budget: 3–8M/pair. Test in-store before purchase. Cần: clear at 45–50dB, warm sound profile. Alt: JBL, Yamaha NS series.'},
+  {id:21,name:'Rode / DJI Mic (qua Sendo/Lazada)',type:'online',cat:'Audio · Microphone',contact:'Platform',phone:'',email:'lazada.vn',lt:'3–7 ngày',pri:'P1',status:'prospect',note:'Wireless lavalier cho content. Rode Wireless GO II hoặc DJI Mic. Budget 4–8M. Mua chính hãng, kiểm tra seal.'},
+  // CONTENT EQUIPMENT
+  {id:22,name:'Máy ảnh / điện thoại',type:'local',cat:'Content · Camera',contact:'Tgdd / FPT',phone:'',email:'thegioididong.com',lt:'Có sẵn',pri:'P0',status:'prospect',note:'iPhone 15 Pro hoặc Samsung S24 Ultra cho content. Nếu đã có flagship phone tốt → skip. Rent option: thuê máy ảnh cho shoot lớn.'},
+  {id:23,name:'Godox Vietnam',type:'local',cat:'Content · Lighting',contact:'Đại lý Godox',phone:'',email:'godox.com',lt:'1–2 tuần',pri:'P1',status:'prospect',note:'LED panel SL-60W cho controlled shoots. V-flat reflector. Có đại lý tại HCM. Budget: 5–15M cho basic setup. Tìm: Thiết bị quay phim HCM.'},
+  {id:24,name:'Shopee / Temu (props)',type:'online',cat:'Content · Props',contact:'Platform',phone:'',email:'shopee.vn',lt:'3–7 ngày',pri:'P1',status:'prospect',note:'Stone slabs, dried botanicals, linen fabric cho content props. Filter: natural materials, non-branded. Budget ~500K–2M cho initial props set.'},
+  // SAFETY
+  {id:25,name:'PCCC / Bình chữa cháy',type:'local',cat:'Safety',contact:'Cửa hàng thiết bị PCCC',phone:'',email:'',lt:'1 tuần',pri:'P0',status:'prospect',note:'Bình chữa cháy CO2 2kg. Cần certificate và annual inspection. Mua từ đơn vị được cấp phép — không mua online không rõ nguồn gốc.'},
+  {id:26,name:'Sơ cứu / Y tế (First Aid)',type:'local',cat:'Safety',contact:'Nhà thuốc / Online',phone:'',email:'',lt:'Có sẵn',pri:'P0',status:'prospect',note:'First aid kit đầy đủ. Tìm tại: Pharmacity, Long Châu, hoặc Shopee professional first aid kits.'},
+];
+
+let nextId = VENDORS.length + 1;
+let activeType='all', activePri='all', searchQ='', activeCat='all';
+
+const CATS = ['all','Furniture Custom','Furniture Stock','Interior Construction','Stone · Travertine','Concrete · Custom','Lighting · LED','Lighting Control','Lighting · LED Strip','Diffuser · Commercial','Fragrance Ingredients','Fragrance · Aromatic','Packaging · Bottles','Packaging · Bags','Packaging · Labels','Technology · Apple','Technology · POS','Technology · Zalo OA','Technology · Payment','Audio · Speakers','Audio · Microphone','Content · Camera','Content · Lighting','Content · Props','Safety'];
+
+const CAT_GROUPS = {
+  'all':'Semua',
+  'furniture':'Furniture & Custom',
+  'lighting':'Lighting',
+  'fragrance':'Fragrance',
+  'packaging':'Packaging',
+  'technology':'Technology',
+  'content':'Content',
+  'safety':'Safety',
+};
+
+function buildCatTabs(){
+  const groups = ['all','furniture','lighting','fragrance','packaging','technology','content','safety'];
+  const groupMap = {
+    all:v=>true,
+    furniture:v=>v.cat.toLowerCase().includes('furni')||v.cat.includes('Construction')||v.cat.includes('Stone')||v.cat.includes('Concrete'),
+    lighting:v=>v.cat.includes('Lighting'),
+    fragrance:v=>v.cat.includes('Diffuser')||v.cat.includes('Fragrance')||v.cat.includes('Ingredients')||v.cat.includes('Aromatic'),
+    packaging:v=>v.cat.includes('Packaging'),
+    technology:v=>v.cat.includes('Technology')||v.cat.includes('Audio')||v.cat.includes('POS'),
+    content:v=>v.cat.includes('Content'),
+    safety:v=>v.cat.includes('Safety'),
+  };
+  const el = document.getElementById('cattabs');
+  el.innerHTML = groups.map(g=>`<div class="cattab ${activeCat===g?'active':''}" onclick="setGroup('${g}')">${CAT_GROUPS[g]}</div>`).join('');
+  return groupMap;
+}
+
+let groupMap = {};
+function setGroup(g){
+  activeCat=g;
+  buildCatTabs();
+  applyFilters();
+}
+
+function buildTable(){
+  const tbody = document.getElementById('tableBody');
+  let html='', curCat='';
+  VENDORS.forEach((v,idx)=>{
+    if(v.cat!==curCat){curCat=v.cat;html+=`<tr class="cat-row"><td colspan="8">▸ ${curCat}</td></tr>`;}
+    const typeClass=`t-${v.type}`;
+    const priDot=`pri-${v.pri.toLowerCase()}`;
+    html+=`<tr data-type="${v.type}" data-pri="${v.pri}" data-cat="${v.cat}" data-idx="${idx}" class="vendor-row">
+      <td><div class="v-name">${v.name}</div><div class="v-sub">${v.email||''}</div></td>
+      <td><span class="v-type ${typeClass}">${TYPE_LABELS[v.type]}</span></td>
+      <td><span class="cat-chip">${v.cat}</span></td>
+      <td><div class="v-contact">${v.phone||v.contact||'—'}</div><div class="v-sub" style="font-size:11px">${v.contact&&v.phone?v.contact:''}</div></td>
+      <td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--w3)">${v.lt}</td>
+      <td><span class="priority-dot ${priDot}"></span>${v.pri}</td>
+      <td><select class="status-sel" onchange="updateStatus(${idx},this.value)">
+        ${Object.entries(STATUS_LABELS).map(([k,l])=>`<option value="${k}" ${v.status===k?'selected':''}>${l}</option>`).join('')}
+      </select></td>
+      <td><div class="v-note">${v.note}</div></td>
+    </tr>`;
+  });
+  tbody.innerHTML=html;
+  applyFilters();
+}
+
+function updateStatus(idx,val){VENDORS[idx].status=val;}
+
+function applyFilters(){
+  const q=searchQ.toLowerCase();
+  const rows=document.querySelectorAll('.vendor-row');
+  let vis=0;
+  rows.forEach(row=>{
+    const type=row.dataset.type,pri=row.dataset.pri,cat=row.dataset.cat;
+    const tm=activeType==='all'||type===activeType;
+    const pm=activePri==='all'||pri===activePri;
+    const gm=activeCat==='all'||groupMap[activeCat]?.(VENDORS[parseInt(row.dataset.idx)])||false;
+    const sm=!q||row.textContent.toLowerCase().includes(q);
+    const show=tm&&pm&&sm&&gm;
+    row.classList.toggle('hidden',!show);
+    if(show)vis++;
+  });
+  document.querySelectorAll('.cat-row').forEach(cr=>{
+    let next=cr.nextElementSibling,has=false;
+    while(next&&!next.classList.contains('cat-row')){if(!next.classList.contains('hidden'))has=true;next=next.nextElementSibling;}
+    cr.classList.toggle('hidden',!has);
+  });
+  document.getElementById('itemCount').textContent=vis+' vendors';
+  document.getElementById('tbStat').textContent=VENDORS.length+' vendors total';
+}
+
+// Filter chips
+document.querySelectorAll('[data-filter="type"]').forEach(btn=>{
+  btn.addEventListener('click',()=>{activeType=btn.dataset.val;document.querySelectorAll('[data-filter="type"]').forEach(b=>b.classList.toggle('active',b.dataset.val===activeType));applyFilters();});
+});
+document.querySelectorAll('[data-filter="pri"]').forEach(btn=>{
+  btn.addEventListener('click',()=>{activePri=btn.dataset.val;document.querySelectorAll('[data-filter="pri"]').forEach(b=>b.classList.toggle('active',b.dataset.val===activePri));applyFilters();});
+});
+document.querySelector('.f-search').addEventListener('input',function(){searchQ=this.value;applyFilters();});
+
+// MODAL
+function openModal(){document.getElementById('modalBg').classList.add('open');}
+function closeModal(){document.getElementById('modalBg').classList.remove('open');document.querySelectorAll('.modal-body input,.modal-body textarea,.modal-body select').forEach(el=>{if(el.tagName==='SELECT')el.selectedIndex=0;else el.value='';});}
+function addVendor(){
+  const v={
+    id:nextId++,
+    name:document.getElementById('mf-name').value||'Unnamed vendor',
+    type:document.getElementById('mf-type').value,
+    cat:document.getElementById('mf-cat').value||'Other',
+    contact:document.getElementById('mf-contact').value,
+    phone:document.getElementById('mf-phone').value,
+    email:document.getElementById('mf-email').value,
+    lt:document.getElementById('mf-lt').value||'—',
+    pri:document.getElementById('mf-pri').value,
+    status:document.getElementById('mf-status').value,
+    note:document.getElementById('mf-note').value,
+  };
+  VENDORS.push(v);
+  closeModal();
+  buildTable();
+}
+
+function exportData(){
+  const csv='Name,Type,Category,Contact,Phone,Email,Lead Time,Priority,Status,Notes\n'+
+    VENDORS.map(v=>[v.name,v.type,v.cat,v.contact,v.phone,v.email,v.lt,v.pri,v.status,v.note].map(s=>`"${(s||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='moraq-mod-003-vendors.csv';a.click();
+}
+
+// Init
+groupMap = buildCatTabs();
+buildTable();
+</script>
+</body>
+</html>

@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="color-scheme" content="dark">
+<title>MORAQ Material Library — Supplement 01</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#0C0B0A!important;color:#fff!important;height:100%}
+.shell{position:fixed;inset:0;background:#0C0B0A;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:flex;flex-direction:column;overflow:hidden}
+.top{height:50px;flex-shrink:0;background:#111010;border-bottom:1px solid #242220;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.t-l{display:flex;align-items:center;gap:12px}
+.t-brand{font-family:'Menlo','Monaco','Courier New',monospace;font-size:10px;letter-spacing:.2em;color:#9FE1CB;opacity:.8}
+.t-sep{width:1px;height:14px;background:#2A2724}
+.t-title{font-family:'Georgia','Times New Roman',serif;font-size:13px;font-style:italic;color:rgba(255,255,255,.35)}
+.t-doc{font-family:'Menlo','Monaco','Courier New',monospace;font-size:8px;color:rgba(255,255,255,.2)}
+.tabs{height:44px;flex-shrink:0;background:#111010;border-bottom:1px solid #242220;display:flex;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{display:flex;align-items:center;gap:7px;padding:0 16px;cursor:pointer;flex-shrink:0;border-bottom:2px solid transparent;transition:all .2s;user-select:none}
+.tab-dot{width:5px;height:5px;border-radius:50%;opacity:.35;flex-shrink:0;background:var(--c)}
+.tab-lbl{font-family:'Menlo','Monaco','Courier New',monospace;font-size:8px;letter-spacing:.1em;color:rgba(255,255,255,.3);transition:color .2s;white-space:nowrap}
+.tab:hover .tab-lbl{color:rgba(255,255,255,.6)}
+.tab:hover .tab-dot{opacity:.7}
+.tab.on .tab-lbl{color:#fff}.tab.on .tab-dot{opacity:1}
+.tab.on{border-bottom-color:var(--c)}
+.stage{flex:1;position:relative;overflow:hidden;background:#0C0B0A}
+.panel{position:absolute;inset:0;background:#0C0B0A;overflow-y:auto;overflow-x:hidden;opacity:0;transition:opacity .28s;pointer-events:none;scrollbar-width:thin;scrollbar-color:#2A2724 transparent}
+.panel::-webkit-scrollbar{width:3px}
+.panel::-webkit-scrollbar-thumb{background:#2A2724}
+.panel.on{opacity:1;pointer-events:all}
+.pw{padding:22px;display:flex;flex-direction:column;gap:16px}
+
+/* TYPE */
+.eyebrow{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7.5px;letter-spacing:.16em;display:block;margin-bottom:7px}
+.hero{font-family:'Georgia','Times New Roman',serif;font-size:clamp(24px,4vw,38px);font-weight:300;line-height:.97;color:#fff}
+.hero em{font-style:italic}
+.h2{font-family:'Georgia','Times New Roman',serif;font-size:clamp(17px,2.5vw,24px);font-weight:300;color:#fff;line-height:1.1}
+.h2 em{font-style:italic}
+.body{font-size:12px;color:rgba(255,255,255,.55);line-height:1.78}
+.body b{color:rgba(255,255,255,.85);font-weight:400}
+.hr{height:1px;background:#242220}
+.card{background:#1A1916;border:1px solid #2A2724;border-radius:6px;padding:13px}
+.lbl{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.12em;color:rgba(255,255,255,.3);display:block;margin-bottom:7px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tcol{display:flex;gap:12px}
+.tcol .l{flex:1;min-width:0;display:flex;flex-direction:column;gap:12px}
+.tcol .r{width:220px;flex-shrink:0;display:flex;flex-direction:column;gap:10px}
+.rb{border-left:2px solid #0F6E56;background:#080F0C;border-radius:0 6px 6px 0;padding:13px}
+.rl{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.14em;color:#9FE1CB;display:block;margin-bottom:5px}
+.rt{font-size:12px;color:rgba(255,255,255,.52);line-height:1.75;font-style:italic}
+.rt b{color:rgba(255,255,255,.82);font-weight:400;font-style:normal}
+.rba{border-left:2px solid #854F0B;background:#110900;border-radius:0 6px 6px 0;padding:13px}
+.rla{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.14em;color:#FAC775;display:block;margin-bottom:5px}
+.spec-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #1A1918;font-size:11.5px}
+.spec-row:last-child{border-bottom:none}
+.sk{color:rgba(255,255,255,.45)}
+.sv{font-family:'Menlo','Monaco','Courier New',monospace;font-size:10px;color:rgba(255,255,255,.78);letter-spacing:.03em}
+.sv.ok{color:#9FE1CB}
+.sv.warn{color:#FAC775}
+.tag{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.07em;padding:2px 8px;border-radius:10px;border:1px solid;display:inline-block}
+
+/* ── FAMILY DIAGRAM ── */
+.family-row{display:flex;gap:10px}
+.family-card{flex:1;border-radius:8px;overflow:hidden;border:1px solid #2A2724;display:flex;flex-direction:column}
+.fc-top{padding:16px;display:flex;flex-direction:column;gap:8px;flex:1}
+.fc-num{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7.5px;letter-spacing:.1em}
+.fc-name{font-family:'Georgia','Times New Roman',serif;font-size:17px;line-height:1.2}
+.fc-name em{font-style:italic}
+.fc-role{font-size:11px;line-height:1.55}
+.fc-signal{font-family:'Menlo','Monaco','Courier New',monospace;font-size:8px;letter-spacing:.05em;margin-top:auto;padding-top:8px}
+.fc-materials{padding:10px 14px;border-top:1px solid #242220;display:flex;flex-wrap:wrap;gap:5px}
+.fc-mat{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.05em;padding:2px 7px;border-radius:8px}
+
+/* ── TEXTURE SWATCHES ── */
+.tex-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.tex-card{border-radius:6px;overflow:hidden;border:1px solid #2A2724;cursor:pointer;transition:all .18s;user-select:none}
+.tex-card:hover{transform:translateY(-2px);border-color:#3A3730}
+.tex-card.sel{border-color:#0F6E56;box-shadow:0 0 0 1.5px rgba(15,110,86,.35)}
+.tx-swatch{height:80px;position:relative}
+.tx-swatch svg{position:absolute;inset:0;width:100%;height:100%}
+.tx-info{padding:8px 10px;background:#1A1916}
+.tx-name{font-size:11.5px;color:rgba(255,255,255,.78);font-weight:500;margin-bottom:2px}
+.tx-sub{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;color:rgba(255,255,255,.28);letter-spacing:.04em;line-height:1.45}
+.tx-badge{display:inline-block;font-family:'Menlo','Monaco','Courier New',monospace;font-size:6px;letter-spacing:.06em;padding:1.5px 5px;border-radius:8px;margin-top:3px}
+
+/* ── DETAIL DRAWER ── */
+.detail-drawer{background:#141210;border:1px solid #2A2724;border-radius:7px;overflow:hidden;display:none;margin-top:4px}
+.detail-drawer.open{display:block}
+.dd-head{padding:11px 14px;border-bottom:1px solid #242220;display:flex;justify-content:space-between;align-items:center}
+.ddh-name{font-family:'Georgia','Times New Roman',serif;font-size:17px;color:#fff}
+.ddh-close{font-family:'Menlo','Monaco','Courier New',monospace;font-size:10px;color:rgba(255,255,255,.3);cursor:pointer;padding:2px 8px;border:1px solid #2A2724;border-radius:4px}
+.ddh-close:hover{color:#fff;border-color:#3A3730}
+.dd-body{padding:13px 14px;display:flex;gap:14px}
+.dd-specs{flex:1;display:flex;flex-direction:column;gap:0}
+.dd-why{width:220px;flex-shrink:0;padding:12px;background:#0A0C08;border-radius:5px;border-left:2px solid #0F6E56;display:flex;flex-direction:column;gap:6px}
+.dw-label{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.1em;color:#9FE1CB;display:block;margin-bottom:3px}
+.dw-text{font-size:11px;color:rgba(255,255,255,.48);line-height:1.65;font-style:italic}
+.dw-text b{color:rgba(255,255,255,.72);font-weight:400;font-style:normal}
+.dd-ref{padding:10px 14px;background:#0C0B0A;border-top:1px solid #1A1918;font-size:10.5px;color:rgba(255,255,255,.3);font-style:italic;line-height:1.55}
+
+/* ── WOOD HIERARCHY ── */
+.wood-split{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ws-card{border-radius:8px;overflow:hidden;border:1px solid #2A2724}
+.wsc-top{height:100px;position:relative}
+.wsc-top svg{position:absolute;inset:0;width:100%;height:100%}
+.wsc-body{padding:13px;display:flex;flex-direction:column;gap:8px}
+.wsb-label{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.12em;display:block;margin-bottom:2px}
+.wsb-name{font-family:'Georgia','Times New Roman',serif;font-size:16px;color:#fff;margin-bottom:5px}
+.wsb-use{font-size:11.5px;color:rgba(255,255,255,.55);line-height:1.65}
+.wsb-use b{color:rgba(255,255,255,.85);font-weight:400}
+.wsb-specs{margin-top:4px;display:flex;flex-direction:column;gap:0}
+
+/* ── FURNITURE TYPOLOGY ── */
+.furn-card{background:#1A1916;border:1px solid #2A2724;border-radius:8px;overflow:hidden}
+.furn-illus{height:160px;position:relative;background:#111}
+.furn-illus svg{position:absolute;inset:0;width:100%;height:100%}
+.furn-body{padding:13px;display:flex;flex-direction:column;gap:8px}
+.fb-label{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.1em;display:block;margin-bottom:3px}
+.fb-name{font-family:'Georgia','Times New Roman',serif;font-size:17px;color:#fff;line-height:1.2;margin-bottom:4px}
+.fb-name em{font-style:italic}
+.fb-desc{font-size:11.5px;color:rgba(255,255,255,.52);line-height:1.65}
+.fb-desc b{color:rgba(255,255,255,.82);font-weight:400}
+.fb-spec{font-family:'Menlo','Monaco','Courier New',monospace;font-size:8.5px;letter-spacing:.04em;color:#9FE1CB;margin-top:4px;line-height:1.65}
+.fb-never{padding:8px 13px;background:#160808;border-top:1px solid #2A1818;font-size:10.5px;color:rgba(163,45,45,.7);line-height:1.5}
+
+/* ── COLOR ON FURNITURE ── */
+.color-rule{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid #1A1918}
+.color-rule:last-child{border-bottom:none}
+.cr-swatch{width:44px;height:44px;border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.05em}
+.cr-body{flex:1}
+.cr-name{font-size:12.5px;color:rgba(255,255,255,.8);font-weight:500;margin-bottom:4px}
+.cr-rule{font-size:11.5px;color:rgba(255,255,255,.48);line-height:1.65}
+.cr-rule b{color:rgba(255,255,255,.8);font-weight:400}
+.cr-ok{font-family:'Menlo','Monaco','Courier New',monospace;font-size:8px;color:#9FE1CB;margin-top:5px;letter-spacing:.04em;line-height:1.6}
+.cr-no{font-family:'Menlo','Monaco','Courier New',monospace;font-size:8px;color:rgba(163,45,45,.7);margin-top:3px;letter-spacing:.04em;line-height:1.6}
+
+@media(max-width:620px){
+  .family-row,.wood-split,.tcol{flex-direction:column}
+  .tcol .r{width:100%}
+  .g3{grid-template-columns:1fr 1fr}
+  .tex-grid{grid-template-columns:1fr 1fr}
+  .dd-body{flex-direction:column}
+  .dd-why{width:100%}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+<div class="top">
+  <div class="t-l">
+    <div class="t-brand">MORAQ</div>
+    <div class="t-sep"></div>
+    <div class="t-title">Material Library — Supplement 01</div>
+  </div>
+  <div class="t-doc">MSDL-001-S1 · V1.0</div>
+</div>
+<div class="tabs" id="tabs">
+  <div class="tab on" data-p="0" style="--c:#0F6E56"><div class="tab-dot"></div><div class="tab-lbl">3 MATERIAL FAMILIES</div></div>
+  <div class="tab" data-p="1" style="--c:#854F0B"><div class="tab-dot"></div><div class="tab-lbl">WOOD HIERARCHY</div></div>
+  <div class="tab" data-p="2" style="--c:#185FA5"><div class="tab-dot"></div><div class="tab-lbl">FULL TEXTURE LIBRARY</div></div>
+  <div class="tab" data-p="3" style="--c:#533CB7"><div class="tab-dot"></div><div class="tab-lbl">FURNITURE TYPOLOGY</div></div>
+  <div class="tab" data-p="4" style="--c:#9FE1CB"><div class="tab-dot"></div><div class="tab-lbl">COLOR ON FURNITURE</div></div>
+</div>
+<div class="stage">
+
+<!-- ══════════════════════════════
+     P0 — 3 MATERIAL FAMILIES
+══════════════════════════════ -->
+<div class="panel on" id="p0">
+<div class="pw">
+  <div>
+    <span class="eyebrow" style="color:#9FE1CB">SUPPLEMENT 01 · 3 MATERIAL FAMILIES</span>
+    <div class="hero">Không phải danh sách<br>vật liệu. <em>Một hệ thống<br>có vai trò.</em></div>
+  </div>
+  <div class="body" style="max-width:540px">MSDL-001 list vật liệu theo category. Supplement này organize chúng theo <b>chức năng và tín hiệu cảm xúc</b> — mỗi family nói một điều khác nhau với người đứng trong store. Designer cần biết điều này để không chọn vật liệu đúng nhưng sai vị trí.</div>
+
+  <!-- FAMILY DIAGRAM -->
+  <div class="family-row">
+
+    <div class="family-card" style="background:#080F0C;border-color:rgba(15,110,86,.25)">
+      <div class="fc-top">
+        <div class="fc-num" style="color:#9FE1CB">FAMILY 01 · STONE & PLASTER</div>
+        <div class="fc-name" style="color:#9FE1CB">Cold &<br><em>Grounding</em></div>
+        <div class="fc-role" style="color:rgba(255,255,255,.5)">Tạo nền tảng của không gian. Nặng, mát, vĩnh cửu. Khách bước vào cảm thấy sự ổn định trước khi cảm thấy bất cứ thứ gì khác.</div>
+        <div class="fc-signal" style="color:#9FE1CB">SIGNAL: Archive · Permanence · Weight</div>
+      </div>
+      <div class="fc-materials" style="background:#0A1410;border-color:rgba(15,110,86,.15)">
+        <span class="fc-mat" style="background:#0A1E14;color:#9FE1CB;border:1px solid #1A4028">Counter Stone</span>
+        <span class="fc-mat" style="background:#0A1E14;color:#9FE1CB;border:1px solid #1A4028">Floor Stone</span>
+        <span class="fc-mat" style="background:#0A1E14;color:#9FE1CB;border:1px solid #1A4028">Wall Plaster</span>
+        <span class="fc-mat" style="background:#0A1E14;color:#9FE1CB;border:1px solid #1A4028">Entry Threshold</span>
+        <span class="fc-mat" style="background:#0A1E14;color:#9FE1CB;border:1px solid #1A4028">Ceiling (exposed)</span>
+      </div>
+    </div>
+
+    <div class="family-card" style="background:#0C0A08;border-color:rgba(133,79,11,.25)">
+      <div class="fc-top">
+        <div class="fc-num" style="color:#FAC775">FAMILY 02 · DARK METAL</div>
+        <div class="fc-name" style="color:#FAC775">Industrial &<br><em>Honest</em></div>
+        <div class="fc-role" style="color:rgba(255,255,255,.5)">Nói về craft và quá trình. Không ẩn giấu kết cấu — phô bày nó một cách tự hào. Khách nhìn thấy bracket, thấy bolt, thấy rằng thứ này được xây bởi người có tay nghề.</div>
+        <div class="fc-signal" style="color:#FAC775">SIGNAL: Workshop · Craft · Honest construction</div>
+      </div>
+      <div class="fc-materials" style="background:#100C04;border-color:rgba(133,79,11,.15)">
+        <span class="fc-mat" style="background:#160C02;color:#FAC775;border:1px solid #3A2008">Shelving Frame</span>
+        <span class="fc-mat" style="background:#160C02;color:#FAC775;border:1px solid #3A2008">Track Lighting</span>
+        <span class="fc-mat" style="background:#160C02;color:#FAC775;border:1px solid #3A2008">Hardware</span>
+        <span class="fc-mat" style="background:#160C02;color:#FAC775;border:1px solid #3A2008">Stool Base</span>
+        <span class="fc-mat" style="background:#160C02;color:#FAC775;border:1px solid #3A2008">Rolling Cart</span>
+        <span class="fc-mat" style="background:#160C02;color:#FAC775;border:1px solid #3A2008">Pipe Bracket</span>
+      </div>
+    </div>
+
+    <div class="family-card" style="background:#0C0A06;border-color:rgba(200,168,75,.2)">
+      <div class="fc-top">
+        <div class="fc-num" style="color:rgba(200,168,75,.8)">FAMILY 03 · WOOD (2 TONES)</div>
+        <div class="fc-name" style="color:rgba(200,168,75,.9)">Warm &<br><em>Human</em></div>
+        <div class="fc-role" style="color:rgba(255,255,255,.5)">Mang hơi ấm vào không gian đá và kim loại. Dùng theo hai tông có chủ ý: tối cho cấu trúc, sáng cho bề mặt làm việc. Tay chạm vào gỗ mới cảm thấy "human".</div>
+        <div class="fc-signal" style="color:rgba(200,168,75,.8)">SIGNAL: Human touch · Craft warmth · Living material</div>
+      </div>
+      <div class="fc-materials" style="background:#0E0C04;border-color:rgba(200,168,75,.12)">
+        <span class="fc-mat" style="background:#1C1608;color:rgba(200,168,75,.8);border:1px solid rgba(200,168,75,.2)">Dark: Counter Base</span>
+        <span class="fc-mat" style="background:#1C1608;color:rgba(200,168,75,.8);border:1px solid rgba(200,168,75,.2)">Dark: Risers</span>
+        <span class="fc-mat" style="background:#1C1608;color:rgba(200,168,75,.8);border:1px solid rgba(200,168,75,.2)">Dark: Structural</span>
+        <span class="fc-mat" style="background:#261E0A;color:rgba(200,168,75,.6);border:1px solid rgba(200,168,75,.15)">Light: Display Surface</span>
+        <span class="fc-mat" style="background:#261E0A;color:rgba(200,168,75,.6);border:1px solid rgba(200,168,75,.15)">Light: Drawer Front</span>
+        <span class="fc-mat" style="background:#261E0A;color:rgba(200,168,75,.6);border:1px solid rgba(200,168,75,.15)">Light: Tester Island</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- INTERACTION DIAGRAM -->
+  <div class="card">
+    <span class="lbl">FAMILY INTERACTION — CÁI NÀO Ở ĐÂU</span>
+    <div style="position:relative">
+      <svg viewBox="0 0 540 200" xmlns="http://www.w3.org/2000/svg">
+        <rect width="540" height="200" fill="#111010" rx="4"/>
+        <!-- Store zones -->
+        <rect x="10" y="10" width="520" height="55" fill="#080F0C" rx="2"/>
+        <text x="270" y="32" font-family="monospace" font-size="7.5" fill="rgba(159,225,203,.5)" text-anchor="middle" letter-spacing="1">ZONE 3 · COUNTER</text>
+        <rect x="10" y="75" width="520" height="55" fill="#0C0A08"/>
+        <text x="270" y="100" font-family="monospace" font-size="7.5" fill="rgba(250,199,117,.4)" text-anchor="middle" letter-spacing="1">ZONE 2 · P2 DISCOVERY</text>
+        <rect x="10" y="140" width="520" height="50" fill="#0A0908" rx="0 0 2 2"/>
+        <text x="270" y="163" font-family="monospace" font-size="7.5" fill="rgba(255,255,255,.2)" text-anchor="middle" letter-spacing="1">ZONE 1 · ENTRY</text>
+        <!-- Family indicators -->
+        <!-- Stone -->
+        <rect x="16" y="142" width="80" height="12" rx="2" fill="rgba(15,110,86,.2)"/>
+        <text x="56" y="151" font-family="monospace" font-size="6" fill="#9FE1CB" text-anchor="middle">STONE FLOOR</text>
+        <rect x="16" y="15" width="60" height="10" rx="2" fill="rgba(15,110,86,.2)"/>
+        <text x="46" y="23" font-family="monospace" font-size="6" fill="#9FE1CB" text-anchor="middle">STONE TOP</text>
+        <!-- Wall plaster both sides -->
+        <rect x="10" y="10" width="8" height="180" fill="rgba(15,110,86,.12)"/>
+        <rect x="522" y="10" width="8" height="180" fill="rgba(15,110,86,.12)"/>
+        <text x="5" y="105" font-family="monospace" font-size="6" fill="rgba(15,110,86,.5)" text-anchor="middle" transform="rotate(-90,5,105)">PLASTER</text>
+        <!-- Metal -->
+        <rect x="16" y="35" width="70" height="10" rx="2" fill="rgba(133,79,11,.2)"/>
+        <text x="51" y="43" font-family="monospace" font-size="6" fill="#FAC775" text-anchor="middle">TRACK LIGHT</text>
+        <rect x="102" y="77" width="75" height="10" rx="2" fill="rgba(133,79,11,.2)"/>
+        <text x="139" y="85" font-family="monospace" font-size="6" fill="#FAC775" text-anchor="middle">SHELF FRAME</text>
+        <rect x="400" y="77" width="70" height="10" rx="2" fill="rgba(133,79,11,.2)"/>
+        <text x="435" y="85" font-family="monospace" font-size="6" fill="#FAC775" text-anchor="middle">ROLLING CART</text>
+        <!-- Wood dark -->
+        <rect x="90" y="15" width="80" height="10" rx="2" fill="rgba(200,168,75,.15)"/>
+        <text x="130" y="23" font-family="monospace" font-size="6" fill="rgba(200,168,75,.8)" text-anchor="middle">WOOD DARK BASE</text>
+        <!-- Wood light -->
+        <rect x="200" y="77" width="90" height="10" rx="2" fill="rgba(200,168,75,.1)"/>
+        <text x="245" y="85" font-family="monospace" font-size="6" fill="rgba(200,168,75,.6)" text-anchor="middle">WOOD LIGHT SURFACE</text>
+        <!-- Teal accent -->
+        <rect x="310" y="77" width="80" height="10" rx="2" fill="rgba(15,110,86,.12)"/>
+        <text x="350" y="85" font-family="monospace" font-size="6" fill="#9FE1CB" text-anchor="middle">TEAL STORAGE</text>
+        <!-- Local -->
+        <rect x="380" y="142" width="90" height="12" rx="2" fill="rgba(250,199,117,.1)" stroke="rgba(250,199,117,.2)" stroke-width=".5" stroke-dasharray="3,2"/>
+        <text x="425" y="151" font-family="monospace" font-size="6" fill="#FAC775" text-anchor="middle">LOCAL MATERIAL</text>
+        <!-- Zone dividers -->
+        <line x1="10" y1="73" x2="530" y2="73" stroke="#2A2724" stroke-width=".5" stroke-dasharray="3,3"/>
+        <line x1="10" y1="138" x2="530" y2="138" stroke="#2A2724" stroke-width=".5" stroke-dasharray="3,3"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="rb">
+    <span class="rl">QUY TẮC PHỐI HỢP</span>
+    <div class="rt">Mỗi zone phải có đủ cả 3 families. <b>Stone cho nền tảng, Metal cho cấu trúc, Wood cho hơi ấm.</b> Nếu một zone thiếu một family — nó sẽ cảm thấy off mà designer không biết tại sao. Ví dụ: counter chỉ có stone + wood mà không có metal hardware → thiếu craft signal, trông như bếp ăn đắt tiền thay vì atelier.</div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════
+     P1 — WOOD HIERARCHY
+══════════════════════════════ -->
+<div class="panel" id="p1">
+<div class="pw">
+  <div>
+    <span class="eyebrow" style="color:#FAC775">WOOD HIERARCHY · HAI TÔNG CÓ CHỦ Ý</span>
+    <div class="hero">Gỗ tối là xương.<br><em>Gỗ sáng là da.</em></div>
+  </div>
+  <div class="body" style="max-width:540px">Moodboard xác nhận: MORAQ dùng <b>đúng hai tông gỗ</b> trong cùng một không gian, không phải vì thiếu nhất quán mà vì mỗi tông có nhiệm vụ khác nhau. Đây là cách các thương hiệu LVMH, Aesop, và các luxury apothecary brand tạo ra visual depth mà không cần màu sắc.</div>
+
+  <div class="wood-split">
+    <div class="ws-card">
+      <div class="wsc-top">
+        <svg viewBox="0 0 260 100" xmlns="http://www.w3.org/2000/svg">
+          <rect width="260" height="100" fill="#1A1208"/>
+          <g stroke="rgba(255,200,100,.08)" stroke-width=".8" fill="none">
+            <line x1="0" y1="10" x2="260" y2="7"/><line x1="0" y1="20" x2="260" y2="17"/>
+            <line x1="0" y1="32" x2="260" y2="29"/><line x1="0" y1="45" x2="260" y2="42"/>
+            <line x1="0" y1="55" x2="260" y2="52"/><line x1="0" y1="65" x2="260" y2="62"/>
+            <line x1="0" y1="78" x2="260" y2="75"/><line x1="0" y1="90" x2="260" y2="87"/>
+          </g>
+          <rect x="0" y="75" width="260" height="25" fill="rgba(26,18,8,.7)"/>
+          <text x="16" y="90" font-family="monospace" font-size="7.5" fill="rgba(200,168,75,.5)" letter-spacing="1">DARK TONE · STRUCTURAL</text>
+        </svg>
+      </div>
+      <div class="wsc-body">
+        <div>
+          <span class="wsb-label" style="color:rgba(200,168,75,.7)">DARK HARDWOOD · Teak / Walnut / Wenge</span>
+          <div class="wsb-name">Structural Frame</div>
+        </div>
+        <div class="wsb-use">Dùng cho: <b>Counter base, shelf frame, riser body, museum cabinet frame, stools.</b> Bất cứ thứ gì là "xương" của không gian — chịu lực, định nghĩa hình dạng, tạo hierarchy.</div>
+        <div class="wsb-specs">
+          <div class="spec-row"><div class="sk">Species</div><div class="sv ok">Teak · Walnut · Wenge · Merbau</div></div>
+          <div class="spec-row"><div class="sk">Finish</div><div class="sv ok">Matte oil · không varnish</div></div>
+          <div class="spec-row"><div class="sk">Color range</div><div class="sv">Dark brown → near-black</div></div>
+          <div class="spec-row"><div class="sk">Grain</div><div class="sv">Visible, mạnh, có character</div></div>
+          <div class="spec-row"><div class="sk">Sound khi gõ</div><div class="sv ok">Thud nặng, solid</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ws-card">
+      <div class="wsc-top">
+        <svg viewBox="0 0 260 100" xmlns="http://www.w3.org/2000/svg">
+          <rect width="260" height="100" fill="#E0D4B8"/>
+          <g stroke="rgba(100,80,40,.12)" stroke-width=".7" fill="none">
+            <line x1="0" y1="12" x2="260" y2="9"/><line x1="0" y1="24" x2="260" y2="21"/>
+            <line x1="0" y1="36" x2="260" y2="33"/><line x1="0" y1="48" x2="260" y2="45"/>
+            <line x1="0" y1="58" x2="260" y2="55"/><line x1="0" y1="70" x2="260" y2="67"/>
+            <line x1="0" y1="82" x2="260" y2="79"/>
+          </g>
+          <rect x="0" y="75" width="260" height="25" fill="rgba(200,180,140,.5)"/>
+          <text x="16" y="90" font-family="monospace" font-size="7.5" fill="rgba(100,80,40,.6)" letter-spacing="1">LIGHT TONE · WORKING SURFACE</text>
+        </svg>
+      </div>
+      <div class="wsc-body">
+        <div>
+          <span class="wsb-label" style="color:rgba(200,168,75,.5)">LIGHT HARDWOOD · Ash / Raw Pine / White Oak</span>
+          <div class="wsb-name">Working Surface</div>
+        </div>
+        <div class="wsb-use">Dùng cho: <b>Counter display surface, tester island top, drawer fronts, inner shelf lining.</b> Bất cứ thứ gì tay khách chạm vào hoặc nhìn thấy khi làm việc — mang lại warmth và invitation.</div>
+        <div class="wsb-specs">
+          <div class="spec-row"><div class="sk">Species</div><div class="sv ok">Ash · White oak · Pine raw · Birch</div></div>
+          <div class="spec-row"><div class="sk">Finish</div><div class="sv ok">Natural oil · không stain · không varnish</div></div>
+          <div class="spec-row"><div class="sk">Color range</div><div class="sv">Cream-tan → light brown</div></div>
+          <div class="spec-row"><div class="sk">Grain</div><div class="sv">Mịn, nhẹ — không grain mạnh</div></div>
+          <div class="spec-row"><div class="sk">Aging</div><div class="sv ok">Patina đẹp hơn theo thời gian</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- USAGE DECISION GUIDE -->
+  <div class="card">
+    <span class="lbl">KHI NÀO DÙNG LOẠI NÀO — DECISION GUIDE</span>
+    <div style="display:flex;flex-direction:column;gap:0">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-bottom:1px solid #242220;padding:7px 0">
+        <div style="font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.1em;color:rgba(255,255,255,.25)">ELEMENT</div>
+        <div style="font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.1em;color:rgba(200,168,75,.7)">DARK WOOD</div>
+        <div style="font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.1em;color:rgba(200,168,75,.4)">LIGHT WOOD</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-bottom:1px solid #1A1918;padding:8px 0">
+        <div style="font-size:11.5px;color:rgba(255,255,255,.5)">Counter</div>
+        <div style="font-size:11px;color:rgba(200,168,75,.8)">✓ Base / legs</div>
+        <div style="font-size:11px;color:rgba(200,168,75,.5)">✓ Top surface nếu không dùng stone</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-bottom:1px solid #1A1918;padding:8px 0">
+        <div style="font-size:11.5px;color:rgba(255,255,255,.5)">Display shelf</div>
+        <div style="font-size:11px;color:rgba(200,168,75,.8)">✓ Frame / bracket</div>
+        <div style="font-size:11px;color:rgba(200,168,75,.5)">✓ Shelf surface (nơi đặt chai)</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-bottom:1px solid #1A1918;padding:8px 0">
+        <div style="font-size:11.5px;color:rgba(255,255,255,.5)">Risers</div>
+        <div style="font-size:11px;color:rgba(200,168,75,.8)">✓ Preferred (contrast với chai)</div>
+        <div style="font-size:11px;color:rgba(163,45,45,.5)">— Không (quá nhạt, chai bị mất)</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-bottom:1px solid #1A1918;padding:8px 0">
+        <div style="font-size:11.5px;color:rgba(255,255,255,.5)">Museum cabinet</div>
+        <div style="font-size:11px;color:rgba(200,168,75,.8)">✓ Frame nếu không dùng metal</div>
+        <div style="font-size:11px;color:rgba(163,45,45,.5)">— Không (quá nhẹ cho form nặng)</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-bottom:1px solid #1A1918;padding:8px 0">
+        <div style="font-size:11.5px;color:rgba(255,255,255,.5)">Tester island</div>
+        <div style="font-size:11px;color:rgba(163,45,45,.5)">— Không (quá nặng cho working zone)</div>
+        <div style="font-size:11px;color:rgba(200,168,75,.5)">✓ Top surface (inviting, warm)</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;padding:8px 0">
+        <div style="font-size:11.5px;color:rgba(255,255,255,.5)">Drawer fronts</div>
+        <div style="font-size:11px;color:rgba(163,45,45,.5)">— Có thể, nhưng heavy</div>
+        <div style="font-size:11px;color:rgba(200,168,75,.5)">✓ Preferred (thấy texture rõ)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rba">
+    <span class="rla">TẠI SAO HAI TÔNG — KHÔNG PHẢI MỘT</span>
+    <div class="rt" style="color:rgba(255,255,255,.52)">Một màu gỗ duy nhất tạo ra visual monotony — mọi thứ merge vào nhau. <b>Hai tông tạo ra hierarchy và depth mà không cần thêm màu sắc khác.</b> Dark base = stable ground. Light surface = active zone where things happen. Đây là cách Aesop (ảnh trong moodboard) tạo ra "reading depth" trong store mà không cần contrast màu mạnh. Người xem biết ngay: tối = nền, sáng = nơi tôi tương tác.</div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════
+     P2 — FULL TEXTURE LIBRARY
+══════════════════════════════ -->
+<div class="panel" id="p2">
+<div class="pw">
+  <div>
+    <span class="eyebrow" style="color:#85B7EB">TEXTURE LIBRARY · TẤT CẢ VẬT LIỆU ĐÃ XÁC NHẬN</span>
+    <div class="hero">Bấm để xem<br><em>specs đầy đủ.</em></div>
+  </div>
+  <div class="body" style="max-width:540px">Tổng hợp từ MSDL-001 gốc + bổ sung từ moodboard review. Mỗi vật liệu có family tag, vai trò, và spec. Vật liệu mới được thêm vào từ Supplement này được đánh dấu <span style="font-family:'Menlo','Monaco','Courier New',monospace;font-size:9px;padding:1px 5px;background:#0C0A20;color:#AFA9EC;border-radius:4px;border:1px solid #2A2060">NEW</span>.</div>
+
+  <div class="tex-grid" id="texGrid"></div>
+  <div class="detail-drawer" id="texDrawer">
+    <div class="dd-head">
+      <div class="ddh-name" id="ddName">—</div>
+      <div class="ddh-close" onclick="closeDrawer()">✕ ĐÓNG</div>
+    </div>
+    <div class="dd-body">
+      <div class="dd-specs" id="ddSpecs"></div>
+      <div class="dd-why" id="ddWhy"></div>
+    </div>
+    <div class="dd-ref" id="ddRef"></div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════
+     P3 — FURNITURE TYPOLOGY
+══════════════════════════════ -->
+<div class="panel" id="p3">
+<div class="pw">
+  <div>
+    <span class="eyebrow" style="color:#AFA9EC">FURNITURE TYPOLOGY · 5 LOẠI ĐỒ NỘI THẤT CỐT LÕI</span>
+    <div class="hero">Mỗi piece nói<br><em>một vai trò khác nhau</em><br>trong archive.</div>
+  </div>
+  <div class="body" style="max-width:540px">Bổ sung từ moodboard: Museum Cabinet, Rolling Cart, và Industrial Stool chưa có trong MSDL-001 gốc. Tất cả 5 typologies dưới đây là <b>approved furniture forms</b> cho MORAQ store.</div>
+
+  <div style="display:flex;flex-direction:column;gap:12px">
+
+    <!-- 1. COUNTER -->
+    <div class="furn-card">
+      <div class="furn-illus">
+        <svg viewBox="0 0 560 160" xmlns="http://www.w3.org/2000/svg">
+          <rect width="560" height="160" fill="#0A0908"/>
+          <radialGradient id="cl1" cx="50%" cy="0%" r="70%"><stop offset="0%" stop-color="#FAC775" stop-opacity=".18"/><stop offset="100%" stop-color="#0A0908" stop-opacity="0"/></radialGradient>
+          <rect width="560" height="160" fill="url(#cl1)"/>
+          <!-- Counter body -->
+          <rect x="60" y="60" width="440" height="60" rx="2" fill="#1A1208"/>
+          <!-- Stone top -->
+          <rect x="60" y="48" width="440" height="16" rx="2" fill="#2A2724"/>
+          <g stroke="rgba(255,255,255,.06)" stroke-width=".5" fill="none">
+            <path d="M60 54 Q150 52 280 55 Q410 58 500 54"/>
+            <path d="M60 58 Q200 56 280 60 Q360 56 500 58"/>
+          </g>
+          <!-- Wood base detail -->
+          <rect x="80" y="80" width="180" height="36" fill="#241A08" rx="1"/>
+          <rect x="300" y="80" width="180" height="36" fill="#241A08" rx="1"/>
+          <line x1="80" y1="90" x2="260" y2="90" stroke="rgba(255,200,100,.08)" stroke-width=".5"/>
+          <line x1="300" y1="90" x2="480" y2="90" stroke="rgba(255,200,100,.08)" stroke-width=".5"/>
+          <!-- Bottles on counter -->
+          <rect x="220" y="28" width="8" height="22" rx="1" fill="#9FE1CB" opacity=".7"/>
+          <rect x="234" y="24" width="9" height="26" rx="1" fill="#0F6E56" opacity=".8"/>
+          <rect x="249" y="30" width="7" height="20" rx="1" fill="#085041" opacity=".8"/>
+          <rect x="296" y="26" width="9" height="24" rx="1" fill="#04342C" opacity=".8"/>
+          <rect x="311" y="28" width="8" height="22" rx="1" fill="#1A1916" stroke="#2A2724" stroke-width=".5" opacity=".7"/>
+          <!-- Metal hardware -->
+          <circle cx="122" cy="100" r="4" fill="#1C1C1E"/>
+          <circle cx="280" cy="100" r="4" fill="#1C1C1E"/>
+          <circle cx="438" cy="100" r="4" fill="#1C1C1E"/>
+          <!-- Dimension arrows -->
+          <line x1="60" y1="145" x2="500" y2="145" stroke="#854F0B" stroke-width=".5" opacity=".5"/>
+          <text x="280" y="142" font-family="monospace" font-size="7" fill="#FAC775" text-anchor="middle">MIN 3m LENGTH · 60–70cm DEEP · 90cm HIGH</text>
+          <rect x="0" y="115" width="55" height="25" fill="rgba(10,9,8,.8)"/>
+          <text x="28" y="126" font-family="monospace" font-size="6.5" fill="rgba(255,255,255,.3)" text-anchor="middle">STONE TOP</text>
+          <text x="28" y="135" font-family="monospace" font-size="6.5" fill="rgba(255,255,255,.2)" text-anchor="middle">DARK BASE</text>
+        </svg>
+      </div>
+      <div class="furn-body">
+        <div>
+          <span class="fb-label" style="color:#9FE1CB">TYPOLOGY 01 · CORE</span>
+          <div class="fb-name">The Counter — <em>Altar of the Archive</em></div>
+        </div>
+        <div class="fb-desc">Trung tâm của toàn bộ không gian. <b>Stone top + dark wood base</b> là combination chuẩn. Stone tạo cool luxury signal khi tay chạm vào; dark wood base tạo visual weight và grounding. Đây là nơi mọi ceremony xảy ra.</div>
+        <div class="fb-spec">MATERIAL: Stone top (marble/granite) + Dark hardwood base · HEIGHT: 90cm · DEPTH: 60–70cm · MIN LENGTH: 3m<br>METAL DETAIL: Matte black hardware mandatory — không chrome, không brass</div>
+      </div>
+      <div class="fb-never">✗ Glass counter · ✗ White stone · ✗ Light wood base · ✗ Visible POS equipment · ✗ Anything on counter không thuộc ceremony</div>
+    </div>
+
+    <!-- 2. MUSEUM CABINET (NEW) -->
+    <div class="furn-card" style="border-color:rgba(83,60,183,.3)">
+      <div class="furn-illus">
+        <svg viewBox="0 0 560 160" xmlns="http://www.w3.org/2000/svg">
+          <rect width="560" height="160" fill="#0A0908"/>
+          <!-- Museum cabinet -->
+          <rect x="140" y="10" width="280" height="140" rx="3" fill="#1C1C1E" stroke="#2A2A2E" stroke-width="1"/>
+          <!-- Glass doors -->
+          <rect x="148" y="18" width="125" height="95" rx="1" fill="rgba(159,225,203,.04)" stroke="rgba(159,225,203,.1)" stroke-width=".8"/>
+          <rect x="281" y="18" width="125" height="95" rx="1" fill="rgba(159,225,203,.04)" stroke="rgba(159,225,203,.1)" stroke-width=".8"/>
+          <!-- Door handles -->
+          <circle cx="279" cy="65" r="3" fill="#2A2A2E"/>
+          <circle cx="283" cy="65" r="3" fill="#2A2A2E"/>
+          <!-- Shelves inside -->
+          <line x1="148" y1="45" x2="273" y2="45" stroke="#2A2A2E" stroke-width="1.5"/>
+          <line x1="148" y1="72" x2="273" y2="72" stroke="#2A2A2E" stroke-width="1.5"/>
+          <line x1="281" y1="45" x2="406" y2="45" stroke="#2A2A2E" stroke-width="1.5"/>
+          <line x1="281" y1="72" x2="406" y2="72" stroke="#2A2A2E" stroke-width="1.5"/>
+          <!-- Specimens on shelves -->
+          <g opacity=".5">
+            <rect x="155" y="27" width="12" height="18" rx="1" fill="#9FE1CB"/>
+            <rect x="172" y="31" width="10" height="14" rx="1" fill="#0F6E56"/>
+            <rect x="187" y="27" width="14" height="18" rx="1" fill="#085041"/>
+            <rect x="210" y="29" width="11" height="16" rx="1" fill="#9FE1CB"/>
+            <rect x="240" y="25" width="13" height="20" rx="1" fill="#0F6E56"/>
+            <rect x="288" y="27" width="12" height="18" rx="1" fill="#9FE1CB"/>
+            <rect x="305" y="29" width="10" height="16" rx="1" fill="#085041"/>
+            <rect x="330" y="25" width="14" height="20" rx="1" fill="#0F6E56"/>
+            <rect x="360" y="27" width="11" height="18" rx="1" fill="#9FE1CB"/>
+            <rect x="383" y="28" width="13" height="17" rx="1" fill="#085041"/>
+          </g>
+          <!-- Drawer section -->
+          <rect x="140" y="117" width="280" height="8" rx="0" fill="#242428"/>
+          <rect x="140" y="127" width="280" height="20" rx="0 0 2 2" fill="#1E1E22"/>
+          <line x1="280" y1="117" x2="280" y2="147" stroke="#2A2A2E" stroke-width="1"/>
+          <!-- Handles -->
+          <line x1="185" y1="135" x2="225" y2="135" stroke="#3A3A3E" stroke-width="2"/>
+          <line x1="335" y1="135" x2="375" y2="135" stroke="#3A3A3E" stroke-width="2"/>
+          <!-- Label -->
+          <text x="280" y="155" font-family="monospace" font-size="7.5" fill="rgba(175,169,236,.5)" text-anchor="middle">MUSEUM SPECIMEN CABINET · METAL FRAME</text>
+        </svg>
+      </div>
+      <div class="furn-body">
+        <div>
+          <span class="fb-label" style="color:#AFA9EC">TYPOLOGY 02 · NEW · THE ARCHIVE SOUL</span>
+          <div class="fb-name">Museum Cabinet — <em>Specimen Display</em></div>
+        </div>
+        <div class="fb-desc"><b>Đây là piece quan trọng nhất để communicate "Scent Archive" concept</b>. Tủ kính kiểu museum / apothecary — nơi raw materials, specimens, hoặc archive objects được trưng bày. Không phải để bán — để storytell. Khách nhìn vào và hiểu: đây là nơi thu thập và bảo tồn, không phải nơi retail thông thường.</div>
+        <div class="fb-spec">MATERIAL: Blackened metal frame + glass panels + flat pull-out drawers dưới<br>SCALE: Cao 180–220cm · Rộng 80–120cm · Sâu 40cm<br>PLACEMENT: Back wall của Zone 3, hoặc focal wall của Zone 2<br>CONTENT: Raw ingredients, scent strips theo category, city archive objects</div>
+      </div>
+      <div class="fb-never">✗ Wood frame (phải metal để đúng với industrial-specimen aesthetic) · ✗ Bright interior lighting · ✗ Filled quá tải — 60% filled max</div>
+    </div>
+
+    <!-- 3. ROLLING CART (NEW) -->
+    <div class="furn-card" style="border-color:rgba(133,79,11,.25)">
+      <div class="furn-illus">
+        <svg viewBox="0 0 560 160" xmlns="http://www.w3.org/2000/svg">
+          <rect width="560" height="160" fill="#0A0908"/>
+          <!-- Rolling cart -->
+          <rect x="190" y="20" width="180" height="90" rx="2" fill="#1C1208"/>
+          <!-- Shelves -->
+          <rect x="190" y="20" width="180" height="8" rx="1" fill="#241A08" stroke="#2A1E10" stroke-width=".8"/>
+          <rect x="190" y="52" width="180" height="6" rx="0" fill="#1E1608"/>
+          <rect x="190" y="82" width="180" height="6" rx="0" fill="#1E1608"/>
+          <!-- Frame sides vertical -->
+          <rect x="190" y="20" width="8" height="90" fill="#1C1A18"/>
+          <rect x="362" y="20" width="8" height="90" fill="#1C1A18"/>
+          <!-- Items on shelves -->
+          <rect x="210" y="27" width="8" height="26" rx="1" fill="#9FE1CB" opacity=".6"/>
+          <rect x="223" y="30" width="9" height="22" rx="1" fill="#0F6E56" opacity=".7"/>
+          <rect x="250" y="25" width="10" height="28" rx="1" fill="#085041" opacity=".7"/>
+          <rect x="295" y="28" width="8" height="24" rx="1" fill="#9FE1CB" opacity=".6"/>
+          <rect x="315" y="25" width="9" height="27" rx="1" fill="#0F6E56" opacity=".7"/>
+          <rect x="340" y="27" width="8" height="25" rx="1" fill="#085041" opacity=".6"/>
+          <!-- Wheels -->
+          <circle cx="210" cy="118" r="12" fill="#1C1C1E" stroke="#2A2A2E" stroke-width="1.5"/>
+          <circle cx="210" cy="118" r="5" fill="#111"/>
+          <circle cx="350" cy="118" r="12" fill="#1C1C1E" stroke="#2A2A2E" stroke-width="1.5"/>
+          <circle cx="350" cy="118" r="5" fill="#111"/>
+          <!-- Handle -->
+          <rect x="355" y="30" width="20" height="60" rx="10" fill="#2A2724" stroke="#1C1C1E" stroke-width="1"/>
+          <!-- Label -->
+          <text x="280" y="150" font-family="monospace" font-size="7.5" fill="rgba(250,199,117,.5)" text-anchor="middle">INDUSTRIAL ROLLING CART · MOBILE TESTER STATION</text>
+        </svg>
+      </div>
+      <div class="furn-body">
+        <div>
+          <span class="fb-label" style="color:#FAC775">TYPOLOGY 03 · NEW · MOBILE</span>
+          <div class="fb-name">Rolling Cart — <em>Mobile Craft Station</em></div>
+        </div>
+        <div class="fb-desc">Cart kim loại industrial với bánh xe — <b>mobile tester station</b> cho pop-up, event, và seasonal rotation. Không cố định vị trí. Khi không dùng cho tester: có thể làm display di động hoặc packaging station. Authentic lab/workshop aesthetic.</div>
+        <div class="fb-spec">MATERIAL: Blackened steel frame + dark wood shelf surface · WHEELS: Locking casters, minimum 10cm diameter<br>SCALE: Cao 85–95cm · Rộng 60–90cm · 2–3 tiers<br>USE: Pop-up event · Tester rotation · Packaging station</div>
+      </div>
+      <div class="fb-never">✗ Chrome wheels · ✗ Plastic components · ✗ Used as permanent furniture (must stay mobile)</div>
+    </div>
+
+    <!-- 4. INDUSTRIAL STOOL (NEW) -->
+    <div class="furn-card" style="border-color:rgba(133,79,11,.2)">
+      <div class="furn-illus">
+        <svg viewBox="0 0 560 160" xmlns="http://www.w3.org/2000/svg">
+          <rect width="560" height="160" fill="#0A0908"/>
+          <!-- Stool 1 -->
+          <ellipse cx="200" cy="55" rx="30" ry="6" fill="#241A08"/>
+          <rect x="185" y="55" width="30" height="4" fill="#1A1208"/>
+          <line x1="200" y1="59" x2="186" y2="130" stroke="#1C1A18" stroke-width="4"/>
+          <line x1="200" y1="59" x2="214" y2="130" stroke="#1C1A18" stroke-width="4"/>
+          <ellipse cx="200" cy="55" rx="28" ry="5" fill="#2A1E0A"/>
+          <!-- Stool 2 -->
+          <ellipse cx="300" cy="65" rx="30" ry="6" fill="#241A08"/>
+          <rect x="285" y="65" width="30" height="4" fill="#1A1208"/>
+          <!-- Adjustable column -->
+          <rect x="295" y="69" width="10" height="50" rx="2" fill="#1C1C1E"/>
+          <rect x="292" y="99" width="16" height="8" rx="1" fill="#2A2A2E"/>
+          <!-- Base -->
+          <ellipse cx="300" cy="130" rx="35" ry="6" fill="none" stroke="#1C1C1E" stroke-width="3"/>
+          <line x1="265" y1="130" x2="335" y2="130" stroke="#1C1C1E" stroke-width="3"/>
+          <line x1="300" y1="95" x2="300" y2="130" stroke="#1C1C1E" stroke-width="3"/>
+          <!-- Stool 3 simple -->
+          <ellipse cx="400" cy="50" rx="26" ry="5" fill="#2A1E0A"/>
+          <line x1="380" y1="55" x2="376" y2="128" stroke="#1C1A18" stroke-width="3"/>
+          <line x1="388" y1="55" x2="392" y2="128" stroke="#1C1A18" stroke-width="3"/>
+          <line x1="412" y1="55" x2="416" y2="128" stroke="#1C1A18" stroke-width="3"/>
+          <line x1="420" y1="55" x2="424" y2="128" stroke="#1C1A18" stroke-width="3"/>
+          <line x1="376" y1="95" x2="424" y2="95" stroke="#1C1A18" stroke-width="2"/>
+          <text x="280" y="150" font-family="monospace" font-size="7.5" fill="rgba(250,199,117,.5)" text-anchor="middle">CAST IRON / BLACKENED STEEL STOOL · 3 OPTIONS</text>
+        </svg>
+      </div>
+      <div class="furn-body">
+        <div>
+          <span class="fb-label" style="color:#FAC775">TYPOLOGY 04 · NEW · SEATING</span>
+          <div class="fb-name">Industrial Stool — <em>Workshop Seating</em></div>
+        </div>
+        <div class="fb-desc">Seating cho khách tại tester island hoặc counter. <b>Cast iron hoặc blackened steel — không có upholstered seating</b>. Stool industrial gợi lên lab / workshop, phù hợp với Family 02 Dark Metal. Không dùng lounge chair hay cushioned seating — sai signal.</div>
+        <div class="fb-spec">MATERIAL: Cast iron base hoặc blackened steel · SEAT: Dark wood round disc hoặc metal mesh<br>TYPES: Fixed height (65–75cm bar stool) hoặc adjustable (55–80cm) · QUANTITY: Max 2–3 per store<br>PLACEMENT: Tester island, không để tại counter</div>
+      </div>
+      <div class="fb-never">✗ Cushioned/upholstered seat · ✗ Chrome/polished metal · ✗ Plastic · ✗ Lounge chair hoặc sofa · ✗ Quá nhiều (tạo ra "cafe" feeling)</div>
+    </div>
+
+    <!-- 5. PIPE SHELVING -->
+    <div class="furn-card">
+      <div class="furn-illus">
+        <svg viewBox="0 0 560 160" xmlns="http://www.w3.org/2000/svg">
+          <rect width="560" height="160" fill="#0A0908"/>
+          <!-- Wall -->
+          <rect x="80" y="0" width="400" height="155" fill="#111"/>
+          <!-- Pipe verticals -->
+          <rect x="130" y="5" width="8" height="145" rx="4" fill="#1C1C1E"/>
+          <rect x="260" y="5" width="8" height="145" rx="4" fill="#1C1C1E"/>
+          <rect x="390" y="5" width="8" height="145" rx="4" fill="#1C1C1E"/>
+          <!-- Brackets / flanges -->
+          <rect x="122" y="38" width="24" height="8" rx="2" fill="#2A2A2E"/>
+          <rect x="122" y="88" width="24" height="8" rx="2" fill="#2A2A2E"/>
+          <rect x="122" y="128" width="24" height="8" rx="2" fill="#2A2A2E"/>
+          <rect x="252" y="38" width="24" height="8" rx="2" fill="#2A2A2E"/>
+          <rect x="252" y="88" width="24" height="8" rx="2" fill="#2A2A2E"/>
+          <rect x="252" y="128" width="24" height="8" rx="2" fill="#2A2A2E"/>
+          <rect x="382" y="38" width="24" height="8" rx="2" fill="#2A2A2E"/>
+          <rect x="382" y="88" width="24" height="8" rx="2" fill="#2A2A2E"/>
+          <rect x="382" y="128" width="24" height="8" rx="2" fill="#2A2A2E"/>
+          <!-- Shelves -->
+          <rect x="134" y="30" width="264" height="10" rx="1" fill="#241A08"/>
+          <rect x="134" y="80" width="264" height="10" rx="1" fill="#241A08"/>
+          <rect x="134" y="120" width="264" height="10" rx="1" fill="#241A08"/>
+          <!-- Bottles -->
+          <g opacity=".65">
+            <rect x="145" y="13" width="7" height="18" rx="1" fill="#9FE1CB"/>
+            <rect x="157" y="10" width="8" height="21" rx="1" fill="#0F6E56"/>
+            <rect x="170" y="14" width="7" height="17" rx="1" fill="#085041"/>
+            <rect x="200" y="11" width="9" height="20" rx="1" fill="#04342C"/>
+            <rect x="225" y="13" width="8" height="18" rx="1" fill="#9FE1CB"/>
+            <rect x="310" y="11" width="8" height="20" rx="1" fill="#0F6E56"/>
+            <rect x="325" y="14" width="7" height="17" rx="1" fill="#085041"/>
+            <rect x="350" y="12" width="9" height="19" rx="1" fill="#9FE1CB"/>
+            <rect x="375" y="13" width="7" height="18" rx="1" fill="#0F6E56"/>
+          </g>
+          <text x="280" y="152" font-family="monospace" font-size="7.5" fill="rgba(255,255,255,.3)" text-anchor="middle">PIPE FRAME SHELVING · WALL-MOUNTED</text>
+        </svg>
+      </div>
+      <div class="furn-body">
+        <div>
+          <span class="fb-label" style="color:#9FE1CB">TYPOLOGY 05 · WALL DISPLAY</span>
+          <div class="fb-name">Pipe Frame Shelving — <em>Exposed Structure</em></div>
+        </div>
+        <div class="fb-desc">Kệ wall-mounted với ống nước industrial làm frame. <b>Exposed pipe là một cách khác để thực hiện Family 02 Dark Metal</b> — visible structure, không che giấu, rẻ hơn welded frame nhưng cho aesthetic tương đương. Phù hợp cho secondary display wall hoặc back wall của Zone 2.</div>
+        <div class="fb-spec">PIPE: Black iron pipe, 25mm diameter · FLANGE: Matte black floor flange, wall-mounted<br>SHELF: Dark wood plank, 25–30mm thickness · SPACING: 35–45cm giữa các shelf<br>PLACEMENT: Side wall hoặc back wall · KHÔNG làm counter chính</div>
+      </div>
+      <div class="fb-never">✗ Chrome pipe · ✗ PVC pipe · ✗ Galvanized pipe (ánh bạc sai tone) · ✗ Overloaded — sparse display only</div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════
+     P4 — COLOR ON FURNITURE
+══════════════════════════════ -->
+<div class="panel" id="p4">
+<div class="pw">
+  <div>
+    <span class="eyebrow" style="color:#9FE1CB">COLOR ON FURNITURE · KHI NÀO DÙNG MÀU BRAND</span>
+    <div class="hero">Màu không phải<br><em>décor. Màu là<br>thông điệp.</em></div>
+  </div>
+  <div class="body" style="max-width:540px">Moodboard xác nhận: MORAQ dùng Teal #0F6E56 lên furniture (kệ storage đứng). Đây là application của brand color vào không gian — cần quy tắc rõ ràng để không bị lạm dụng. <b>Màu trên furniture là punctuation, không phải paragraph.</b></div>
+
+  <div class="hr"></div>
+
+  <div class="card" style="padding:0;overflow:hidden">
+    <div style="background:#141210;padding:9px 14px;border-bottom:1px solid #242220">
+      <span class="lbl" style="margin-bottom:0">5 MÀU BRAND · QUY TẮC ÁP DỤNG LÊN NỘI THẤT</span>
+    </div>
+    <div style="padding:4px 14px">
+
+      <div class="color-rule">
+        <div class="cr-swatch" style="background:#0F6E56">
+          <span style="color:rgba(255,255,255,.5);font-size:6px">TEAL</span>
+        </div>
+        <div class="cr-body">
+          <div class="cr-name">Teal #0F6E56 — Brand Primary</div>
+          <div class="cr-rule"><b>Approved trên closed storage furniture</b> — kệ có cửa, tủ storage, drawer cabinet. Không dùng trên open display surface hoặc counter. Teal trên storage = "inside this, there is something curated".</div>
+          <div class="cr-ok">✓ Closed shelving unit · ✓ Storage cabinet · ✓ Drawer front · ✓ Back panel của shelving</div>
+          <div class="cr-no">✗ Counter top · ✗ Open display shelf · ✗ Floor · ✗ Wall (quá aggressive) · ✗ Ceiling</div>
+        </div>
+      </div>
+
+      <div class="color-rule">
+        <div class="cr-swatch" style="background:#1A1916;border:1px solid #2A2724">
+          <span style="color:rgba(255,255,255,.3);font-size:6px">INK</span>
+        </div>
+        <div class="cr-body">
+          <div class="cr-name">Ink #1A1916 — Background Default</div>
+          <div class="cr-rule"><b>Default màu cho tất cả surfaces không phải wood, stone, hoặc metal.</b> Wall paint, plaster base coat, any painted surface. Không phải pure black (#000) — Ink có warmth nhẹ của brown, tạo ra "old library" feeling khác với "modern minimal".</div>
+          <div class="cr-ok">✓ Wall paint · ✓ Ceiling paint · ✓ Back panel của cabinet · ✓ Painted accent surface</div>
+          <div class="cr-no">✗ Không thay bằng pure black · ✗ Không thay bằng dark grey</div>
+        </div>
+      </div>
+
+      <div class="color-rule">
+        <div class="cr-swatch" style="background:#854F0B">
+          <span style="color:rgba(255,255,255,.5);font-size:6px">AMBER</span>
+        </div>
+        <div class="cr-body">
+          <div class="cr-name">Amber #854F0B — Accent Only</div>
+          <div class="cr-rule"><b>Không dùng Amber trên furniture paint.</b> Amber là màu của ánh sáng (2700K warm white), không phải màu vật liệu. Dùng Amber trong lighting, graphic elements, và label system — không phải trên bề mặt đồ nội thất.</div>
+          <div class="cr-ok">✓ Lighting tone target · ✓ Brand graphic · ✓ Scent card label</div>
+          <div class="cr-no">✗ Furniture paint · ✗ Wall paint · ✗ Fabric · ✗ Bất kỳ surface nào trong store</div>
+        </div>
+      </div>
+
+      <div class="color-rule">
+        <div class="cr-swatch" style="background:#FAF9F6;border:1px solid #2A2724">
+          <span style="color:rgba(26,25,22,.4);font-size:6px">CREAM</span>
+        </div>
+        <div class="cr-body">
+          <div class="cr-name">Cream #FAF9F6 — Paper & Textile</div>
+          <div class="cr-rule"><b>Cream là màu của vật liệu tự nhiên, không phải paint.</b> Dùng cho: thank-you card, scent strip paper, tissue packaging, light wood surface tự nhiên. Không paint bề mặt nào thành Cream — nó phải đến từ vật liệu thật.</div>
+          <div class="cr-ok">✓ Paper products · ✓ Natural light wood · ✓ Linen fabric accent · ✓ Tissue paper</div>
+          <div class="cr-no">✗ Wall paint · ✗ Furniture paint · ✗ Bất kỳ painted surface nào</div>
+        </div>
+      </div>
+
+      <div class="color-rule" style="border-bottom:none">
+        <div class="cr-swatch" style="background:#E8DFD0">
+          <span style="color:rgba(26,25,22,.4);font-size:6px">LINEN</span>
+        </div>
+        <div class="cr-body">
+          <div class="cr-name">Linen #E8DFD0 — Natural Material Only</div>
+          <div class="cr-rule"><b>Tương tự Cream — Linen là màu của vật liệu, không phải paint.</b> Màu của giấy Dó, đá limestone nhạt, vải thô tự nhiên. Khi local material của một city chapter có màu Linen (ví dụ: giấy Dó Hà Nội) — đây là approved application.</div>
+          <div class="cr-ok">✓ Local natural material · ✓ Paper liner cho shelf · ✓ Natural stone với tone nhạt</div>
+          <div class="cr-no">✗ Paint · ✗ Synthetic fabric · ✗ Bất kỳ thứ gì không phải natural material</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- APPLICATION EXAMPLE -->
+  <div class="rba">
+    <span class="rla">VÍ DỤ ĐÚNG — KỆ TEAL TRONG MOODBOARD</span>
+    <div class="rt" style="color:rgba(255,255,255,.52)">Cái kệ cao màu teal trong moodboard (Image 1, bottom right) là ví dụ đúng: <b>đây là closed storage unit với compartments — không phải open display shelf.</b> Màu Teal trên closed storage nói: "thứ bên trong được cất giữ có chủ ý." Nếu đổi thành open shelf với chai nước hoa bày lên — sai, vì Teal sẽ compete với màu chai thay vì frame nó. Quy tắc: Teal chỉ khi surface không có product display trực tiếp trên đó.</div>
+  </div>
+
+  <!-- COLOR BALANCE -->
+  <div class="card">
+    <span class="lbl">TỔNG THỂ MÀU SẮC TRONG STORE — TỶ LỆ</span>
+    <div style="display:flex;flex-direction:column;gap:7px;margin-top:4px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-family:'Menlo','Monaco','Courier New',monospace;font-size:8px;color:rgba(255,255,255,.3);min-width:130px">INK (wall/ceiling)</div>
+        <div style="flex:1;height:6px;background:#1A1916;border-radius:3px;overflow:hidden"><div style="width:55%;height:100%;background:#1A1916;border:1px solid #3A3530;border-radius:3px"></div></div>
+        <div style="font-family:'Menlo','Monaco','Courier New',monospace;font-size:9px;color:rgba(255,255,255,.4);min-width:30px">~55%</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-family:'Menlo','Monaco','Courier New',monospace;font-size:8px;color:rgba(255,255,255,.3);min-width:130px">DARK MATERIAL (wood/metal)</div>
+        <div style="flex:1;height:6px;background:#1A1916;border-radius:3px;overflow:hidden"><div style="width:25%;height:100%;background:#241A08;border-radius:3px"></div></div>
+        <div style="font-family:'Menlo','Monaco','Courier New',monospace;font-size:9px;color:rgba(255,255,255,.4);min-width:30px">~25%</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-family:'Menlo','Monaco','Courier New',monospace;font-size:8px;color:rgba(255,255,255,.3);min-width:130px">STONE (floor/counter)</div>
+        <div style="flex:1;height:6px;background:#1A1916;border-radius:3px;overflow:hidden"><div style="width:12%;height:100%;background:#2A2724;border-radius:3px"></div></div>
+        <div style="font-family:'Menlo','Monaco','Courier New',monospace;font-size:9px;color:rgba(255,255,255,.4);min-width:30px">~12%</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-family:'Menlo','Monaco','Courier New',monospace;font-size:8px;color:var(--teal,#9FE1CB);min-width:130px">TEAL (accent storage)</div>
+        <div style="flex:1;height:6px;background:#1A1916;border-radius:3px;overflow:hidden"><div style="width:5%;height:100%;background:#0F6E56;border-radius:3px"></div></div>
+        <div style="font-family:'Menlo','Monaco','Courier New',monospace;font-size:9px;color:#9FE1CB;min-width:30px">~5%</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-family:'Menlo','Monaco','Courier New',monospace;font-size:8px;color:rgba(200,168,75,.6);min-width:130px">LIGHT WOOD / LOCAL</div>
+        <div style="flex:1;height:6px;background:#1A1916;border-radius:3px;overflow:hidden"><div style="width:3%;height:100%;background:#E8DFD0;border-radius:3px"></div></div>
+        <div style="font-family:'Menlo','Monaco','Courier New',monospace;font-size:9px;color:rgba(200,168,75,.5);min-width:30px">~3%</div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:10px;font-style:italic">Teal chỉ chiếm ~5% tổng diện tích visual — đủ để nhận ra, không đủ để dominate. Đây là cách luxury brand dùng brand color: sparingly, intentionally.</div>
+  </div>
+
+</div>
+</div>
+
+</div><!-- stage -->
+</div><!-- shell -->
+
+<script>
+// TABS
+const TABS=document.getElementById('tabs').querySelectorAll('.tab');
+const PANELS=[...Array(5)].map((_,i)=>document.getElementById('p'+i));
+let cur=0;
+TABS.forEach((t,i)=>{
+  t.addEventListener('click',()=>{
+    if(i===cur)return;
+    TABS[cur].classList.remove('on');PANELS[cur].classList.remove('on');
+    cur=i;t.classList.add('on');PANELS[i].classList.add('on');
+    PANELS[i].scrollTop=0;
+    t.scrollIntoView({behavior:'smooth',inline:'nearest',block:'nearest'});
+  });
+});
+
+// TEXTURE LIBRARY DATA
+const TEX=[
+  {name:'Natural Stone Counter',family:'STONE',fnew:false,sub:'Marble · Granite · Limestone',badge:'CORE',bcol:'#0A1E14',btxt:'#9FE1CB',bbd:'#1A4028',
+   svg:`<rect width="130" height="80" fill="#2A2724"/><g stroke="rgba(255,255,255,.07)" stroke-width=".5" fill="none"><path d="M0 18 Q35 16 65 20 Q95 24 130 18"/><path d="M0 38 Q40 34 65 40 Q90 36 130 38"/><path d="M0 58 Q30 56 65 62 Q100 56 130 58"/></g>`,
+   specs:[{k:'Options',v:'Marble · Granite · Limestone · Basalt'},{k:'Finish',v:'Matte hoặc honed — không polished'},{k:'Thickness',v:'Min 30mm top slab'},{k:'Temperature',v:'19–21°C ở nhiệt độ phòng',ok:true},{k:'CRI test',v:'Verify màu dưới 2700K trước khi order'},{k:'Forbidden',v:'Engineered stone · Acrylic stone',warn:true}],
+   why:'Cool temperature khi tay chạm vào là luxury subconscious signal mạnh nhất. Marble nhân tạo ấm hơn 3–4°C — đủ để mất cảm giác này.',ref:'Family 01 · MSDL-001 Section D'},
+  {name:'Rough Plaster Wall',family:'STONE',fnew:true,sub:'Tadelakt · Lime plaster · Raw cement',badge:'NEW',bcol:'#0C0A20',btxt:'#AFA9EC',bbd:'#2A2060',
+   svg:`<rect width="130" height="80" fill="#1E1C18"/><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4"/><feColorMatrix type="saturate" values="0"/></filter><rect width="130" height="80" filter="url(#noise)" opacity=".12"/>`,
+   specs:[{k:'Types',v:'Lime plaster · Tadelakt · Raw cement render'},{k:'Color',v:'Ink #1A1916 tông — không trắng, không xám lạnh'},{k:'Texture',v:'Rough, hand-applied — không smooth hoặc perfect'},{k:'Application',v:'All walls · Ceiling nếu exposed'},{k:'Sealant',v:'Matte sealant — không shiny'},{k:'Forbidden',v:'Paint bóng · Wallpaper · Tile · Smooth finish',warn:true}],
+   why:'Rough plaster nói về age và authenticity. "Archive" cần tường có texture của thời gian. Smooth white paint nói về new retail — sai signal.',ref:'Family 01 · Supplement 01 moodboard'},
+  {name:'Dark Stone Floor',family:'STONE',fnew:false,sub:'Basalt · Slate · Dark limestone',badge:'CORE',bcol:'#0A1E14',btxt:'#9FE1CB',bbd:'#1A4028',
+   svg:`<rect width="130" height="80" fill="#1A1814"/><g stroke="rgba(255,255,255,.06)" stroke-width=".5"><line x1="0" y1="26" x2="130" y2="26"/><line x1="0" y1="52" x2="130" y2="52"/><line x1="43" y1="0" x2="43" y2="26"/><line x1="86" y1="0" x2="86" y2="26"/><line x1="21" y1="26" x2="21" y2="52"/><line x1="65" y1="26" x2="65" y2="52"/><line x1="108" y1="26" x2="108" y2="52"/></g>`,
+   specs:[{k:'Options',v:'Basalt · Slate · Dark limestone honed'},{k:'Finish',v:'Matte — không polished (phản sáng sai)'},{k:'Joint',v:'2–3mm max grout line · Grout màu dark'},{k:'Underlayment',v:'Solid concrete — không hollow sound'},{k:'Sound test',v:'Footstep phải solid, trầm — không hollow',ok:true},{k:'Forbidden',v:'Ceramic tile · Vinyl · Light stone · Carpet',warn:true}],
+   why:'Footstep sound là sensory element bị bỏ qua nhiều nhất. Basalt và slate tạo ra âm thanh solid khác hoàn toàn với ceramic tile.',ref:'Family 01 · Sensory Blueprint SB-001'},
+  {name:'Dark Hardwood',family:'WOOD',fnew:false,sub:'Teak · Walnut · Wenge · Merbau',badge:'CORE',bcol:'#0A1E14',btxt:'#9FE1CB',bbd:'#1A4028',
+   svg:`<rect width="130" height="80" fill="#1A1208"/><g stroke="rgba(255,200,100,.07)" stroke-width=".8" fill="none"><line x1="0" y1="10" x2="130" y2="7"/><line x1="0" y1="20" x2="130" y2="17"/><line x1="0" y1="32" x2="130" y2="29"/><line x1="0" y1="45" x2="130" y2="42"/><line x1="0" y1="55" x2="130" y2="52"/><line x1="0" y1="65" x2="130" y2="62"/><line x1="0" y1="75" x2="130" y2="72"/></g>`,
+   specs:[{k:'Species',v:'Teak · Walnut · Wenge · Merbau'},{k:'Finish',v:'Matte oil — không varnish/lacquer',ok:true},{k:'Color range',v:'Dark brown → near black'},{k:'Grain',v:'Visible, strong — không fill'},{k:'Sound',v:'Solid thud khi gõ — không hollow',ok:true},{k:'Forbidden',v:'Laminate · MDF · Engineered wood face',warn:true}],
+   why:'Matte oil không chỉ đẹp — nó tỏa warmth khi cảm ứng. Varnish tạo barrier plastic giữa tay và gỗ.',ref:'Family 03 · Wood Hierarchy P1'},
+  {name:'Light Hardwood',family:'WOOD',fnew:true,sub:'Ash · White oak · Raw pine',badge:'NEW',bcol:'#0C0A20',btxt:'#AFA9EC',bbd:'#2A2060',
+   svg:`<rect width="130" height="80" fill="#E0D4B8"/><g stroke="rgba(100,80,40,.1)" stroke-width=".7" fill="none"><line x1="0" y1="12" x2="130" y2="9"/><line x1="0" y1="24" x2="130" y2="21"/><line x1="0" y1="36" x2="130" y2="33"/><line x1="0" y1="48" x2="130" y2="45"/><line x1="0" y1="60" x2="130" y2="57"/><line x1="0" y1="72" x2="130" y2="69"/></g>`,
+   specs:[{k:'Species',v:'Ash · White oak · Raw pine · Birch'},{k:'Finish',v:'Natural oil — không stain, không varnish',ok:true},{k:'Color',v:'Cream-tan → light brown natural'},{k:'Grain',v:'Mịn, nhẹ — không strong grain'},{k:'Aging',v:'Patina đẹp hơn theo thời gian',ok:true},{k:'Use only for',v:'Display surface · Drawer front · Tester island top'}],
+   why:'Contrast với dark wood tạo visual hierarchy. Tay khách chạm vào light wood surface trước — warmth và invitation. Đây là working surface, không phải structural.',ref:'Family 03 · Wood Hierarchy P1 · Moodboard Image 1'},
+  {name:'Blackened Steel',family:'METAL',fnew:false,sub:'Blackened steel · Powder coat black',badge:'CORE',bcol:'#0A1E14',btxt:'#9FE1CB',bbd:'#1A4028',
+   svg:`<rect width="130" height="80" fill="#1C1C1E"/><rect x="10" y="22" width="110" height="5" fill="#2A2A2E"/><rect x="10" y="50" width="110" height="5" fill="#2A2A2E"/><rect x="12" y="8" width="5" height="64" fill="#2A2A2E"/><rect x="113" y="8" width="5" height="64" fill="#2A2A2E"/>`,
+   specs:[{k:'Options',v:'Mill blackened · Matte black powder coat'},{k:'Finish',v:'Matte — không shiny, không brushed'},{k:'Treatment',v:'Beeswax hoặc linseed để chống oxy hóa'},{k:'Hardware',v:'Matte black — không chrome, không brass',ok:true},{k:'Bracket style',v:'Open industrial — không hidden bracket'},{k:'Forbidden',v:'Chrome · Brushed nickel · Bright brass · Zinc',warn:true}],
+   why:'Chrome signals "bathroom luxury". Blackened steel signals "craft workshop". Đây là distinction quan trọng nhất trong metal selection.',ref:'Family 02 · MSDL-001 Section D'},
+  {name:'Track Lighting Rail',family:'METAL',fnew:true,sub:'Industrial track · Matte black',badge:'NEW',bcol:'#0C0A20',btxt:'#AFA9EC',bbd:'#2A2060',
+   svg:`<rect width="130" height="80" fill="#111"/><rect x="15" y="20" width="100" height="8" rx="2" fill="#1C1C1E"/><rect x="15" y="52" width="100" height="8" rx="2" fill="#1C1C1E"/><circle cx="35" cy="24" r="4" fill="#0A0A0A"/><circle cx="35" cy="56" r="4" fill="#0A0A0A"/><circle cx="65" cy="24" r="4" fill="#0A0A0A"/><circle cx="65" cy="56" r="4" fill="#0A0A0A"/><circle cx="95" cy="24" r="4" fill="#FAC775" opacity=".5"/><circle cx="95" cy="56" r="4" fill="#FAC775" opacity=".5"/>`,
+   specs:[{k:'Type',v:'Surface-mounted track rail · Industrial style'},{k:'Color',v:'Matte black — không white track',ok:true},{k:'Fixture',v:'Directional spot, adjustable, narrow beam'},{k:'Color temp',v:'2700K strict — không mixed color temp',ok:true},{k:'CRI',v:'Min 95 — specify khi mua',ok:true},{k:'Forbidden',v:'Recessed fixture ẩn kết cấu · White track · Chrome',warn:true}],
+   why:'Track visible là "honest construction" — nhìn thấy cơ chế chiếu sáng là phần của industrial aesthetic. Recessed ẩn track mất đi tính honest đó.',ref:'Family 02 · Sensory Blueprint SB-001 · Moodboard Image 2'},
+  {name:'Industrial Pipe Shelf',family:'METAL',fnew:true,sub:'Black iron pipe · Wall-mounted',badge:'NEW',bcol:'#0C0A20',btxt:'#AFA9EC',bbd:'#2A2060',
+   svg:`<rect width="130" height="80" fill="#111"/><rect x="20" y="5" width="5" height="70" rx="2.5" fill="#1C1C1E"/><rect x="105" y="5" width="5" height="70" rx="2.5" fill="#1C1C1E"/><rect x="15" y="25" width="100" height="7" rx="1" fill="#1A1208"/><rect x="15" y="52" width="100" height="7" rx="1" fill="#1A1208"/><circle cx="22" cy="22" r="5" fill="#2A2A2E"/><circle cx="108" cy="22" r="5" fill="#2A2A2E"/><circle cx="22" cy="50" r="5" fill="#2A2A2E"/><circle cx="108" cy="50" r="5" fill="#2A2A2E"/>`,
+   specs:[{k:'Pipe diameter',v:'25–32mm black iron pipe'},{k:'Flange',v:'Matte black floor flange'},{k:'Shelf',v:'Dark hardwood plank 25–30mm'},{k:'Spacing',v:'35–45cm giữa các tier'},{k:'Max load',v:'15kg per shelf — specify khi install'},{k:'Forbidden',v:'Chrome pipe · PVC · Galvanized (ánh bạc)',warn:true}],
+   why:'Pipe shelving là cheaper version của custom welded frame — cho cùng industrial aesthetic nhưng accessible hơn. Phù hợp cho secondary display walls.',ref:'Family 02 · Furniture Typology P3 · Moodboard Image 2'},
+  {name:'Glass Lab Vessel',family:'GLASS',fnew:false,sub:'Borosilicate · Clear · Apothecary',badge:'ACCENT',bcol:'#0C0A20',btxt:'#AFA9EC',bbd:'#2A2060',
+   svg:`<rect width="130" height="80" fill="#0E0D0C"/><ellipse cx="35" cy="42" rx="14" ry="24" fill="none" stroke="rgba(159,225,203,.25)" stroke-width="1"/><ellipse cx="35" cy="42" rx="10" ry="20" fill="rgba(159,225,203,.05)"/><ellipse cx="75" cy="38" rx="18" ry="28" fill="none" stroke="rgba(159,225,203,.2)" stroke-width="1"/><ellipse cx="75" cy="38" rx="14" ry="24" fill="rgba(159,225,203,.04)"/><ellipse cx="110" cy="45" rx="12" ry="20" fill="none" stroke="rgba(159,225,203,.18)" stroke-width="1"/>`,
+   specs:[{k:'Type',v:'Borosilicate lab glass · Clear only'},{k:'Shapes',v:'Variable heights — apothecary aesthetic'},{k:'Content',v:'Coffee beans · Raw ingredients · Empty prop'},{k:'Count',v:'Max 5–7 vessels per store'},{k:'Placement',v:'Counter surface · P2 tester island'},{k:'Forbidden',v:'Colored glass · Crystal decorative · Non-lab form',warn:true}],
+   why:'Lab glass signals "something is made here". Decorative vessels signal "interior decoration". Exact form of vessel matters.',ref:'MSDL-001 Section D'},
+  {name:'Teal Storage Unit',family:'COLOR',fnew:true,sub:'Teal #0F6E56 painted · Closed only',badge:'NEW',bcol:'#0C0A20',btxt:'#AFA9EC',bbd:'#2A2060',
+   svg:`<rect width="130" height="80" fill="#0A1E14"/><rect x="20" y="8" width="90" height="64" rx="2" fill="#0F6E56" opacity=".85"/><line x1="65" y1="8" x2="65" y2="72" stroke="rgba(0,0,0,.2)" stroke-width="1"/><rect x="20" y="8" width="90" height="20" rx="2 2 0 0" fill="#085041"/><rect x="20" y="28" width="90" height="20" fill="#0A6050"/><rect x="20" y="48" width="90" height="22" rx="0 0 2 2" fill="#0D6855"/>`,
+   specs:[{k:'Color',v:'Teal #0F6E56 — exact hex'},{k:'Finish',v:'Matte paint — không gloss'},{k:'Form',v:'Closed storage ONLY — có cửa hoặc drawer'},{k:'Max area',v:'~5% total visual surface area'},{k:'Placement',v:'Secondary zone — không phải focal point'},{k:'Forbidden',v:'Open display shelf · Counter · Floor · Wall',warn:true}],
+   why:'Teal trên closed storage = "inside here, there is something curated." Teal trên open display compete với chai thay vì frame chúng.',ref:'Color on Furniture P4 · Moodboard Image 1'},
+];
+
+// Render tex grid
+const grid=document.getElementById('texGrid');
+const families={STONE:'#9FE1CB',WOOD:'rgba(200,168,75,.8)',METAL:'#FAC775',GLASS:'#AFA9EC',COLOR:'#9FE1CB'};
+TEX.forEach((t,i)=>{
+  const el=document.createElement('div');
+  el.className='tex-card';
+  el.dataset.i=i;
+  el.innerHTML=`
+    <div class="tx-swatch"><svg viewBox="0 0 130 80" xmlns="http://www.w3.org/2000/svg">${t.svg}</svg></div>
+    <div class="tx-info">
+      <div class="tx-name">${t.name}</div>
+      <div class="tx-sub">${t.sub}</div>
+      <span class="tx-badge" style="background:${t.bcol};color:${t.btxt};border:1px solid ${t.bbd}">${t.badge}</span>
+      ${t.fnew?`<span class="tx-badge" style="background:#0C0A20;color:#AFA9EC;border:1px solid #2A2060;margin-left:3px">NEW</span>`:''}
+    </div>`;
+  el.addEventListener('click',()=>openDrawer(i,el));
+  grid.appendChild(el);
+});
+
+function openDrawer(i,el){
+  const t=TEX[i];
+  const prev=grid.querySelector('.sel');
+  if(prev&&prev!==el){prev.classList.remove('sel');}
+  if(el.classList.contains('sel')){el.classList.remove('sel');document.getElementById('texDrawer').classList.remove('open');return;}
+  el.classList.add('sel');
+  document.getElementById('ddName').textContent=t.name;
+  const specsHTML=t.specs.map(s=>`<div class="spec-row"><div class="sk">${s.k}</div><div class="sv ${s.ok?'ok':s.warn?'warn':''}">${s.v}</div></div>`).join('');
+  document.getElementById('ddSpecs').innerHTML=specsHTML;
+  document.getElementById('ddWhy').innerHTML=`<span class="dw-label">TẠI SAO</span><div class="dw-text">${t.why}</div>`;
+  document.getElementById('ddRef').textContent=`Reference: ${t.ref}`;
+  document.getElementById('texDrawer').classList.add('open');
+  setTimeout(()=>document.getElementById('texDrawer').scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+}
+
+function closeDrawer(){
+  document.getElementById('texDrawer').classList.remove('open');
+  grid.querySelectorAll('.sel').forEach(e=>e.classList.remove('sel'));
+}
+
+// swipe
+let tx=0;
+document.querySelector('.stage').addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+document.querySelector('.stage').addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>60){const n=dx<0?Math.min(cur+1,4):Math.max(cur-1,0);if(n!==cur)TABS[n].click();}
+},{passive:true});
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight')TABS[Math.min(cur+1,4)]?.click();
+  if(e.key==='ArrowLeft')TABS[Math.max(cur-1,0)]?.click();
+});
+</script>
+</body>
+</html>

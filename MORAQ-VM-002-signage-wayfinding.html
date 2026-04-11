@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MORAQ — SWS-001 · Signage & Wayfinding System</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1A1916;--teal:#0F6E56;--amber:#854F0B;--cream:#FAF9F6;--linen:#E8DFD0;--stone:#C8C0B4;--wood-dk:#3E3020;--wood-lt:#B8A88C;--metal:#4A4A4A;--dim:#854F0B;--call:#0F6E56}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:#F4F3EF;color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased}
+.hdr{background:var(--ink);padding:2rem 2.5rem 1.2rem}
+.hdr-r{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.12em;color:var(--cream);opacity:.35;margin-bottom:.5rem;text-transform:uppercase}
+.hdr h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:1.5rem;color:var(--cream);line-height:1.35}
+.hdr h1 em{font-style:italic;color:var(--linen);opacity:.6}
+.hdr-d{font-size:.75rem;color:var(--linen);opacity:.4;margin-top:.4rem;max-width:760px;line-height:1.7}
+.tabs{display:flex;background:var(--ink);padding:0 2.5rem;overflow-x:auto;border-bottom:1px solid rgba(232,223,208,.08);gap:.1rem}
+.tb{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.06em;text-transform:uppercase;color:var(--cream);opacity:.45;background:none;border:none;border-bottom:2px solid transparent;padding:.6rem .7rem;cursor:pointer;transition:all .2s;white-space:nowrap}
+.tb:hover{opacity:.7}.tb.on{opacity:1;color:var(--teal);border-bottom-color:var(--teal)}
+.pnl{display:none;padding:1.4rem 2.5rem 2rem;max-width:1020px;margin:0 auto}.pnl.on{display:block}
+h2{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.25rem;margin:1.6rem 0 .6rem;padding-top:1.3rem;border-top:1px solid rgba(0,0,0,.06)}h2:first-child{border-top:none;padding-top:0}
+h3{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1rem;margin:1.1rem 0 .4rem;color:var(--teal)}
+p{font-size:.78rem;opacity:.55;margin-bottom:.55rem;line-height:1.8}p strong{opacity:1;font-weight:600}
+.dwg{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:6px;padding:1rem;margin:.7rem 0;overflow-x:auto}
+.dwg-label{font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);opacity:.3;margin-bottom:.5rem}
+.tbl{width:100%;border-collapse:collapse;margin:.5rem 0;font-size:.72rem}.tbl th{font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.06em;text-transform:uppercase;text-align:left;padding:.4rem .5rem;background:var(--ink);color:var(--cream);opacity:.6}.tbl td{padding:.35rem .5rem;border-bottom:1px solid rgba(0,0,0,.04);vertical-align:top;line-height:1.5}.tbl td:first-child{font-weight:500;width:120px}.tbl tr:nth-child(even) td{background:#FAFAF8}
+.ig{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin:.4rem 0}.ig3{grid-template-columns:1fr 1fr 1fr}
+.it{background:#FAFAF8;border:1px solid rgba(0,0,0,.04);border-radius:4px;padding:.5rem .7rem}.it-n{font-family:'DM Mono',monospace;font-size:.52rem;font-weight:500;margin-bottom:.1rem;color:var(--ink)}.it-s{font-size:.66rem;opacity:.4;line-height:1.5}
+.note{background:var(--ink);color:var(--linen);padding:.5rem .8rem;border-radius:4px;margin:.5rem 0;font-size:.7rem;line-height:1.7;opacity:.7}.note strong{color:var(--cream);opacity:1}
+.warn{background:rgba(133,79,11,.06);border-left:3px solid var(--amber);padding:.45rem .75rem;margin:.5rem 0;font-size:.7rem;line-height:1.6;color:var(--ink);opacity:.55}
+.card{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:6px;padding:1rem 1.1rem;margin:.6rem 0}
+.tag{display:inline-block;font-family:'DM Mono',monospace;font-size:.48rem;letter-spacing:.08em;text-transform:uppercase;color:#fff;padding:.15rem .5rem;border-radius:2px;margin-bottom:.35rem}.t1{background:var(--teal)}.t2{background:var(--amber)}.t3{background:var(--ink)}
+.ct{font-family:'Cormorant Garamond',serif;font-size:1rem;margin-bottom:.25rem;color:var(--ink)}.cd{font-size:.72rem;opacity:.42;line-height:1.65;margin-bottom:.4rem}
+.L{font-family:'DM Mono',monospace;letter-spacing:.3px}
+.ft{max-width:1020px;margin:1.2rem auto;padding:0 2.5rem;display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:.42rem;letter-spacing:.08em;opacity:.15;text-transform:uppercase}
+@media(max-width:700px){.hdr,.tabs,.pnl{padding-left:1rem;padding-right:1rem}.ig,.ig3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="hdr">
+<div class="hdr-r"><span>MORAQ</span><span>SWS-001 · V2.0 · APR 2026</span></div>
+<h1>Signage & Wayfinding System<br><em>Ánh sáng dẫn đường — Chữ chỉ xác nhận</em></h1>
+<div class="hdr-d">18 signage items. Nguyên tắc #1: nếu cần biển chỉ dẫn → fix lighting. Ref: LID-001, BC-001.</div>
+</div>
+<div class="tabs">
+<button class="tb on" data-t="phi">Philosophy</button><button class="tb" data-t="ext">Exterior</button><button class="tb" data-t="nav">Wayfinding</button><button class="tb" data-t="prd">Product Labels</button><button class="tb" data-t="cer">Ceremony Cards</button><button class="tb" data-t="ops">Operational</button><button class="tb" data-t="for">Forbidden</button><button class="tb" data-t="spec">Type Specs</button>
+</div>
+
+<div class="pnl on" id="p-phi">
+<h2>Philosophy — Ánh sáng là wayfinding</h2>
+<p><strong>"Nếu cần biển chỉ dẫn đến counter → lighting layout sai."</strong></p>
+<div class="dwg"><div class="dwg-label">Signage Hierarchy · 4 Tầng</div>
+<svg width="100%" viewBox="0 0 700 130" xmlns="http://www.w3.org/2000/svg">
+<rect x="40" y="10" width="620" height="24" rx="3" fill="var(--ink)" opacity=".6"/><text x="50" y="25" class="L" style="font-size:6px;fill:var(--cream);font-weight:500">TẦNG 1 · EXTERIOR</text><text x="350" y="25" text-anchor="middle" class="L" style="font-size:5px;fill:var(--cream);opacity:.5">Store name · Hours · Beacon window</text><text x="640" y="25" text-anchor="end" class="L" style="font-size:5px;fill:var(--cream);opacity:.4">20m+</text>
+<rect x="40" y="38" width="620" height="24" rx="3" fill="var(--ink)" opacity=".35"/><text x="50" y="53" class="L" style="font-size:6px;fill:var(--ink);font-weight:500">TẦNG 2 · WAYFINDING</text><text x="350" y="53" text-anchor="middle" class="L" style="font-size:5px;fill:var(--ink);opacity:.5">Lighting gradient · Material transition</text><text x="640" y="53" text-anchor="end" class="L" style="font-size:5px;fill:var(--ink);opacity:.4">TRONG STORE</text>
+<rect x="40" y="66" width="620" height="24" rx="3" fill="var(--ink)" opacity=".15"/><text x="50" y="81" class="L" style="font-size:6px;fill:var(--ink);font-weight:500">TẦNG 3 · PRODUCT</text><text x="350" y="81" text-anchor="middle" class="L" style="font-size:5px;fill:var(--ink);opacity:.5">Scent cards · Grammar labels · Price</text><text x="640" y="81" text-anchor="end" class="L" style="font-size:5px;fill:var(--ink);opacity:.4">CẦM TAY</text>
+<rect x="40" y="94" width="620" height="24" rx="3" fill="var(--ink)" opacity=".06" stroke="var(--ink)" stroke-width=".3"/><text x="50" y="109" class="L" style="font-size:6px;fill:var(--ink);font-weight:500">TẦNG 4 · CEREMONY</text><text x="350" y="109" text-anchor="middle" class="L" style="font-size:5px;fill:var(--ink);opacity:.5">Thank-you card · Insert · Bottle label</text><text x="640" y="109" text-anchor="end" class="L" style="font-size:5px;fill:var(--ink);opacity:.4">1:1</text>
+</svg></div>
+<div class="ig ig3"><div class="it"><div class="it-n">1 · Invisible system</div><div class="it-s">Thuộc về không gian — không "được gắn lên".</div></div><div class="it"><div class="it-n">2 · Light leads</div><div class="it-s">3 pools of light dẫn mắt. Signage xác nhận.</div></div><div class="it"><div class="it-n">3 · Less is luxury</div><div class="it-s">Mỗi sign thêm = brand dilution.</div></div></div>
+</div>
+
+<div class="pnl" id="p-ext">
+<h2>Tầng 1 · Exterior — 3 Items</h2>
+<div class="card"><div class="tag t3">SWS-01 · STORE NAME</div><div class="ct">MORAQ — halo-lit trên facade</div>
+<div class="dwg"><div class="dwg-label">Front View + Section</div>
+<svg width="100%" viewBox="0 0 700 130" xmlns="http://www.w3.org/2000/svg">
+<text x="200" y="12" text-anchor="middle" class="L" style="font-size:6px;fill:#888;letter-spacing:1px">FRONT VIEW</text>
+<rect x="40" y="18" width="320" height="70" fill="var(--ink)" opacity=".08"/>
+<rect x="82" y="35" width="240" height="35" rx="2" fill="var(--amber)" opacity=".06"/>
+<text x="200" y="60" text-anchor="middle" style="font-family:'Cormorant Garamond',serif;font-size:28px;fill:var(--ink);opacity:.8;letter-spacing:10px;font-weight:300">MORAQ</text>
+<g opacity=".3"><circle cx="112" cy="52" r="1.5" fill="var(--metal)"/><circle cx="168" cy="52" r="1.5" fill="var(--metal)"/><circle cx="228" cy="52" r="1.5" fill="var(--metal)"/><circle cx="288" cy="52" r="1.5" fill="var(--metal)"/></g>
+<text x="200" y="100" text-anchor="middle" class="L" style="font-size:5.5px;fill:#777">CORMORANT GARAMOND LIGHT · H: 120–180mm · MATTE BLACK METAL 3mm</text>
+<text x="540" y="12" text-anchor="middle" class="L" style="font-size:6px;fill:#888;letter-spacing:1px">SECTION</text>
+<rect x="500" y="18" width="35" height="70" fill="var(--ink)" opacity=".06" stroke="var(--ink)" stroke-width=".3"/>
+<text x="518" y="56" text-anchor="middle" class="L" style="font-size:4px;fill:#bbb" transform="rotate(90,518,56)">WALL</text>
+<rect x="535" y="40" width="18" height="4" fill="var(--metal)" opacity=".4"/>
+<rect x="535" y="52" width="18" height="4" fill="var(--metal)" opacity=".4"/>
+<rect x="553" y="32" width="6" height="30" rx="1" fill="var(--ink)" opacity=".55"/>
+<line x1="550" y1="42" x2="550" y2="52" stroke="var(--amber)" stroke-width="2" opacity=".35"/>
+<circle cx="550" cy="47" r="10" fill="var(--amber)" opacity=".05"/>
+<text x="570" y="42" class="L" style="font-size:5.5px;fill:var(--amber);opacity:.7">HALO LED</text>
+<text x="570" y="52" class="L" style="font-size:5px;fill:var(--amber);opacity:.45">2700K behind</text>
+<line x1="535" y1="68" x2="553" y2="68" stroke="var(--dim)" stroke-width=".4"/>
+<text x="544" y="78" text-anchor="middle" class="L" style="font-size:5px;fill:var(--dim)">15–20mm</text>
+<text x="200" y="115" text-anchor="middle" class="L" style="font-size:5px;fill:var(--call)">Steel 3mm · Laser cut · Matte black powder coat · Stud mount to masonry</text>
+</svg></div></div>
+
+<div class="card"><div class="tag t2">SWS-02 · HOURS + ADDRESS</div><div class="ct">Vinyl cut trên cửa kính</div>
+<div class="dwg"><div class="dwg-label">Door Glass Application</div>
+<svg width="100%" viewBox="0 0 500 100" xmlns="http://www.w3.org/2000/svg">
+<rect x="80" y="5" width="300" height="85" fill="var(--teal)" opacity=".03" stroke="var(--teal)" stroke-width=".5" opacity=".2"/>
+<text x="360" y="32" text-anchor="end" class="L" style="font-size:7.5px;fill:var(--ink);opacity:.55;letter-spacing:.5px">THỨ HAI – THỨ BẢY</text>
+<text x="360" y="45" text-anchor="end" class="L" style="font-size:7.5px;fill:var(--ink);opacity:.55;letter-spacing:.5px">10:00 – 21:00</text>
+<text x="360" y="62" text-anchor="end" class="L" style="font-size:5.5px;fill:var(--ink);opacity:.35">CHỦ NHẬT: 10:00 – 18:00</text>
+<text x="360" y="77" text-anchor="end" class="L" style="font-size:5px;fill:var(--ink);opacity:.25;letter-spacing:.8px">435 HÒA HẢO · Q.10 · HCMC</text>
+<text x="420" y="35" class="L" style="font-size:5px;fill:var(--dim)">EYE LEVEL 1500mm</text>
+<text x="420" y="48" class="L" style="font-size:5px;fill:var(--dim);opacity:.5">DM Mono Light · Vinyl cut</text>
+<text x="420" y="60" class="L" style="font-size:5px;fill:var(--dim);opacity:.5">Frosted hoặc Ink color</text>
+</svg></div></div>
+
+<div class="card"><div class="tag t1">SWS-03 · BEACON WINDOW</div><div class="ct">Clean glass — light is the message</div>
+<div class="dwg"><div class="dwg-label">Night View · Store as Beacon</div>
+<svg width="100%" viewBox="0 0 600 90" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="600" height="90" fill="var(--ink)" opacity=".65"/>
+<rect x="150" y="10" width="300" height="60" rx="2" fill="var(--amber)" opacity=".08"/>
+<rect x="155" y="13" width="290" height="54" rx="1" fill="var(--cream)" opacity=".12"/>
+<circle cx="230" cy="28" r="7" fill="var(--amber)" opacity=".12"/><circle cx="300" cy="24" r="9" fill="var(--amber)" opacity=".15"/><circle cx="370" cy="28" r="7" fill="var(--amber)" opacity=".12"/>
+<g opacity=".12"><rect x="210" y="42" width="7" height="16" rx="2" fill="var(--cream)"/><rect x="240" y="40" width="7" height="18" rx="2" fill="var(--cream)"/><rect x="340" y="42" width="7" height="16" rx="2" fill="var(--cream)"/><rect x="370" y="40" width="7" height="18" rx="2" fill="var(--cream)"/></g>
+<text x="300" y="8" text-anchor="middle" style="font-family:'Cormorant Garamond',serif;font-size:9px;fill:var(--cream);opacity:.45;letter-spacing:5px">MORAQ</text>
+<text x="40" y="35" class="L" style="font-size:5.5px;fill:#C75050;opacity:.7">✗ NO POSTERS</text><text x="40" y="48" class="L" style="font-size:5.5px;fill:#C75050;opacity:.7">✗ NO BANNERS</text><text x="40" y="61" class="L" style="font-size:5.5px;fill:#C75050;opacity:.7">✗ NO PROMOS</text>
+<text x="490" y="35" class="L" style="font-size:5.5px;fill:var(--teal);opacity:.7">✓ WARM GLOW</text><text x="490" y="48" class="L" style="font-size:5.5px;fill:var(--teal);opacity:.7">✓ PRODUCTS LIT</text><text x="490" y="61" class="L" style="font-size:5.5px;fill:var(--teal);opacity:.7">✓ PENDANT VISIBLE</text>
+<text x="300" y="82" text-anchor="middle" class="L" style="font-size:5px;fill:var(--cream);opacity:.3">CLEAN GLASS · LIGHT = THE ONLY MESSAGE</text>
+</svg></div></div>
+</div>
+
+<div class="pnl" id="p-nav">
+<h2>Tầng 2 · In-Store Wayfinding</h2>
+<h3>Primary = Lighting gradient</h3>
+<div class="dwg"><div class="dwg-label">Store Section · Lighting = Wayfinding</div>
+<svg width="100%" viewBox="0 0 700 125" xmlns="http://www.w3.org/2000/svg">
+<line x1="30" y1="95" x2="670" y2="95" stroke="var(--stone)" stroke-width=".5"/>
+<line x1="30" y1="12" x2="670" y2="12" stroke="var(--stone)" stroke-width=".3"/>
+<rect x="30" y="12" width="200" height="83" fill="var(--ink)" opacity=".18"/>
+<rect x="230" y="12" width="220" height="83" fill="var(--ink)" opacity=".08"/>
+<rect x="450" y="12" width="220" height="83" fill="var(--amber)" opacity=".04"/>
+<g opacity=".06" fill="var(--amber)"><polygon points="130,12 100,95 160,95"/><polygon points="340,12 310,95 370,95"/><polygon points="400,12 370,95 430,95"/><polygon points="500,12 460,95 540,95"/><polygon points="560,12 520,95 600,95"/><polygon points="620,12 580,95 660,95"/></g>
+<rect x="480" y="60" width="80" height="35" rx="2" fill="var(--wood-dk)" opacity=".12"/>
+<text x="130" y="48" text-anchor="middle" class="L" style="font-size:8px;fill:var(--cream);font-weight:500">ENTRY</text><text x="130" y="62" text-anchor="middle" class="L" style="font-size:6px;fill:var(--cream);opacity:.6">200 lux</text>
+<text x="340" y="42" text-anchor="middle" class="L" style="font-size:8px;fill:var(--ink);opacity:.45;font-weight:500">P2</text><text x="340" y="56" text-anchor="middle" class="L" style="font-size:6px;fill:var(--ink);opacity:.3">300–500 lux</text>
+<text x="560" y="42" text-anchor="middle" class="L" style="font-size:8px;fill:var(--ink);opacity:.35;font-weight:500">COUNTER</text><text x="560" y="56" text-anchor="middle" class="L" style="font-size:6px;fill:var(--ink);opacity:.25">800–1000 lux</text>
+<rect x="228" y="93" width="4" height="4" fill="var(--amber)" opacity=".5"/><rect x="448" y="93" width="4" height="4" fill="var(--amber)" opacity=".5"/>
+<text x="230" y="110" text-anchor="middle" class="L" style="font-size:4.5px;fill:var(--amber);opacity:.5">BRASS J-05</text><text x="450" y="110" text-anchor="middle" class="L" style="font-size:4.5px;fill:var(--amber);opacity:.5">BRASS J-05</text>
+<text x="350" y="122" text-anchor="middle" class="L" style="font-size:5px;fill:var(--teal);opacity:.4;letter-spacing:1.5px">MẮT TỰ ĐI THEO ÁNH SÁNG → KHÔNG CẦN BIỂN</text>
+</svg></div>
+
+<div class="card"><div class="tag t3">SWS-04 · UMBRELLA GUIDE</div><div class="ct">"Để ô tại đây"</div>
+<div class="dwg"><div class="dwg-label">Engraved Metal Bar</div>
+<svg width="100%" viewBox="0 0 500 55" xmlns="http://www.w3.org/2000/svg">
+<rect x="60" y="8" width="380" height="22" rx="3" fill="var(--ink)" opacity=".65" stroke="var(--ink)" stroke-width=".5"/>
+<text x="250" y="23" text-anchor="middle" class="L" style="font-size:8.5px;fill:var(--cream);opacity:.75;letter-spacing:2.5px">ĐỂ Ô TẠI ĐÂY</text>
+<text x="250" y="42" text-anchor="middle" class="L" style="font-size:5px;fill:#777">MATTE BLACK STEEL BAR · LASER ENGRAVE · DM MONO REGULAR 12px</text>
+</svg></div></div>
+
+<div class="card"><div class="tag t3">SWS-05 · WC INDICATOR</div><div class="ct">Icon line art — gần BOH</div>
+<div class="dwg"><div class="dwg-label">Custom Icon · On Wall</div>
+<svg width="100%" viewBox="0 0 500 60" xmlns="http://www.w3.org/2000/svg">
+<rect x="60" y="3" width="180" height="50" fill="var(--ink)" opacity=".03"/>
+<circle cx="140" cy="16" r="6" fill="none" stroke="var(--ink)" stroke-width="1.2" opacity=".4"/>
+<line x1="140" y1="22" x2="140" y2="38" stroke="var(--ink)" stroke-width="1.2" opacity=".4"/>
+<line x1="133" y1="30" x2="147" y2="30" stroke="var(--ink)" stroke-width="1.2" opacity=".4"/>
+<line x1="158" y1="27" x2="175" y2="27" stroke="var(--ink)" stroke-width=".8" opacity=".25"/><line x1="170" y1="22" x2="175" y2="27" stroke="var(--ink)" stroke-width=".8" opacity=".25"/><line x1="170" y1="32" x2="175" y2="27" stroke="var(--ink)" stroke-width=".8" opacity=".25"/>
+<text x="300" y="18" class="L" style="font-size:5.5px;fill:var(--ink);opacity:.45">Custom line art · Ink color · 80mm tall</text>
+<text x="300" y="32" class="L" style="font-size:5px;fill:var(--ink);opacity:.35">Gần BOH · Eye level · Chỉ thấy khi ở gần</text>
+<text x="300" y="46" class="L" style="font-size:5px;fill:#C75050;opacity:.45">✗ Không dùng international WC symbol</text>
+</svg></div></div>
+<div class="warn"><strong>Không có "Counter →".</strong> Fix lighting nếu khách lạc. Counter sáng nhất = wayfinding tự nhiên.</div>
+</div>
+
+<div class="pnl" id="p-prd">
+<h2>Tầng 3 · Product Labels — 4 Items</h2>
+<div class="card"><div class="tag t1">SWS-06 · SCENT CARD</div><div class="ct">70×45mm · Cạnh mỗi chai</div>
+<div class="dwg"><div class="dwg-label">Card Mockup + Material Section</div>
+<svg width="100%" viewBox="0 0 700 155" xmlns="http://www.w3.org/2000/svg">
+<rect x="50" y="8" width="280" height="130" rx="4" fill="var(--cream)" stroke="var(--linen)" stroke-width="1"/>
+<rect x="50" y="8" width="280" height="4" rx="2" fill="var(--teal)" opacity=".5"/>
+<text x="72" y="38" style="font-family:'Cormorant Garamond',serif;font-size:16px;fill:var(--ink)">Saigon Dusk</text>
+<text x="72" y="52" class="L" style="font-size:7px;fill:var(--teal);letter-spacing:1.5px">ORIENTAL · EAU DE PARFUM</text>
+<line x1="72" y1="60" x2="310" y2="60" stroke="var(--linen)" stroke-width=".6"/>
+<text x="72" y="76" class="L" style="font-size:6.5px;fill:var(--ink);opacity:.55">TOP: Bergamot · Pink Pepper</text>
+<text x="72" y="89" class="L" style="font-size:6.5px;fill:var(--ink);opacity:.55">HEART: Jasmine Sambac · Oud</text>
+<text x="72" y="102" class="L" style="font-size:6.5px;fill:var(--ink);opacity:.55">BASE: Amber · Sandalwood · Musk</text>
+<text x="72" y="125" class="L" style="font-size:5.5px;fill:var(--ink);opacity:.3">50ml · Compound tại store</text>
+<text x="310" y="125" text-anchor="end" class="L" style="font-size:8px;fill:var(--ink);opacity:.45">2.400.000 ₫</text>
+<line x1="340" y1="8" x2="355" y2="8" stroke="var(--dim)" stroke-width=".4"/><line x1="340" y1="138" x2="355" y2="138" stroke="var(--dim)" stroke-width=".4"/><line x1="350" y1="8" x2="350" y2="138" stroke="var(--dim)" stroke-width=".4"/><text x="362" y="76" class="L" style="font-size:6.5px;fill:var(--dim)">45mm</text>
+<line x1="50" y1="148" x2="330" y2="148" stroke="var(--dim)" stroke-width=".4"/><text x="190" y="155" text-anchor="middle" class="L" style="font-size:6.5px;fill:var(--dim)">70mm</text>
+<text x="500" y="18" text-anchor="middle" class="L" style="font-size:6px;fill:#888;letter-spacing:1px">MATERIAL</text>
+<rect x="420" y="30" width="160" height="25" rx="2" fill="var(--cream)" stroke="var(--linen)" stroke-width="1"/>
+<g opacity=".08" stroke="var(--ink)" stroke-width=".3"><line x1="425" y1="38" x2="575" y2="38"/><line x1="425" y1="44" x2="575" y2="44"/><line x1="425" y1="50" x2="575" y2="50"/></g>
+<text x="500" y="45" text-anchor="middle" class="L" style="font-size:6px;fill:var(--ink);opacity:.4">COTTON 350gsm</text>
+<text x="500" y="75" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--call)">LETTERPRESS (preferred)</text>
+<text x="500" y="88" text-anchor="middle" class="L" style="font-size:5px;fill:#888">Tactile impression · Premium feel</text>
+<text x="500" y="105" text-anchor="middle" class="L" style="font-size:5px;fill:#888">HOLDER: Wire stand 30mm</text>
+<text x="500" y="118" text-anchor="middle" class="L" style="font-size:5px;fill:#888;opacity:.5">Matte black · Hoặc slot trong shelf</text>
+</svg></div></div>
+
+<div class="card"><div class="tag t2">SWS-07 · SCENT GRAMMAR LABELS</div><div class="ct">4 family labels engraved shelf edge</div>
+<div class="dwg"><div class="dwg-label">Front View + Cross-Section 1:1</div>
+<svg width="100%" viewBox="0 0 700 70" xmlns="http://www.w3.org/2000/svg">
+<text x="200" y="10" text-anchor="middle" class="L" style="font-size:5px;fill:#888;letter-spacing:1px">SHELF EDGE · FRONT</text>
+<rect x="30" y="16" width="380" height="14" rx="1" fill="var(--wood-lt)" opacity=".45" stroke="var(--wood-lt)" stroke-width=".6"/>
+<text x="55" y="27" class="L" style="font-size:7px;fill:var(--teal);font-weight:500;letter-spacing:2px">FRESH</text>
+<text x="155" y="27" class="L" style="font-size:7px;fill:var(--teal);font-weight:500;letter-spacing:2px">FLORAL</text>
+<text x="260" y="27" class="L" style="font-size:7px;fill:var(--teal);font-weight:500;letter-spacing:2px">WOODY</text>
+<text x="345" y="27" class="L" style="font-size:7px;fill:var(--teal);font-weight:500;letter-spacing:2px">ORIENTAL</text>
+<text x="570" y="10" text-anchor="middle" class="L" style="font-size:5px;fill:#888;letter-spacing:1px">SECTION 1:1</text>
+<rect x="510" y="16" width="120" height="16" rx="1" fill="var(--wood-lt)" opacity=".45" stroke="var(--wood-lt)" stroke-width=".7"/>
+<rect x="522" y="22" width="40" height="3" fill="var(--teal)" opacity=".5"/>
+<line x1="564" y1="23" x2="590" y2="38" stroke="var(--call)" stroke-width=".3"/>
+<text x="595" y="40" class="L" style="font-size:5px;fill:var(--call)">CNC 0.5mm</text>
+<text x="595" y="50" class="L" style="font-size:4.5px;fill:var(--call);opacity:.5">Teal paint fill</text>
+<text x="200" y="45" text-anchor="middle" class="L" style="font-size:5px;fill:#888">DM MONO MEDIUM 8px · LETTER-SPACING 2px · TEAL #0F6E56 · ENGRAVED or METAL PLATE 40×12mm</text>
+</svg></div></div>
+
+<div class="card"><div class="tag t3">SWS-08 · ARCHIVE DESCRIPTION</div><div class="ct">90×55mm — story card chi tiết</div>
+<div class="dwg"><div class="dwg-label">Card + Shelf Slot</div>
+<svg width="100%" viewBox="0 0 600 100" xmlns="http://www.w3.org/2000/svg">
+<rect x="50" y="5" width="250" height="88" rx="3" fill="var(--cream)" stroke="var(--linen)" stroke-width=".8"/>
+<rect x="50" y="5" width="250" height="3" rx="1" fill="var(--teal)" opacity=".4"/>
+<text x="68" y="28" style="font-family:'Cormorant Garamond',serif;font-size:13px;fill:var(--ink)">Midnight Garden</text>
+<text x="68" y="40" class="L" style="font-size:5.5px;fill:var(--teal);letter-spacing:1px">FLORAL · EDP · 50ml</text>
+<line x1="68" y1="46" x2="285" y2="46" stroke="var(--linen)" stroke-width=".4"/>
+<text x="68" y="58" style="font-family:'DM Sans',sans-serif;font-size:5.5px;fill:var(--ink);opacity:.4">Lấy cảm hứng từ vườn hoa Đà Lạt lúc nửa đêm.</text>
+<text x="68" y="68" style="font-family:'DM Sans',sans-serif;font-size:5.5px;fill:var(--ink);opacity:.4">Tuberose, đất ẩm, gỗ tuyết tùng.</text>
+<text x="68" y="82" class="L" style="font-size:5px;fill:var(--ink);opacity:.25">OCCASION: Evening · Date · Special</text>
+<rect x="380" y="25" width="160" height="10" rx="1" fill="var(--wood-lt)" opacity=".4" stroke="var(--wood-lt)" stroke-width=".5"/>
+<rect x="420" y="27" width="3" height="6" fill="#F4F3EF"/>
+<rect x="418" y="5" width="52" height="24" rx="2" fill="var(--cream)" opacity=".8" stroke="var(--linen)" stroke-width=".4" transform="rotate(-12,444,17)"/>
+<text x="460" y="50" text-anchor="middle" class="L" style="font-size:5px;fill:var(--dim)">SLOT TRONG SHELF · TILT 15°</text>
+</svg></div></div>
+
+<div class="card"><div class="tag t3">SWS-09 · PRICE DISPLAY</div><div class="ct">Story first → Price second</div>
+<div class="dwg"><div class="dwg-label">Eye Path Rule</div>
+<svg width="100%" viewBox="0 0 600 55" xmlns="http://www.w3.org/2000/svg">
+<rect x="60" y="3" width="200" height="48" rx="3" fill="var(--cream)" stroke="var(--linen)" stroke-width=".6"/>
+<circle cx="92" cy="14" r="3" fill="var(--teal)" opacity=".45"/><text x="100" y="16" class="L" style="font-size:5.5px;fill:var(--teal);opacity:.7">① TÊN</text>
+<circle cx="92" cy="26" r="3" fill="var(--teal)" opacity=".3"/><text x="100" y="28" class="L" style="font-size:5.5px;fill:var(--teal);opacity:.5">② NOTES</text>
+<circle cx="232" cy="42" r="3" fill="var(--dim)" opacity=".4"/><text x="210" y="44" text-anchor="end" class="L" style="font-size:5px;fill:var(--dim)">③</text><text x="240" y="44" class="L" style="font-size:7px;fill:var(--ink);opacity:.45">2.400.000 ₫</text>
+<path d="M95,16 Q180,18 95,26 Q180,35 228,42" fill="none" stroke="var(--teal)" stroke-width=".4" stroke-dasharray="2 1.5" opacity=".3"/>
+<text x="380" y="14" class="L" style="font-size:5.5px;fill:var(--ink);opacity:.55;font-weight:500">DM Mono 8pt · Ink opacity 40%</text>
+<text x="380" y="28" class="L" style="font-size:5px;fill:#888">Format: 2.400.000 ₫ (chấm ngàn)</text>
+<text x="380" y="42" class="L" style="font-size:5px;fill:#C75050;opacity:.5">✗ Không sticker giá trên chai · Không tag on neck</text>
+</svg></div></div>
+</div>
+
+<div class="pnl" id="p-cer">
+<h2>Tầng 4 · Ceremony Cards — 3 Items</h2>
+<div class="card"><div class="tag t2">SWS-10 · THANK-YOU CARD</div><div class="ct">90×55mm · Viết tay bắt buộc</div>
+<div class="dwg"><div class="dwg-label">Card + Gift Box Context</div>
+<svg width="100%" viewBox="0 0 700 125" xmlns="http://www.w3.org/2000/svg">
+<rect x="40" y="5" width="270" height="112" rx="3" fill="var(--cream)" stroke="var(--linen)" stroke-width="1"/>
+<text x="58" y="24" style="font-family:'Cormorant Garamond',serif;font-size:9px;fill:var(--teal);opacity:.5;letter-spacing:3px">MORAQ</text>
+<rect x="55" y="32" width="240" height="55" rx="2" fill="none" stroke="var(--linen)" stroke-width=".5" stroke-dasharray="3 2"/>
+<text x="175" y="52" text-anchor="middle" style="font-family:'Cormorant Garamond',serif;font-size:9px;fill:var(--ink);opacity:.3;font-style:italic">Chị Hương ơi,</text>
+<text x="175" y="66" text-anchor="middle" style="font-family:'Cormorant Garamond',serif;font-size:8px;fill:var(--ink);opacity:.2;font-style:italic">Cảm ơn chị đã chọn Saigon Dusk — Linh</text>
+<text x="175" y="106" text-anchor="middle" class="L" style="font-size:4.5px;fill:var(--ink);opacity:.2;letter-spacing:1px">MORAQ · SAIGON CHAPTER · 435 HÒA HẢO</text>
+<text x="500" y="12" text-anchor="middle" class="L" style="font-size:5px;fill:#888;letter-spacing:1px">TRONG GIFT BOX</text>
+<rect x="400" y="22" width="200" height="90" rx="4" fill="var(--ink)" opacity=".06" stroke="var(--ink)" stroke-width=".4"/>
+<rect x="410" y="32" width="180" height="70" rx="2" fill="var(--linen)" opacity=".3"/>
+<rect x="435" y="50" width="80" height="35" rx="2" fill="var(--cream)" stroke="var(--linen)" stroke-width=".5"/>
+<text x="475" y="68" text-anchor="middle" class="L" style="font-size:4px;fill:var(--teal);opacity:.4">MORAQ</text>
+<rect x="530" y="35" width="18" height="45" rx="4" fill="var(--ink)" opacity=".08"/>
+<text x="500" y="118" text-anchor="middle" class="L" style="font-size:5px;fill:#888">Card TRÊN tissue · Visible ngay khi mở</text>
+</svg></div>
+<div class="ig"><div class="it"><div class="it-n">Handwritten</div><div class="it-s">Tên khách + cảm ơn + tên staff + ngày · Gel pen 0.5mm · Ink đen/teal</div></div><div class="it"><div class="it-n">Pre-printed</div><div class="it-s">MORAQ mark teal · Store info bottom · Zone viết tay blank</div></div></div></div>
+
+<div class="card"><div class="tag t1">SWS-11 · PACKAGING INSERT</div><div class="ct">55×35mm · Care + QR</div>
+<div class="dwg"><div class="dwg-label">Mặt A + Mặt B</div>
+<svg width="100%" viewBox="0 0 600 82" xmlns="http://www.w3.org/2000/svg">
+<text x="130" y="9" text-anchor="middle" class="L" style="font-size:5px;fill:#888;letter-spacing:1px">MẶT A · CARE</text>
+<rect x="40" y="14" width="180" height="62" rx="3" fill="var(--cream)" stroke="var(--linen)" stroke-width=".8"/>
+<text x="130" y="32" text-anchor="middle" class="L" style="font-size:6px;fill:var(--ink);opacity:.55;letter-spacing:1px">BẢO QUẢN</text>
+<text x="130" y="46" text-anchor="middle" style="font-family:'DM Sans',sans-serif;font-size:5.5px;fill:var(--ink);opacity:.38">Để xa ánh sáng trực tiếp</text>
+<text x="130" y="58" text-anchor="middle" style="font-family:'DM Sans',sans-serif;font-size:5.5px;fill:var(--ink);opacity:.38">15–25°C · Nắp đậy kín</text>
+<text x="130" y="68" text-anchor="middle" style="font-family:'DM Sans',sans-serif;font-size:5px;fill:var(--ink);opacity:.25">Sử dụng trong 12 tháng</text>
+<text x="430" y="9" text-anchor="middle" class="L" style="font-size:5px;fill:#888;letter-spacing:1px">MẶT B · QR</text>
+<rect x="340" y="14" width="180" height="62" rx="3" fill="var(--cream)" stroke="var(--linen)" stroke-width=".8"/>
+<rect x="400" y="24" width="30" height="30" rx="2" fill="var(--ink)" opacity=".15"/>
+<rect x="404" y="28" width="22" height="22" fill="var(--cream)"/>
+<g opacity=".18"><rect x="406" y="30" width="4" height="4" fill="var(--ink)"/><rect x="412" y="30" width="4" height="4" fill="var(--ink)"/><rect x="418" y="30" width="4" height="4" fill="var(--ink)"/><rect x="406" y="36" width="4" height="4" fill="var(--ink)"/><rect x="412" y="36" width="4" height="4" fill="var(--ink)"/><rect x="418" y="36" width="4" height="4" fill="var(--ink)"/><rect x="406" y="42" width="4" height="4" fill="var(--ink)"/></g>
+<text x="448" y="38" class="L" style="font-size:5.5px;fill:var(--ink);opacity:.4">moraq.vn</text>
+<text x="448" y="48" class="L" style="font-size:5.5px;fill:var(--ink);opacity:.4">/your-scent</text>
+<text x="430" y="68" text-anchor="middle" class="L" style="font-size:4.5px;fill:var(--ink);opacity:.2">Xem scent story · Reorder</text>
+</svg></div></div>
+
+<div class="card"><div class="tag t3">SWS-12 · BOTTLE LABEL</div><div class="ct">Custom label in tại Lab Booth</div>
+<div class="dwg"><div class="dwg-label">On Bottle + Zoom</div>
+<svg width="100%" viewBox="0 0 500 95" xmlns="http://www.w3.org/2000/svg">
+<rect x="70" y="5" width="40" height="68" rx="6" fill="var(--ink)" opacity=".15" stroke="var(--ink)" stroke-width=".5"/>
+<rect x="82" y="0" width="16" height="9" rx="3" fill="var(--ink)" opacity=".18"/>
+<rect x="75" y="25" width="30" height="30" rx="2" fill="var(--cream)" stroke="var(--linen)" stroke-width=".5"/>
+<text x="90" y="38" text-anchor="middle" class="L" style="font-size:3px;fill:var(--ink);opacity:.5">Saigon Dusk</text>
+<text x="90" y="44" text-anchor="middle" class="L" style="font-size:2px;fill:var(--ink);opacity:.3">HƯƠNG · 11/04</text>
+<text x="90" y="49" text-anchor="middle" class="L" style="font-size:2px;fill:var(--ink);opacity:.3">50ml · MORAQ</text>
+<line x1="108" y1="40" x2="180" y2="25" stroke="var(--dim)" stroke-width=".3"/>
+<rect x="180" y="10" width="260" height="72" rx="3" fill="var(--cream)" stroke="var(--linen)" stroke-width=".8"/>
+<text x="198" y="30" style="font-family:'Cormorant Garamond',serif;font-size:12px;fill:var(--ink)">Saigon Dusk</text>
+<text x="198" y="42" class="L" style="font-size:6px;fill:var(--teal);letter-spacing:1px">ORIENTAL · EDP</text>
+<line x1="198" y1="48" x2="425" y2="48" stroke="var(--linen)" stroke-width=".4"/>
+<text x="198" y="58" class="L" style="font-size:5.5px;fill:var(--ink);opacity:.45">Compound cho: HƯƠNG</text>
+<text x="198" y="68" class="L" style="font-size:5.5px;fill:var(--ink);opacity:.45">Ngày: 11/04/2026 · 50ml</text>
+<text x="198" y="78" class="L" style="font-size:5px;fill:var(--ink);opacity:.25;letter-spacing:1px">MORAQ · SAIGON CHAPTER</text>
+<text x="310" y="92" text-anchor="middle" class="L" style="font-size:5px;fill:var(--dim)">DM MONO 5–7pt · PRINT TẠI LAB BOOTH · THERMAL/INKJET</text>
+</svg></div></div>
+</div>
+
+<div class="pnl" id="p-ops">
+<h2>Operational Labels — 6 Items · Staff Only</h2>
+<div class="dwg"><div class="dwg-label">Position Map</div>
+<svg width="100%" viewBox="0 0 700 165" xmlns="http://www.w3.org/2000/svg">
+<rect x="40" y="15" width="620" height="120" rx="3" fill="var(--ink)" opacity=".03" stroke="var(--ink)" stroke-width=".4"/>
+<rect x="420" y="38" width="110" height="45" rx="2" fill="var(--wood-dk)" opacity=".12"/><text x="475" y="64" text-anchor="middle" class="L" style="font-size:5px;fill:var(--wood-dk);opacity:.4">COUNTER</text>
+<rect x="200" y="45" width="65" height="32" rx="2" fill="var(--wood-lt)" opacity=".1"/><text x="233" y="65" text-anchor="middle" class="L" style="font-size:4px;fill:var(--wood-dk);opacity:.3">TESTER</text>
+<rect x="300" y="95" width="55" height="35" rx="2" fill="var(--teal)" opacity=".05" stroke="var(--teal)" stroke-width=".3"/><text x="328" y="116" text-anchor="middle" class="L" style="font-size:4px;fill:var(--teal);opacity:.3">LAB</text>
+<rect x="560" y="45" width="85" height="78" rx="2" fill="var(--ink)" opacity=".05"/><text x="603" y="88" text-anchor="middle" class="L" style="font-size:5px;fill:var(--ink);opacity:.2">BOH</text>
+<g><circle cx="233" cy="40" r="7" fill="var(--call)" opacity=".15" stroke="var(--call)" stroke-width=".4"/><text x="233" y="43" text-anchor="middle" class="L" style="font-size:5px;fill:var(--call)">13</text></g>
+<g><circle cx="455" cy="80" r="7" fill="var(--call)" opacity=".15" stroke="var(--call)" stroke-width=".4"/><text x="455" y="83" text-anchor="middle" class="L" style="font-size:5px;fill:var(--call)">14</text></g>
+<g><circle cx="603" cy="60" r="7" fill="var(--call)" opacity=".15" stroke="var(--call)" stroke-width=".4"/><text x="603" y="63" text-anchor="middle" class="L" style="font-size:5px;fill:var(--call)">15</text></g>
+<g><circle cx="100" cy="80" r="7" fill="var(--call)" opacity=".15" stroke="var(--call)" stroke-width=".4"/><text x="100" y="83" text-anchor="middle" class="L" style="font-size:5px;fill:var(--call)">16</text></g>
+<g><circle cx="328" cy="100" r="7" fill="var(--call)" opacity=".15" stroke="var(--call)" stroke-width=".4"/><text x="328" y="103" text-anchor="middle" class="L" style="font-size:5px;fill:var(--call)">17</text></g>
+<g><circle cx="233" cy="82" r="7" fill="var(--call)" opacity=".15" stroke="var(--call)" stroke-width=".4"/><text x="233" y="85" text-anchor="middle" class="L" style="font-size:5px;fill:var(--call)">18</text></g>
+<text x="60" y="155" class="L" style="font-size:5px;fill:var(--call)">13 Planogram · 14 Drawer · 15 BOH zone · 16 Diffuser log · 17 Lab equipment · 18 Coffee bean date</text>
+</svg></div>
+<div class="ig ig3">
+<div class="it"><div class="it-n">SWS-13 · Planogram</div><div class="it-s">Scent Grammar positions · Shelf edge phía staff</div></div>
+<div class="it"><div class="it-n">SWS-14 · Drawer</div><div class="it-s">S·M·L·XL·CARD·TISSUE · DM Mono 10pt</div></div>
+<div class="it"><div class="it-n">SWS-15 · BOH</div><div class="it-s">Bán chạy · Bao bì · DM Mono 14pt</div></div>
+<div class="it"><div class="it-n">SWS-16 · Diffuser</div><div class="it-s">"Fill: __" · "Intensity: 3/5" · Ref: SB-001</div></div>
+<div class="it"><div class="it-n">SWS-17 · Lab</div><div class="it-s">SCALE·FRIDGE·PRINTER · DM Mono 8pt</div></div>
+<div class="it"><div class="it-n">SWS-18 · Coffee</div><div class="it-s">"Thay: [ngày]" · 3-day rotation</div></div>
+</div>
+<div class="note"><strong>Rule:</strong> Tất cả chỉ visible khi staff ở working position. Khách không thấy.</div>
+</div>
+
+<div class="pnl" id="p-for">
+<h2>Forbidden Signage — 10 Items</h2>
+<div class="dwg"><div class="dwg-label">✗ vs ✓</div>
+<svg width="100%" viewBox="0 0 700 120" xmlns="http://www.w3.org/2000/svg">
+<text x="175" y="10" text-anchor="middle" class="L" style="font-size:7px;fill:#C75050;font-weight:500;letter-spacing:1px">✗ FORBIDDEN</text>
+<rect x="30" y="16" width="130" height="40" rx="3" fill="#C75050" opacity=".08" stroke="#C75050" stroke-width=".4"/><text x="95" y="34" text-anchor="middle" class="L" style="font-size:8px;fill:#C75050;font-weight:500">SALE 50%</text><text x="95" y="48" text-anchor="middle" class="L" style="font-size:4.5px;fill:#C75050;opacity:.5">Promo banner</text>
+<rect x="175" y="16" width="130" height="40" rx="3" fill="#C75050" opacity=".08" stroke="#C75050" stroke-width=".4"/><text x="240" y="34" text-anchor="middle" class="L" style="font-size:7px;fill:#C75050">COUNTER →</text><text x="240" y="48" text-anchor="middle" class="L" style="font-size:4.5px;fill:#C75050;opacity:.5">Direction arrow</text>
+<rect x="30" y="62" width="130" height="40" rx="3" fill="#C75050" opacity=".08" stroke="#C75050" stroke-width=".4"/><text x="95" y="80" text-anchor="middle" class="L" style="font-size:6px;fill:#C75050">★ BESTSELLER</text><text x="95" y="94" text-anchor="middle" class="L" style="font-size:4.5px;fill:#C75050;opacity:.5">Sticker on shelf</text>
+<rect x="175" y="62" width="130" height="40" rx="3" fill="#C75050" opacity=".08" stroke="#C75050" stroke-width=".4"/><text x="240" y="80" text-anchor="middle" class="L" style="font-size:6px;fill:#C75050">@moraq.vn</text><text x="240" y="94" text-anchor="middle" class="L" style="font-size:4.5px;fill:#C75050;opacity:.5">Social on wall</text>
+<text x="525" y="10" text-anchor="middle" class="L" style="font-size:7px;fill:var(--teal);font-weight:500;letter-spacing:1px">✓ THAY BẰNG</text>
+<rect x="390" y="16" width="130" height="40" rx="3" fill="var(--teal)" opacity=".05" stroke="var(--teal)" stroke-width=".4"/><text x="455" y="36" text-anchor="middle" class="L" style="font-size:6px;fill:var(--teal)">Không discount</text><text x="455" y="48" text-anchor="middle" class="L" style="font-size:4.5px;fill:var(--teal);opacity:.5">BC-001</text>
+<rect x="535" y="16" width="130" height="40" rx="3" fill="var(--teal)" opacity=".05" stroke="var(--teal)" stroke-width=".4"/><text x="600" y="36" text-anchor="middle" class="L" style="font-size:6px;fill:var(--teal)">Fix lighting</text><text x="600" y="48" text-anchor="middle" class="L" style="font-size:4.5px;fill:var(--teal);opacity:.5">800+ lux counter</text>
+<rect x="390" y="62" width="130" height="40" rx="3" fill="var(--teal)" opacity=".05" stroke="var(--teal)" stroke-width=".4"/><text x="455" y="82" text-anchor="middle" class="L" style="font-size:6px;fill:var(--teal)">Staff tư vấn</text><text x="455" y="94" text-anchor="middle" class="L" style="font-size:4.5px;fill:var(--teal);opacity:.5">Verbally</text>
+<rect x="535" y="62" width="130" height="40" rx="3" fill="var(--teal)" opacity=".05" stroke="var(--teal)" stroke-width=".4"/><text x="600" y="82" text-anchor="middle" class="L" style="font-size:6px;fill:var(--teal)">Organic</text><text x="600" y="94" text-anchor="middle" class="L" style="font-size:4.5px;fill:var(--teal);opacity:.5">SMD-001</text>
+</svg></div>
+<div class="warn"><strong>Test:</strong> Nếu trông như "mua từ cửa hàng vật tư quảng cáo" → loại bỏ ngay.</div>
+</div>
+
+<div class="pnl" id="p-spec">
+<h2>Type + Material Specs</h2>
+<div class="dwg"><div class="dwg-label">3 Typeface System</div>
+<svg width="100%" viewBox="0 0 700 65" xmlns="http://www.w3.org/2000/svg">
+<rect x="20" y="5" width="210" height="52" rx="4" fill="var(--ink)" opacity=".04"/><text x="125" y="25" text-anchor="middle" style="font-family:'Cormorant Garamond',serif;font-size:14px;fill:var(--ink)">Cormorant Garamond</text><text x="125" y="38" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--teal)">DISPLAY + NAMES</text><text x="125" y="50" text-anchor="middle" class="L" style="font-size:4.5px;fill:#888">Store name · Scent names · Headers</text>
+<rect x="245" y="5" width="210" height="52" rx="4" fill="var(--ink)" opacity=".04"/><text x="350" y="25" text-anchor="middle" style="font-family:'DM Sans',sans-serif;font-size:13px;fill:var(--ink)">DM Sans</text><text x="350" y="38" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--teal)">BODY + DESCRIPTION</text><text x="350" y="50" text-anchor="middle" class="L" style="font-size:4.5px;fill:#888">Care · Stories · Longer text</text>
+<rect x="470" y="5" width="210" height="52" rx="4" fill="var(--ink)" opacity=".04"/><text x="575" y="25" text-anchor="middle" class="L" style="font-size:13px;fill:var(--ink)">DM Mono</text><text x="575" y="38" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--teal)">LABELS + TECHNICAL</text><text x="575" y="50" text-anchor="middle" class="L" style="font-size:4.5px;fill:#888">Grammar · Prices · Codes · Ops</text>
+</svg></div>
+<div class="dwg"><div class="dwg-label">Color Palette</div>
+<svg width="100%" viewBox="0 0 700 40" xmlns="http://www.w3.org/2000/svg">
+<rect x="20" y="3" width="80" height="30" rx="4" fill="var(--ink)"/><text x="60" y="20" text-anchor="middle" class="L" style="font-size:5px;fill:var(--cream)">#1A1916</text><text x="60" y="28" text-anchor="middle" class="L" style="font-size:3.5px;fill:var(--cream);opacity:.5">Primary text</text>
+<rect x="108" y="3" width="80" height="30" rx="4" fill="var(--teal)"/><text x="148" y="20" text-anchor="middle" class="L" style="font-size:5px;fill:var(--cream)">#0F6E56</text><text x="148" y="28" text-anchor="middle" class="L" style="font-size:3.5px;fill:var(--cream);opacity:.5">Grammar</text>
+<rect x="196" y="3" width="80" height="30" rx="4" fill="var(--amber)"/><text x="236" y="20" text-anchor="middle" class="L" style="font-size:5px;fill:var(--cream)">#854F0B</text><text x="236" y="28" text-anchor="middle" class="L" style="font-size:3.5px;fill:var(--cream);opacity:.5">Dimensions</text>
+<rect x="284" y="3" width="80" height="30" rx="4" fill="var(--cream)" stroke="var(--linen)" stroke-width="1"/><text x="324" y="20" text-anchor="middle" class="L" style="font-size:5px;fill:var(--ink)">#FAF9F6</text><text x="324" y="28" text-anchor="middle" class="L" style="font-size:3.5px;fill:var(--ink);opacity:.3">Card bg</text>
+<rect x="372" y="3" width="80" height="30" rx="4" fill="var(--linen)" stroke="var(--stone)" stroke-width=".5"/><text x="412" y="20" text-anchor="middle" class="L" style="font-size:5px;fill:var(--ink)">#E8DFD0</text><text x="412" y="28" text-anchor="middle" class="L" style="font-size:3.5px;fill:var(--ink);opacity:.3">Borders</text>
+<rect x="460" y="3" width="100" height="30" rx="4" fill="#C75050" opacity=".15" stroke="#C75050" stroke-width=".5"/><text x="510" y="20" text-anchor="middle" class="L" style="font-size:5px;fill:#C75050">✗ PURE HUES</text><text x="510" y="28" text-anchor="middle" class="L" style="font-size:3.5px;fill:#C75050;opacity:.5">NEVER</text>
+</svg></div>
+<table class="tbl">
+<tr><th>Element</th><th>Font</th><th>Size</th><th>Weight</th><th>Color</th></tr>
+<tr><td>Store name</td><td>Cormorant Garamond</td><td>120–180mm</td><td>Light</td><td>Ink</td></tr>
+<tr><td>Scent name</td><td>Cormorant Garamond</td><td>14pt</td><td>Regular</td><td>Ink</td></tr>
+<tr><td>Scent notes</td><td>DM Mono</td><td>6–7pt</td><td>Regular</td><td>Ink 50%</td></tr>
+<tr><td>Price</td><td>DM Mono</td><td>7–8pt</td><td>Regular</td><td>Ink 40%</td></tr>
+<tr><td>Scent Grammar</td><td>DM Mono</td><td>8pt</td><td>Medium</td><td>Teal</td></tr>
+<tr><td>Care text</td><td>DM Sans</td><td>7pt</td><td>Regular</td><td>Ink 55%</td></tr>
+<tr><td>Bottle label</td><td>DM Mono</td><td>5–7pt</td><td>Regular</td><td>Ink on Cream</td></tr>
+<tr><td>Thank-you</td><td>Handwriting</td><td>Natural</td><td>—</td><td>Black/Teal gel</td></tr>
+</table>
+<div class="ig"><div class="it"><div class="it-n">Paper</div><div class="it-s">Cotton 350gsm · Cream · Uncoated · Letterpress preferred</div></div><div class="it"><div class="it-n">Metal</div><div class="it-s">Steel/aluminium 2–3mm · Matte black · CNC/laser</div></div><div class="it"><div class="it-n">Engraving</div><div class="it-s">CNC 0.5mm into wood · Teal/Ink fill · Sand flush</div></div><div class="it"><div class="it-n">Vinyl</div><div class="it-s">Frosted/Ink color · Pro cut · Glass only</div></div></div>
+</div>
+
+<div class="ft"><span>MORAQ · SWS-001 · SIGNAGE & WAYFINDING · V2.0 · 18 ITEMS</span><span>CONFIDENTIAL · APR 2026</span></div>
+<script>
+document.addEventListener('DOMContentLoaded',function(){var btns=document.querySelectorAll('.tb');var pnls=document.querySelectorAll('.pnl');btns.forEach(function(b){b.addEventListener('click',function(){var t=this.getAttribute('data-t');btns.forEach(function(x){x.classList.remove('on')});pnls.forEach(function(x){x.classList.remove('on')});this.classList.add('on');document.getElementById('p-'+t).classList.add('on');window.scrollTo({top:0,behavior:'smooth'});});});});
+</script>
+</body>
+</html>

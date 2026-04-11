@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MORAQ · FFE-001 Store FF&E Master List</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1A1916;--teal:#0F6E56;--td:#085041;--tl:#E1F5EE;--tm:#5DCAA5;
+  --amber:#854F0B;--ad:#633806;--al:#FAEEDA;--am:#EF9F27;
+  --cream:#FAF9F6;--linen:#E8DFD0;--w2:#C4B49A;--w3:#8C7A62;
+  --red:#A32D2D;--rl:#FCEBEB;--blue:#185FA5;--pl:#EEEDFE;--purple:#534AB7;
+  --gold:#B89A60;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;margin:0}body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);-webkit-font-smoothing:antialiased;font-size:13px;display:flex;flex-direction:column;overflow:hidden}
+.shell{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+
+/* TOP BAR */
+.topbar{background:var(--ink);padding:0 24px;height:52px;min-height:52px;display:flex;align-items:center;gap:16px;flex-shrink:0}
+.tb-logo{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:17px;color:var(--cream);letter-spacing:.1em}
+.tb-doc{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.22);padding:3px 8px;border:1px solid rgba(255,255,255,.1)}
+.tb-total{margin-left:auto;text-align:right}
+.tb-total-label{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);display:block}
+.tb-total-num{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:22px;color:var(--tm);line-height:1}
+.tb-total-range{font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.25)}
+
+/* SUMMARY CARDS */
+.summary{display:grid;grid-template-columns:repeat(9,1fr);gap:2px;background:var(--ink);padding:0 0 2px;flex-shrink:0}
+.sum-card{background:#111;padding:10px 12px;cursor:pointer;border-bottom:2px solid transparent;transition:all .14s}
+.sum-card:hover{background:#1a1a14}
+.sum-card.active{border-bottom-color:var(--teal);background:#0f1a12}
+.sum-zone{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:rgba(250,249,246,.28);margin-bottom:3px}
+.sum-name{font-size:11px;color:rgba(250,249,246,.6);margin-bottom:2px;white-space:nowrap}
+.sum-cost{font-family:'DM Mono',monospace;font-size:9px;color:var(--tm)}
+
+/* FILTERS */
+.filters{padding:10px 24px;border-bottom:1px solid var(--linen);background:var(--cream);display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0}
+.filter-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--w3)}
+.f-chip{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.05em;padding:4px 10px;border:1px solid var(--linen);background:white;cursor:pointer;color:var(--w3);transition:all .12s;border-radius:0}
+.f-chip:hover{border-color:var(--teal);color:var(--teal)}
+.f-chip.active{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+.f-sep{width:1px;height:20px;background:var(--linen)}
+.f-search{font-family:'DM Mono',monospace;font-size:9px;padding:4px 10px;border:1px solid var(--linen);background:white;color:var(--ink);outline:none;min-width:180px}
+.f-search:focus{border-color:var(--teal)}
+.f-count{font-family:'DM Mono',monospace;font-size:8px;color:var(--w3);margin-left:auto}
+
+/* TABLE */
+.table-wrap{flex:1;overflow-y:auto;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead{position:sticky;top:0;z-index:20}
+thead tr{background:var(--ink)}
+th{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(250,249,246,.35);padding:9px 12px;text-align:left;white-space:nowrap;border-right:1px solid rgba(255,255,255,.05)}
+th:last-child{border-right:none}
+th.sort{cursor:pointer}
+th.sort:hover{color:rgba(250,249,246,.6)}
+tbody tr{border-bottom:1px solid var(--linen);transition:background .1s}
+tbody tr:hover{background:rgba(15,110,86,.04)}
+tbody tr.hidden{display:none}
+td{padding:9px 12px;vertical-align:middle;border-right:1px solid var(--linen)}
+td:last-child{border-right:none}
+
+.item-id{font-family:'DM Mono',monospace;font-size:8px;color:var(--w2);white-space:nowrap}
+.item-name{font-weight:500;color:var(--ink);line-height:1.4}
+.item-spec{font-size:11.5px;color:var(--w3);line-height:1.4;margin-top:2px}
+.zone-chip{font-family:'DM Mono',monospace;font-size:8px;padding:2px 7px;border-radius:2px;white-space:nowrap;display:inline-block}
+.p0-chip{background:var(--rl);color:var(--red)}
+.p1-chip{background:var(--al);color:var(--ad)}
+.p2-chip{background:var(--tl);color:var(--td)}
+
+/* QTY INPUT */
+.qty-input{width:52px;border:1px solid var(--linen);background:white;font-family:'DM Mono',monospace;font-size:11px;padding:4px 8px;text-align:center;color:var(--ink);outline:none}
+.qty-input:focus{border-color:var(--teal)}
+
+/* COST CELLS */
+.cost-range{font-family:'DM Mono',monospace;font-size:10px;color:var(--w3);white-space:nowrap}
+.cost-total{font-family:'DM Mono',monospace;font-size:11px;color:var(--teal);white-space:nowrap;font-weight:500}
+
+/* LEAD TIME */
+.lt-chip{font-family:'DM Mono',monospace;font-size:8px;padding:2px 7px;white-space:nowrap;border-radius:2px}
+.lt-long{background:var(--rl);color:var(--red)}
+.lt-mid{background:var(--al);color:var(--ad)}
+.lt-short{background:var(--tl);color:var(--td)}
+.lt-stock{background:rgba(250,249,246,.5);color:var(--w3)}
+
+/* STATUS */
+.status-sel{font-family:'DM Mono',monospace;font-size:8px;border:1px solid var(--linen);padding:3px 6px;background:white;color:var(--w3);outline:none;cursor:pointer}
+.status-sel:focus{border-color:var(--teal)}
+
+/* NOTES */
+.item-note{font-size:11px;color:var(--w3);font-style:italic;line-height:1.4}
+
+/* CATEGORY HEADERS */
+.cat-row td{background:var(--ink);color:var(--cream);padding:8px 12px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase}
+.cat-row td span{color:var(--tm)}
+
+/* TOTALS ROW */
+.totals-row td{background:var(--tl);font-weight:500;padding:10px 12px;border-top:2px solid var(--teal)}
+.totals-row .cost-total{font-size:13px;color:var(--td)}
+
+/* FOOTER */
+.footer{padding:16px 24px;border-top:2px solid var(--linen);background:white;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;flex-shrink:0}
+.footer-note{font-family:'DM Mono',monospace;font-size:8px;color:var(--w3);line-height:1.7}
+.footer-total{text-align:right}
+.footer-total-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--w3);display:block;margin-bottom:4px}
+.footer-total-num{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:32px;color:var(--teal);line-height:1}
+.footer-range{font-family:'DM Mono',monospace;font-size:9px;color:var(--w3)}
+
+/* PRINT */
+@media print{
+  .topbar,.filters,.sum-card{background:white!important;color:var(--ink)!important}
+  .qty-input,.status-sel{border:1px solid var(--linen)}
+  thead{position:static}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <span class="tb-logo">MORAQ</span>
+  <span class="tb-doc">FFE-001 · Store FF&E · v1.0</span>
+  <span style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2)">35–55m² · Single location · Phase 1 procurement</span>
+  <div class="tb-total">
+    <span class="tb-total-label">Tổng ước tính</span>
+    <span class="tb-total-num" id="grandTotal">0</span>
+    <span class="tb-total-range" id="grandRange"></span>
+  </div>
+</div>
+
+<!-- SUMMARY BY CATEGORY -->
+<div class="summary" id="summaryBar"></div>
+
+<!-- FILTERS -->
+<div class="filters">
+  <span class="filter-label">Zone</span>
+  <button class="f-chip active" data-filter="zone" data-val="all">Tất cả</button>
+  <button class="f-chip" data-filter="zone" data-val="P1">P1</button>
+  <button class="f-chip" data-filter="zone" data-val="P2">P2</button>
+  <button class="f-chip" data-filter="zone" data-val="P3">P3</button>
+  <button class="f-chip" data-filter="zone" data-val="P4">P4</button>
+  <button class="f-chip" data-filter="zone" data-val="P6">P6</button>
+  <button class="f-chip" data-filter="zone" data-val="LT">Lighting</button>
+  <button class="f-chip" data-filter="zone" data-val="TK">Tech</button>
+  <button class="f-chip" data-filter="zone" data-val="SG">Signage</button>
+  <button class="f-chip" data-filter="zone" data-val="CS">Consumables</button>
+  <div class="f-sep"></div>
+  <span class="filter-label">Ưu tiên</span>
+  <button class="f-chip active" data-filter="pri" data-val="all">Tất cả</button>
+  <button class="f-chip" data-filter="pri" data-val="P0" style="color:var(--red);border-color:rgba(163,45,45,.3)">P0 Cần ngay</button>
+  <button class="f-chip" data-filter="pri" data-val="P1">P1 Trước opening</button>
+  <button class="f-chip" data-filter="pri" data-val="P2">P2 Sau opening</button>
+  <div class="f-sep"></div>
+  <input class="f-search" type="text" placeholder="Tìm item..." oninput="applyFilters()">
+  <span class="f-count" id="itemCount"></span>
+</div>
+
+<!-- MAIN TABLE -->
+<div class="table-wrap">
+<table id="ffeTable">
+<thead>
+  <tr>
+    <th style="width:90px">ID</th>
+    <th style="width:220px">Tên item</th>
+    <th style="width:60px">Zone</th>
+    <th style="width:280px">Spec / Vật liệu</th>
+    <th style="width:55px">Qty</th>
+    <th style="width:140px">Đơn giá ước tính</th>
+    <th style="width:110px">Thành tiền</th>
+    <th style="width:100px">Lead time</th>
+    <th style="width:72px">Ưu tiên</th>
+    <th style="width:110px">Trạng thái</th>
+    <th>Ghi chú</th>
+  </tr>
+</thead>
+<tbody id="tableBody"></tbody>
+</table>
+</div>
+
+<!-- FOOTER TOTALS -->
+<div class="footer">
+  <div class="footer-note">
+    FFE-001 · MORAQ Store FF&E Master List · v1.0 · 2026<br>
+    Đơn giá là ước tính — cần lấy quote thực từ supplier trước khi confirm.<br>
+    Vật liệu: Dark Oak · Travertine · Aged Brass · Concrete · Matte Black per SPA-002 spec.<br>
+    * Item có dấu custom = cần thiết kế + đặt làm riêng, không mua off-the-shelf.
+  </div>
+  <div class="footer-total">
+    <span class="footer-total-label">Tổng ước tính (mid-range)</span>
+    <span class="footer-total-num" id="footerTotal">0</span>
+    <span class="footer-range" id="footerRange"></span>
+  </div>
+</div>
+</div>
+
+<script>
+// ══ DATA ══
+const DATA = [
+  // ── P3 COUNTER + RITUAL ──
+  {id:'P3-F-001',zone:'P3',cat:'P3 · Counter + Ritual',name:'Quầy pha chế chính *',spec:'Custom: Dark oak frame + Travertine/Concrete top · 120×80cm H=90cm · Under-counter storage tích hợp · Blending station built-in · 2 electrical outlets',mat:'Dark oak + stone',qty:1,min:15e6,max:22e6,lt:'long',pri:'P0',status:'pending',note:'Custom built. Đặt làm trước 6 tuần. Ưu tiên cao nhất.'},
+  {id:'P3-F-002',zone:'P3',cat:'P3 · Counter + Ritual',name:'Ghế khách (counter stool) *',spec:'Upholstered seat · Dark oak legs · H=65cm · Max 2 tại counter · Cream/Linen fabric',mat:'Oak + fabric',qty:2,min:3e6,max:5e6,lt:'mid',pri:'P0',status:'pending',note:'Khách ngồi trong suốt 35 phút. Comfort critical.'},
+  {id:'P3-F-003',zone:'P3',cat:'P3 · Counter + Ritual',name:'Kệ display sau quầy *',spec:'Wall-mounted · Dark oak · W=120cm H=80cm · 4–6 slanted shelves · Backlit (LED strip warm)',mat:'Dark oak',qty:1,min:5e6,max:8e6,lt:'mid',pri:'P0',status:'pending',note:'Hiển thị active scents trong ritual. Phía sau nhân sự.'},
+  {id:'P3-E-001',zone:'P3',cat:'P3 · Counter + Ritual',name:'Cân pha chế độ chính xác cao',spec:'Digital precision scale · 0.01g accuracy · Max 200g · OHAUS Scout hoặc tương đương · Tare function',mat:'Stainless/ABS',qty:1,min:2e6,max:4e6,lt:'stock',pri:'P0',status:'pending',note:'Core blending equipment. Không compromise về accuracy.'},
+  {id:'P3-E-002',zone:'P3',cat:'P3 · Counter + Ritual',name:'Bộ beaker thuỷ tinh pha chế',spec:'Borosilicate glass · Set: 25ml×2, 50ml×2, 100ml×2, 250ml×1 · Graduated markings · Pyrex hoặc tương đương',mat:'Borosilicate glass',qty:1,min:800e3,max:1.5e6,lt:'stock',pri:'P0',status:'pending',note:'1 set working + 1 set backup. Hỏng phải thay ngay.'},
+  {id:'P3-E-003',zone:'P3',cat:'P3 · Counter + Ritual',name:'Pipette và dropper thuỷ tinh',spec:'Glass Pasteur pipettes 3ml (box 100) · Glass dropper bottles với rubber bulb · Precision transfer pipettes',mat:'Glass',qty:1,min:400e3,max:800e3,lt:'stock',pri:'P0',status:'pending',note:'Tiêu hao. Đặt stock 3 tháng.'},
+  {id:'P3-E-004',zone:'P3',cat:'P3 · Counter + Ritual',name:'Ống đong (graduated cylinder)',spec:'Glass · 10ml, 25ml, 50ml, 100ml · Class B accuracy',mat:'Glass',qty:1,min:300e3,max:600e3,lt:'stock',pri:'P0',status:'pending',note:'Set đầy đủ 4 sizes.'},
+  {id:'P3-E-005',zone:'P3',cat:'P3 · Counter + Ritual',name:'Bộ dụng cụ khuấy thuỷ tinh',spec:'Glass stirring rods × 10 · Plastic funnel set (small) · Transfer spoon (stainless)',mat:'Glass/Stainless',qty:1,min:300e3,max:500e3,lt:'stock',pri:'P0',status:'pending',note:''},
+  {id:'P3-E-006',zone:'P3',cat:'P3 · Counter + Ritual',name:'Bình chứa phế phẩm (sealed)',spec:'Glass jar 500ml với nắp kín · Dark/amber glass để che ánh sáng · Label: WASTE',mat:'Glass',qty:2,min:150e3,max:300e3,lt:'stock',pri:'P0',status:'pending',note:'Đặt khuất khỏi tầm mắt khách. 2 bình rotate khi đầy.'},
+  {id:'P3-E-007',zone:'P3',cat:'P3 · Counter + Ritual',name:'Thiết bị khắc nhãn chai VDP *',spec:'Label printer: DYMO LabelWriter 5XL hoặc Brother QL-1110NWB · Lớn hơn cho flexible label formats · WiFi + USB',mat:'ABS plastic',qty:1,min:5e6,max:10e6,lt:'stock',pri:'P0',status:'pending',note:'VDP = Variable Data Printing. Khắc tên khách trực tiếp tại counter. Cần driver setup trước khi opening.'},
+  {id:'P3-E-008',zone:'P3',cat:'P3 · Counter + Ritual',name:'Bảo hộ lao động (PPE) - stock',spec:'Nitrile gloves size M + L (2 boxes each) · Safety glasses × 5 · Lab apron × 3 · IFRA compliance requirement',mat:'Various',qty:1,min:500e3,max:1e6,lt:'stock',pri:'P0',status:'pending',note:'Restock monthly. Mandatory per IFRA protocol.'},
+  {id:'P3-E-009',zone:'P3',cat:'P3 · Counter + Ritual',name:'Mat chống mỏi nhân sự (counter)',spec:'Anti-fatigue mat 60×90cm · Non-slip · Easy clean · Dark/black color',mat:'Rubber/foam',qty:1,min:400e3,max:800e3,lt:'stock',pri:'P1',status:'pending',note:'Nhân sự đứng 8+ giờ. Cần cho health.'},
+
+  // ── P2 DISCOVERY ZONE ──
+  {id:'P2-F-001',zone:'P2',cat:'P2 · Discovery Zone',name:'Kệ trưng bày ingredient wall *',spec:'Custom modular shelving · H=180–200cm W=120–160cm · Dark oak + matte black brackets · Backlit option · Angled display shelves',mat:'Dark oak + metal',qty:1,min:20e6,max:35e6,lt:'long',pri:'P0',status:'pending',note:'Centerpiece của P2. Custom built. Thiết kế cần approve từ SPA-001 floor plan.'},
+  {id:'P2-F-002',zone:'P2',cat:'P2 · Discovery Zone',name:'Lọ thủy tinh display ingredient',spec:'Amber glass jars 100ml với nắp cork hoặc ground glass · Sealed · Đồng nhất size và style · 40–60 units',mat:'Amber glass',qty:50,min:80e3,max:150e3,lt:'stock',pri:'P0',status:'pending',note:'Chứa display ingredients (không phải working stock). Sealed — chỉ để ngửi từ strip, không mở trực tiếp.'},
+  {id:'P2-F-003',zone:'P2',cat:'P2 · Discovery Zone',name:'Giá đỡ smelling strip',spec:'Acrylic hoặc dark wood holder · Counter-top type · Holds 50+ strips · Có ngăn phân loại',mat:'Acrylic/wood',qty:2,min:300e3,max:800e3,lt:'stock',pri:'P1',status:'pending',note:'1 tại P2 display, 1 tại P3 counter.'},
+  {id:'P2-F-004',zone:'P2',cat:'P2 · Discovery Zone',name:'Ghế/băng dài khách (P2 lounge) *',spec:'Upholstered bench · L=120cm · Cream/Linen fabric · Dark oak frame · No armrests · Low profile H=40–45cm',mat:'Oak + fabric',qty:1,min:5e6,max:9e6,lt:'mid',pri:'P1',status:'pending',note:'Khách ngồi tự khám phá. Low, inviting — không phải waiting bench.'},
+  {id:'P2-F-005',zone:'P2',cat:'P2 · Discovery Zone',name:'Đế trưng bày (display pedestal) *',spec:'Travertine hoặc concrete cast · H=40cm hoặc 60cm · W=25×25cm · Matte finish · 2 heights',mat:'Travertine/concrete',qty:3,min:2e6,max:4e6,lt:'mid',pri:'P1',status:'pending',note:'Focal point display. 1 cao + 2 thấp for visual hierarchy.'},
+  {id:'P2-F-006',zone:'P2',cat:'P2 · Discovery Zone',name:'Diffuser khuếch tán mùi ambient *',spec:'Professional cold-air diffuser · Coverage 30–50m² · Programmable intensity · HVAC-connected hoặc standalone · Per SEN-001 spec',mat:'Metal/ABS',qty:1,min:5e6,max:12e6,lt:'mid',pri:'P0',status:'pending',note:'P1 scent threshold phụ thuộc vào thiết bị này. Không dùng consumer diffuser — cần commercial grade. Mùi ambient khác với mùi pha chế.'},
+
+  // ── P1 ARRIVAL ZONE ──
+  {id:'P1-F-001',zone:'P1',cat:'P1 · Arrival Zone',name:'Hero product display *',spec:'Single focal display · Dark oak plinth hoặc glass case · H=80–100cm · Spotlight integration · Showcases 1 signature chai',mat:'Oak/glass',qty:1,min:3e6,max:6e6,lt:'mid',pri:'P1',status:'pending',note:'First visual anchor. Không overcrowd — 1 item only. Rotated theo mùa/campaign.'},
+  {id:'P1-F-002',zone:'P1',cat:'P1 · Arrival Zone',name:'Thảm entrance (natural material)',spec:'Natural sisal hoặc jute · 60×90cm hoặc 90×120cm · Neutral/cream color · Anti-slip backing',mat:'Natural fiber',qty:1,min:500e3,max:1.5e6,lt:'stock',pri:'P1',status:'pending',note:'Transition từ exterior → interior. Material signal: tự nhiên, không synthetic.'},
+  {id:'P1-F-003',zone:'P1',cat:'P1 · Arrival Zone',name:'Brand statement (wall) *',spec:'Wall graphic hoặc etched acrylic · «MORAQ không bán nước hoa.» quote hoặc logo mark · H=30–50cm · Matte finish · Per BRD-007 color',mat:'Acrylic/vinyl',qty:1,min:2e6,max:5e6,lt:'mid',pri:'P1',status:'pending',note:'Visible từ entrance, không quá gần cửa. First-impression brand moment.'},
+
+  // ── P4 TRANSACTION ZONE ──
+  {id:'P4-F-001',zone:'P4',cat:'P4 · Transaction Zone',name:'Quầy thanh toán + packaging *',spec:'Custom: Dark oak · W=80cm D=60cm H=90cm · Under-counter POS hardware · Drawer cho ribbon/tissue · Flat surface packaging · Electrical outlet × 2',mat:'Dark oak',qty:1,min:8e6,max:14e6,lt:'long',pri:'P0',status:'pending',note:'Smaller than P3 counter. Same material family. POS integration trước khi build.'},
+  {id:'P4-E-001',zone:'P4',cat:'P4 · Transaction Zone',name:'iPad Pro (POS + CRM input)',spec:'iPad Pro 11" hoặc 12.9" · WiFi + Cellular · 256GB · Space Black · Apple Pencil compatible',mat:'Aluminium',qty:1,min:19e6,max:28e6,lt:'stock',pri:'P0',status:'pending',note:'POS primary device. Cần case bảo vệ + screen protector. Shared với D0 capture form.'},
+  {id:'P4-E-002',zone:'P4',cat:'P4 · Transaction Zone',name:'iPad counter stand',spec:'Countertop stand · Adjustable angle · Secure mount · Dark/matte black · Kensington lock compatible',mat:'Aluminium/steel',qty:1,min:800e3,max:2e6,lt:'stock',pri:'P0',status:'pending',note:''},
+  {id:'P4-E-003',zone:'P4',cat:'P4 · Transaction Zone',name:'Card reader (VNPAY/Momo compatible)',spec:'mPOS hoặc standalone terminal · VNPAY certified · Chip + contactless + QR · 4G SIM hoặc WiFi',mat:'Plastic/metal',qty:1,min:1.5e6,max:4e6,lt:'stock',pri:'P0',status:'pending',note:'Liên hệ ngân hàng đối tác sớm — setup có thể mất 2–3 tuần.'},
+  {id:'P4-E-004',zone:'P4',cat:'P4 · Transaction Zone',name:'Ngăn kéo tiền mặt (cash drawer)',spec:'Steel cash drawer · 5 bill + 8 coin · USB hoặc RJ11 trigger · 41cm × 41cm',mat:'Steel',qty:1,min:1e6,max:2.5e6,lt:'stock',pri:'P1',status:'pending',note:'Nếu accept cash. Ưu tiên cashless nhưng cần có backup.'},
+  {id:'P4-E-005',zone:'P4',cat:'P4 · Transaction Zone',name:'Máy in receipt (nếu cần)',spec:'Thermal receipt printer · 80mm · USB + Bluetooth · KiotViet/Sapo compatible',mat:'ABS',qty:1,min:1.5e6,max:3e6,lt:'stock',pri:'P2',status:'pending',note:'Optional nếu khách không cần receipt vật lý — digital via Zalo OK.'},
+
+  // ── LIGHTING ──
+  {id:'LT-E-001',zone:'LT',cat:'Lighting · All Zones',name:'Hệ thống track lighting ambient *',spec:'Commercial track system · 2700–3000K warm white · CRI ≥90 · Dimmable · Full store coverage (35–55m²) · Europhase hoặc tương đương',mat:'Metal/LED',qty:1,min:15e6,max:28e6,lt:'mid',pri:'P0',status:'pending',note:'Core atmosphere lighting. Lắp đặt bởi electrician — cần bản vẽ SPA-002 trước. Không dùng 4000K cho ambient.'},
+  {id:'LT-E-002',zone:'LT',cat:'Lighting · All Zones',name:'Spotlight quầy P3 (4000K focused)',spec:'Adjustable spotlight · 4000K · 25–35W · Track-mounted · Tight beam angle 25° · Focused on counter work surface',mat:'Metal/LED',qty:2,min:1.5e6,max:3e6,lt:'stock',pri:'P0',status:'pending',note:'Counter cần 4000K cho color accuracy trong blending. Khác với ambient 2700-3000K.'},
+  {id:'LT-E-003',zone:'LT',cat:'Lighting · All Zones',name:'Bộ điều chỉnh ánh sáng (dimmer)',spec:'Smart dimmer system · Compatible với track lighting · Programmable scenes · Opening/closing ritual presets',mat:'Electronics',qty:1,min:3e6,max:6e6,lt:'mid',pri:'P0',status:'pending',note:'SOP-004 opening ritual có lighting scene. Cần dim về 0 → fade up. Smart dimmer là non-negotiable.'},
+  {id:'LT-E-004',zone:'LT',cat:'Lighting · All Zones',name:'LED strip cho kệ display (warm)',spec:'Warm white LED strip 2700K · CRI ≥90 · Low profile · Adhesive mount · Với diffuser cover · Total 5–8m',mat:'LED/aluminium',qty:1,min:2e6,max:4e6,lt:'stock',pri:'P1',status:'pending',note:'Backlight ingredient wall P2 + kệ sau quầy P3. Tạo depth và warmth.'},
+  {id:'LT-E-005',zone:'LT',cat:'Lighting · All Zones',name:'Đèn chiếu focal display P1',spec:'Adjustable accent light · 2700K · Track-mounted hoặc surface-mounted · Beam 25° · For hero product display',mat:'Metal/LED',qty:1,min:1e6,max:2.5e6,lt:'stock',pri:'P1',status:'pending',note:''},
+
+  // ── P6 ZONE A INGREDIENTS ──
+  {id:'P6A-F-001',zone:'P6',cat:'P6A · Ingredient Storage',name:'Kệ lưu trữ nguyên liệu (Zone A) *',spec:'Wall-mounted open shelving · Dark matte metal hoặc powder-coated steel · Adjustable · W=120cm H=180cm D=30cm · 5–6 shelves · Load bearing ≥10kg/shelf',mat:'Steel (powder coat)',qty:2,min:4e6,max:7e6,lt:'mid',pri:'P0',status:'pending',note:'Zone A phải separated hoàn toàn khỏi Zone C. Ventilation tốt. Không direct sunlight.'},
+  {id:'P6A-E-001',zone:'P6',cat:'P6A · Ingredient Storage',name:'Lọ lưu trữ nguyên liệu (working stock)',spec:'Amber glass screw-top jars · 50ml, 100ml, 250ml, 500ml · Airtight · HDPE-lined cap · 30–50 units mixed sizes',mat:'Amber glass',qty:1,min:3e6,max:6e6,lt:'stock',pri:'P0',status:'pending',note:'Working stock — khác với display jars ở P2. Label: tên INCI + date-in + date-open + batch số.'},
+  {id:'P6A-E-002',zone:'P6',cat:'P6A · Ingredient Storage',name:'Hệ thống nhãn FIFO',spec:'Label printer: DYMO hoặc Brother (nếu chưa có) · Pre-printed label templates: Name/Date-in/Date-open/Batch/IFRA limit · Label holders cho shelf edge',mat:'Various',qty:1,min:800e3,max:2e6,lt:'stock',pri:'P0',status:'pending',note:'FIFO label system critical cho IFRA compliance và quality control.'},
+  {id:'P6A-E-003',zone:'P6',cat:'P6A · Ingredient Storage',name:'Cân backup (Zone A)',spec:'Precision scale 0.1g accuracy · Dedicated cho inventory check · Không mang ra P3',mat:'Stainless',qty:1,min:1e6,max:2e6,lt:'stock',pri:'P1',status:'pending',note:'Backup + inventory weight check. Không share với P3 blending scale.'},
+  {id:'P6A-E-004',zone:'P6',cat:'P6A · Ingredient Storage',name:'Bộ ứng phó sự cố hóa chất (spill kit)',spec:'Chemical spill kit · Absorbent materials · Gloves · Eye wash · Disposal bags · MSDS holder · Per IFRA safety requirements',mat:'Various',qty:1,min:500e3,max:1.5e6,lt:'stock',pri:'P0',status:'pending',note:'Mandatory. Đặt accessible trong Zone A. Train staff trước opening.'},
+
+  // ── P6 ZONE B PACKAGING ──
+  {id:'P6B-F-001',zone:'P6',cat:'P6B · Packaging Storage',name:'Kệ lưu trữ bao bì (Zone B) *',spec:'Shelving with foam-lined drawers · Organized by: bottle size / cap type / box size · Damage-prevention storage · W=100cm H=150cm',mat:'Wood/foam',qty:1,min:4e6,max:8e6,lt:'mid',pri:'P0',status:'pending',note:'Bottles stored upright trong foam insert. Caps stored separately. Boxes flat-packed.'},
+  {id:'P6B-E-001',zone:'P6',cat:'P6B · Packaging Storage',name:'Đèn kiểm tra chất lượng chai',spec:'LED inspection light · Bright white 5000K · Handheld hoặc mounted · Phát hiện defect, scratch trước khi đưa ra P3',mat:'LED',qty:1,min:300e3,max:800e3,lt:'stock',pri:'P1',status:'pending',note:'Quality check trước mỗi session. Không dùng chai có scratch/defect.'},
+
+  // ── P6 ZONE C CLEANING ──
+  {id:'P6C-E-001',zone:'P6',cat:'P6C · Cleaning Zone',name:'Hệ thống lau dọn (wall-mounted)',spec:'Mop + bucket wall rack · Microfiber mop heads (washable) · Spray bottle set × 5 · Dustpan + brush set',mat:'Plastic/metal',qty:1,min:800e3,max:1.5e6,lt:'stock',pri:'P0',status:'pending',note:'Zone C phải có hard separation với A và B. Mùi cleaning product = P1 threshold failure nếu không tách biệt.'},
+  {id:'P6C-E-002',zone:'P6',cat:'P6C · Cleaning Zone',name:'Tủ đựng hóa chất tẩy rửa (locked)',spec:'Steel cabinet với khóa · W=50cm H=100cm · Ventilated · Không để cleaning chemicals tiếp xúc không khí trong store',mat:'Steel',qty:1,min:1.5e6,max:3e6,lt:'stock',pri:'P0',status:'pending',note:'OSHA-compliant chemical storage. Bắt buộc.'},
+
+  // ── TECHNOLOGY ──
+  {id:'TK-E-001',zone:'TK',cat:'Technology · Store',name:'WiFi router (commercial grade)',spec:'WiFi 6 · Dual band · Coverage 50+ m² · TP-Link EAP hoặc Ubiquiti UniFi · Ceiling mount · Guest network separate',mat:'Plastic/metal',qty:1,min:2e6,max:6e6,lt:'stock',pri:'P0',status:'pending',note:'Không dùng consumer router — drop connection = POS failure. ISP line phải có trước router setup.'},
+  {id:'TK-E-002',zone:'TK',cat:'Technology · Store',name:'Camera an ninh (indoor)',spec:'1080p+ · Wide angle · Night vision · PoE hoặc WiFi · App monitoring · Hikvision/Dahua/Hanwha',mat:'Plastic/lens',qty:2,min:2e6,max:5e6,lt:'stock',pri:'P1',status:'pending',note:'1 tại entrance (P1), 1 tại counter (P3). Không aim vào workspace blending detail.'},
+  {id:'TK-E-003',zone:'TK',cat:'Technology · Store',name:'Loa âm thanh (ambient music)',spec:'Bluetooth ceiling speaker hoặc bookshelf · 2-speaker minimum · Clear at 45–50dB · Amp included · Dark color · Per SEN-002',mat:'Various',qty:2,min:3e6,max:8e6,lt:'stock',pri:'P0',status:'pending',note:'Music system là sensory design element — không phải afterthought. 60–70 BPM playlist. Cần test before opening.'},
+  {id:'TK-E-004',zone:'TK',cat:'Technology · Store',name:'Smart plug / điều khiển thiết bị',spec:'Smart plug × 4 hoặc smart power strip · App-controlled · Cho opening/closing ritual automation · Diffuser + lights',mat:'Electronics',qty:1,min:500e3,max:1.5e6,lt:'stock',pri:'P1',status:'pending',note:'SOP-004 opening ritual: thiết bị bật theo thứ tự. Smart plug giúp sequence tự động.'},
+  {id:'TK-S-001',zone:'TK',cat:'Technology · Store',name:'POS subscription (KiotViet/Sapo)',spec:'1 năm · Standard plan · Inventory management · Sales report · Cloud backup',mat:'SaaS',qty:1,min:3e6,max:8e6,lt:'stock',pri:'P0',status:'pending',note:'Đăng ký ít nhất 2 tuần trước opening để setup + test đầy đủ.'},
+  {id:'TK-S-002',zone:'TK',cat:'Technology · Store',name:'Zalo Official Account setup',spec:'Zalo OA registration · Business verification · ZNS template submission (D3/D7) · 2–4 tuần approval time',mat:'Digital',qty:1,min:1e6,max:3e6,lt:'mid',pri:'P0',status:'pending',note:'Bắt đầu application ngay — approval process có thể mất 2–4 tuần. Block trên Timeline nếu bị delay.'},
+
+  // ── SIGNAGE ──
+  {id:'SG-F-001',zone:'SG',cat:'Signage · Brand',name:'Biển hiệu mặt tiền (exterior) *',spec:'MORAQ wordmark · Matte black acrylic cut hoặc brushed brass letters · H=15–20cm · Backlit option · Mounted flush · Per BRD logo spec',mat:'Acrylic/brass',qty:1,min:8e6,max:18e6,lt:'mid',pri:'P0',status:'pending',note:'Visible từ đường. Đặt theo quy định mặt bằng. Không backlit nếu không phù hợp aesthetic.'},
+  {id:'SG-F-002',zone:'SG',cat:'Signage · Brand',name:'Biển giờ mở cửa (minimalist)',spec:'10:00–22:00 · Hàng ngày · Acrylic hoặc vinyl · Nhỏ, tinh tế · Không dùng font digital/LED',mat:'Acrylic',qty:1,min:300e3,max:800e3,lt:'stock',pri:'P1',status:'pending',note:'Kích thước vừa đủ nhìn thấy — không oversized.'},
+  {id:'SG-F-003',zone:'SG',cat:'Signage · Brand',name:'Thẻ giá / scent information cards',spec:'Print: 85×55mm · Cream card stock 300gsm · DM Mono font · Scent name (Layer 1) + price · No ingredient names (SCG-001) · 50+ sets',mat:'Card stock',qty:60,min:15e3,max:30e3,lt:'stock',pri:'P1',status:'pending',note:'Reprint khi có scent mới. Template cần approve trước in hàng loạt.'},
+  {id:'SG-F-004',zone:'SG',cat:'Signage · Brand',name:'Scent menu stand *',spec:'Desktop acrylic hoặc dark wood · A5 size landscape · Holds 1–2 inserts · Swappable insert system',mat:'Acrylic/wood',qty:2,min:500e3,max:1.5e6,lt:'stock',pri:'P1',note:'1 tại P2, 1 tại P3 counter. Insertable = update dễ khi có scent mới.'},
+
+  // ── CONSUMABLES ──
+  {id:'CS-C-001',zone:'CS',cat:'Consumables · Initial Stock',name:'Smelling strips (test strips)',spec:'DIN EN ISO 18078 standard · Unbleached · 160×17mm · Box of 500 · Minimum 3 months stock',mat:'Paper',qty:2,min:400e3,max:800e3,lt:'stock',pri:'P0',status:'pending',note:'Tiêu hao nhanh. Đặt par level: reorder khi còn 2 tuần.'},
+  {id:'CS-C-002',zone:'CS',cat:'Consumables · Initial Stock',name:'Giấy gói (acid-free tissue)',spec:'Acid-free tissue paper · 50×70cm · Cream/natural white · 500 sheets · Không dùng bleached white',mat:'Tissue',qty:500,min:2e3,max:4e3,lt:'stock',pri:'P0',status:'pending',note:'Wrapped around bottle before bagging. Reorder monthly.'},
+  {id:'CS-C-003',zone:'CS',cat:'Consumables · Initial Stock',name:'Túi thương hiệu MORAQ (S/M/L) *',spec:'Matte paper hoặc cotton bag · Cream/Ink color · MORAQ logo print · S: 15×20cm / M: 20×25cm / L: 25×32cm · 200 units each size',mat:'Paper/cotton',qty:1,min:8e6,max:15e6,lt:'mid',pri:'P0',status:'pending',note:'Custom print — cần approve artwork + lead time 3–4 tuần. Đặt 600 units cho 3 tháng đầu.'},
+  {id:'CS-C-004',zone:'CS',cat:'Consumables · Initial Stock',name:'Ribbon / twine (natural)',spec:'Natural cotton ribbon 15mm hoặc jute twine · Cream/natural color · Roll 100m',mat:'Cotton/jute',qty:2,min:200e3,max:500e3,lt:'stock',pri:'P1',status:'pending',note:''},
+  {id:'CS-C-005',zone:'CS',cat:'Consumables · Initial Stock',name:'Hộp quà (gift box)',spec:'Rigid gift box · Cream/Ink color · H=8cm · Fits 10ml + 50ml bottles · Foam insert · 100 units',mat:'Card/foam',qty:100,min:25e3,max:50e3,lt:'mid',pri:'P1',status:'pending',note:'Cho O5 gift card physical delivery. Custom hoặc stock with branded insert.'},
+  {id:'CS-C-006',zone:'CS',cat:'Consumables · Initial Stock',name:'Băng dán thương hiệu (sticker seal)',spec:'Circular hoặc oval sticker · MORAQ mark · Kraft/cream background · 40mm diameter · 500 units',mat:'Paper',qty:500,min:500e3,max:1.5e6,lt:'mid',pri:'P1',status:'pending',note:'Seal túi gói. Brand touchpoint nhỏ nhưng visible.'},
+  {id:'CS-C-007',zone:'CS',cat:'Consumables · Initial Stock',name:'Thẻ cảm ơn / care card *',spec:'85×54mm · 300gsm cream stock · DM Mono print · D0-004 scent care tips pre-printed · Tên scent inserts (or custom print per session)',mat:'Card stock',qty:200,min:30e3,max:60e3,lt:'mid',pri:'P1',status:'pending',note:'Đi kèm mỗi chai. Care instructions theo SCG-001 Layer 1. Không có ingredient names.'},
+
+  // ── BACK OFFICE ──
+  {id:'BO-F-001',zone:'P6',cat:'Back Office · Admin',name:'Bàn làm việc (back office)',spec:'Simple desk · W=120cm D=60cm H=75cm · Light wood hoặc white · Không cần match store aesthetic',mat:'Wood/metal',qty:1,min:2e6,max:5e6,lt:'stock',pri:'P2',status:'pending',note:'Khu vực admin, D0 input, inventory count. Không visible cho khách.'},
+  {id:'BO-F-002',zone:'P6',cat:'Back Office · Admin',name:'Ghế văn phòng',spec:'Ergonomic · Adjustable height · Mesh back',mat:'Mesh/plastic',qty:2,min:1e6,max:3e6,lt:'stock',pri:'P2',status:'pending',note:''},
+  {id:'BO-F-003',zone:'P6',cat:'Back Office · Admin',name:'Tủ tài liệu / hồ sơ (lockable)',spec:'2-drawer filing cabinet · Steel · A4 size · Lockable · SOP docs, contracts, certificates',mat:'Steel',qty:1,min:1.5e6,max:3e6,lt:'stock',pri:'P2',status:'pending',note:'IFRA certificates, formulas, D0 backup printouts — cần lưu trữ secure.'},
+];
+
+// ══ CATEGORIES & COLORS ══
+const CAT_COLORS = {
+  'P3 · Counter + Ritual':'rgba(15,110,86,.08)',
+  'P2 · Discovery Zone':'rgba(133,79,11,.06)',
+  'P1 · Arrival Zone':'rgba(24,95,165,.06)',
+  'P4 · Transaction Zone':'rgba(83,74,183,.06)',
+  'Lighting · All Zones':'rgba(239,159,39,.06)',
+  'P6A · Ingredient Storage':'rgba(163,45,45,.06)',
+  'P6B · Packaging Storage':'rgba(163,45,45,.04)',
+  'P6C · Cleaning Zone':'rgba(163,45,45,.03)',
+  'Technology · Store':'rgba(24,95,165,.05)',
+  'Signage · Brand':'rgba(184,154,96,.05)',
+  'Consumables · Initial Stock':'rgba(15,110,86,.04)',
+  'Back Office · Admin':'rgba(140,122,98,.05)',
+};
+
+const LT_LABELS = {long:'4–8 tuần (custom)',mid:'2–4 tuần',short:'1–2 tuần',stock:'Có sẵn'};
+const LT_CLASS = {long:'lt-long',mid:'lt-mid',short:'lt-short',stock:'lt-stock'};
+const PRI_CLASS = {P0:'p0-chip',P1:'p1-chip',P2:'p2-chip'};
+const PRI_LABELS = {P0:'P0 · Cần ngay',P1:'P1 · Pre-open',P2:'P2 · Post-open'};
+const STATUS_OPTIONS = ['pending','quoting','ordered','received'];
+const STATUS_LABELS = ['Chưa order','Đã liên hệ','Đã order','Đã nhận'];
+
+// ══ STATE ══
+let activeZone = 'all', activePri = 'all', searchQ = '';
+
+// ══ RENDER ══
+function formatVND(n){
+  if(n>=1e9) return (n/1e9).toFixed(1).replace('.0','')+'B';
+  if(n>=1e6) return Math.round(n/1e6)+'M';
+  return Math.round(n/1e3)+'K';
+}
+
+function buildTable(){
+  const tbody = document.getElementById('tableBody');
+  let currentCat = '';
+  let html = '';
+  
+  DATA.forEach((item,idx) => {
+    if(item.cat !== currentCat){
+      currentCat = item.cat;
+      const bg = CAT_COLORS[currentCat] || 'rgba(26,25,22,.08)';
+      html += `<tr class="cat-row"><td colspan="11" style="background:var(--ink)"><span style="color:var(--am)">▸</span> ${currentCat}</td></tr>`;
+    }
+    const mid = (item.min + item.max) / 2;
+    const total = mid * item.qty;
+    html += `<tr data-zone="${item.zone}" data-pri="${item.pri}" data-idx="${idx}" class="item-row">
+      <td><span class="item-id">${item.id}</span></td>
+      <td><div class="item-name">${item.name}</div><div class="item-spec">${item.mat}</div></td>
+      <td><span class="zone-chip" style="background:rgba(255,255,255,.06);color:rgba(26,25,22,.6);border:1px solid var(--linen)">${item.zone}</span></td>
+      <td><div class="item-spec" style="font-size:12px">${item.spec}</div></td>
+      <td><input class="qty-input" type="number" min="0" value="${item.qty}" data-idx="${idx}" onchange="updateQty(this,${idx})"></td>
+      <td><span class="cost-range">${formatVND(item.min)}–${formatVND(item.max)}</span></td>
+      <td><span class="cost-total" id="total-${idx}">${formatVND(total)}</span></td>
+      <td><span class="lt-chip ${LT_CLASS[item.lt]}">${LT_LABELS[item.lt]}</span></td>
+      <td><span class="zone-chip ${PRI_CLASS[item.pri]}">${item.pri}</span></td>
+      <td><select class="status-sel" onchange="updateStatus(this,${idx})">
+        ${STATUS_OPTIONS.map((s,i)=>`<option value="${s}" ${item.status===s?'selected':''}>${STATUS_LABELS[i]}</option>`).join('')}
+      </select></td>
+      <td><div class="item-note">${item.note||'—'}</div></td>
+    </tr>`;
+  });
+  tbody.innerHTML = html;
+  updateTotals();
+  buildSummary();
+}
+
+function updateQty(input, idx){
+  const val = Math.max(0, parseInt(input.value)||0);
+  DATA[idx].qty = val;
+  const mid = (DATA[idx].min + DATA[idx].max) / 2;
+  const el = document.getElementById('total-'+idx);
+  if(el) el.textContent = formatVND(mid * val);
+  updateTotals();
+  buildSummary();
+}
+
+function updateStatus(sel, idx){
+  DATA[idx].status = sel.value;
+}
+
+function updateTotals(){
+  let total = 0;
+  let totalMin = 0, totalMax = 0;
+  DATA.forEach(item => {
+    const mid = (item.min + item.max)/2;
+    total += mid * item.qty;
+    totalMin += item.min * item.qty;
+    totalMax += item.max * item.qty;
+  });
+  const el = document.getElementById('grandTotal');
+  const el2 = document.getElementById('footerTotal');
+  if(el) el.textContent = formatVND(total) + ' VND';
+  if(el2) el2.textContent = formatVND(total) + ' VND';
+  const range = `Range: ${formatVND(totalMin)} – ${formatVND(totalMax)} VND`;
+  const er = document.getElementById('grandRange');
+  const fr = document.getElementById('footerRange');
+  if(er) er.textContent = range;
+  if(fr) fr.textContent = range;
+}
+
+function buildSummary(){
+  const cats = {};
+  DATA.forEach(item => {
+    const z = item.zone;
+    if(!cats[z]) cats[z] = {name:z, total:0};
+    const mid = (item.min+item.max)/2;
+    cats[z].total += mid * item.qty;
+  });
+  const zoneNames = {P1:'Arrival',P2:'Discovery',P3:'Counter+Ritual',P4:'Transaction',P6:'Back-of-House',LT:'Lighting',TK:'Technology',SG:'Signage',CS:'Consumables'};
+  const bar = document.getElementById('summaryBar');
+  bar.innerHTML = Object.entries(cats).map(([z,d])=>`
+    <div class="sum-card ${activeZone===z?'active':''}" onclick="filterZone('${z}')">
+      <div class="sum-zone">${z}</div>
+      <div class="sum-name">${zoneNames[z]||z}</div>
+      <div class="sum-cost">${formatVND(d.total)}</div>
+    </div>
+  `).join('');
+}
+
+function applyFilters(){
+  searchQ = document.querySelector('.f-search').value.toLowerCase();
+  const rows = document.querySelectorAll('.item-row');
+  let visible = 0;
+  rows.forEach(row => {
+    const zone = row.dataset.zone;
+    const pri = row.dataset.pri;
+    const text = row.textContent.toLowerCase();
+    const zMatch = activeZone === 'all' || zone === activeZone;
+    const pMatch = activePri === 'all' || pri === activePri;
+    const sMatch = !searchQ || text.includes(searchQ);
+    const show = zMatch && pMatch && sMatch;
+    row.classList.toggle('hidden', !show);
+    if(show) visible++;
+  });
+  // Hide category rows if all items hidden
+  document.querySelectorAll('.cat-row').forEach(catRow => {
+    let next = catRow.nextElementSibling;
+    let hasVisible = false;
+    while(next && !next.classList.contains('cat-row')){
+      if(!next.classList.contains('hidden')) hasVisible = true;
+      next = next.nextElementSibling;
+    }
+    catRow.classList.toggle('hidden', !hasVisible);
+  });
+  document.getElementById('itemCount').textContent = `${visible} items`;
+}
+
+function filterZone(z){
+  activeZone = activeZone === z ? 'all' : z;
+  document.querySelectorAll('[data-filter="zone"]').forEach(b=>{
+    b.classList.toggle('active', b.dataset.val === activeZone);
+  });
+  buildSummary();
+  applyFilters();
+}
+
+// Chip filters
+document.querySelectorAll('.f-chip').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const filter = btn.dataset.filter;
+    const val = btn.dataset.val;
+    if(filter === 'zone'){
+      activeZone = val;
+      document.querySelectorAll('[data-filter="zone"]').forEach(b=>b.classList.toggle('active',b.dataset.val===val));
+      buildSummary();
+    } else if(filter === 'pri'){
+      activePri = val;
+      document.querySelectorAll('[data-filter="pri"]').forEach(b=>b.classList.toggle('active',b.dataset.val===val));
+    }
+    applyFilters();
+  });
+});
+
+// Init
+buildTable();
+applyFilters();
+</script>
+</body>
+</html>

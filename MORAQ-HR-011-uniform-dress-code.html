@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MORAQ — UNI-001 · Uniform & Dress Code</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1A1916;--teal:#0F6E56;--amber:#854F0B;--cream:#FAF9F6;--linen:#E8DFD0;--stone:#C8C0B4;--wood-dk:#3E3020;--wood-lt:#B8A88C;--metal:#4A4A4A;--dim:#854F0B;--call:#0F6E56}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:#F4F3EF;color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased}
+.hdr{background:var(--ink);padding:2rem 2.5rem 1.2rem}
+.hdr-r{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.12em;color:var(--cream);opacity:.35;margin-bottom:.5rem;text-transform:uppercase}
+.hdr h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:1.5rem;color:var(--cream);line-height:1.35}
+.hdr h1 em{font-style:italic;color:var(--linen);opacity:.6}
+.hdr-d{font-size:.75rem;color:var(--linen);opacity:.4;margin-top:.4rem;max-width:760px;line-height:1.7}
+.tabs{display:flex;background:var(--ink);padding:0 2.5rem;overflow-x:auto;border-bottom:1px solid rgba(232,223,208,.08);gap:.1rem}
+.tb{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.06em;text-transform:uppercase;color:var(--cream);opacity:.45;background:none;border:none;border-bottom:2px solid transparent;padding:.6rem .7rem;cursor:pointer;transition:all .2s;white-space:nowrap}
+.tb:hover{opacity:.7}.tb.on{opacity:1;color:var(--teal);border-bottom-color:var(--teal)}
+.pnl{display:none;padding:1.4rem 2.5rem 2rem;max-width:1020px;margin:0 auto}.pnl.on{display:block}
+h2{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.25rem;margin:1.6rem 0 .6rem;padding-top:1.3rem;border-top:1px solid rgba(0,0,0,.06)}h2:first-child{border-top:none;padding-top:0}
+h3{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1rem;margin:1.1rem 0 .4rem;color:var(--teal)}
+p{font-size:.78rem;opacity:.55;margin-bottom:.55rem;line-height:1.8}p strong{opacity:1;font-weight:600}
+.dwg{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:6px;padding:1rem;margin:.7rem 0;overflow-x:auto}
+.dwg-label{font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);opacity:.3;margin-bottom:.5rem}
+.tbl{width:100%;border-collapse:collapse;margin:.5rem 0;font-size:.72rem}.tbl th{font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.06em;text-transform:uppercase;text-align:left;padding:.4rem .5rem;background:var(--ink);color:var(--cream);opacity:.6}.tbl td{padding:.35rem .5rem;border-bottom:1px solid rgba(0,0,0,.04);vertical-align:top;line-height:1.5}.tbl td:first-child{font-weight:500;width:120px}.tbl tr:nth-child(even) td{background:#FAFAF8}
+.ig{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin:.4rem 0}
+.it{background:#FAFAF8;border:1px solid rgba(0,0,0,.04);border-radius:4px;padding:.5rem .7rem}.it-n{font-family:'DM Mono',monospace;font-size:.52rem;font-weight:500;margin-bottom:.1rem;color:var(--ink)}.it-s{font-size:.66rem;opacity:.4;line-height:1.5}
+.note{background:var(--ink);color:var(--linen);padding:.5rem .8rem;border-radius:4px;margin:.5rem 0;font-size:.7rem;line-height:1.7;opacity:.7}.note strong{color:var(--cream);opacity:1}
+.warn{background:rgba(133,79,11,.06);border-left:3px solid var(--amber);padding:.45rem .75rem;margin:.5rem 0;font-size:.7rem;line-height:1.6;color:var(--ink);opacity:.55}
+.L{font-family:'DM Mono',monospace;letter-spacing:.3px}
+.ft{max-width:1020px;margin:1.2rem auto;padding:0 2.5rem;display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:.42rem;letter-spacing:.08em;opacity:.15;text-transform:uppercase}
+@media(max-width:700px){.hdr,.tabs,.pnl{padding-left:1rem;padding-right:1rem}.ig{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="hdr">
+<div class="hdr-r"><span>MORAQ</span><span>UNI-001 · V1.0 · APR 2026</span></div>
+<h1>Uniform & Dress Code<br><em>Fragrance-Neutral Vessel · Craft Aesthetic</em></h1>
+<div class="hdr-d">Staff là "vessel" trung tính — không cạnh tranh với hương sản phẩm. Trang phục thể hiện craft, không thể hiện retail. Ref: CP-001, SB-001 Fragrance-Neutral Protocol.</div>
+</div>
+<div class="tabs">
+<button class="tb on" data-t="phi">Philosophy</button>
+<button class="tb" data-t="pal">Palette</button>
+<button class="tb" data-t="cor">Core Pieces</button>
+<button class="tb" data-t="lab">Lab Booth</button>
+<button class="tb" data-t="gro">Grooming</button>
+<button class="tb" data-t="for">Forbidden</button>
+</div>
+
+<!-- ═══ PHILOSOPHY ═══ -->
+<div class="pnl on" id="p-phi">
+<h2>Philosophy — Vessel, Not Billboard</h2>
+<p><strong>"Staff là vessel trung tính cho hương — không phải billboard cho brand."</strong> Khách phải nhớ trải nghiệm hương, không nhớ đồng phục. Trang phục blend vào không gian như furniture blend vào store.</p>
+
+<div class="dwg">
+<div class="dwg-label">Staff Visual Weight trong Store</div>
+<svg width="100%" viewBox="0 0 650 90" xmlns="http://www.w3.org/2000/svg">
+<rect x="30" y="10" width="590" height="22" rx="3" fill="var(--ink)" opacity=".06"/>
+<text x="45" y="24" class="L" style="font-size:5.5px;fill:var(--ink);opacity:.3">VISUAL WEIGHT SCALE</text>
+
+<!-- Scale markers -->
+<rect x="30" y="38" width="118" height="30" rx="3" fill="#C75050" opacity=".06" stroke="#C75050" stroke-width=".3"/>
+<text x="89" y="52" text-anchor="middle" class="L" style="font-size:5.5px;fill:#C75050;opacity:.6">INVISIBLE</text>
+<text x="89" y="62" text-anchor="middle" class="L" style="font-size:4.5px;fill:#C75050;opacity:.4">Khách không biết ai là staff</text>
+
+<rect x="160" y="38" width="200" height="30" rx="3" fill="var(--teal)" opacity=".08" stroke="var(--teal)" stroke-width=".5"/>
+<text x="260" y="52" text-anchor="middle" class="L" style="font-size:6px;fill:var(--teal);font-weight:500">MORAQ ZONE</text>
+<text x="260" y="62" text-anchor="middle" class="L" style="font-size:4.5px;fill:var(--teal);opacity:.5">Nhận biết nhẹ · Blend vào không gian</text>
+
+<rect x="372" y="38" width="118" height="30" rx="3" fill="#C75050" opacity=".06" stroke="#C75050" stroke-width=".3"/>
+<text x="431" y="52" text-anchor="middle" class="L" style="font-size:5.5px;fill:#C75050;opacity:.6">UNIFORM</text>
+<text x="431" y="62" text-anchor="middle" class="L" style="font-size:4.5px;fill:#C75050;opacity:.4">Polo + logo = retail signal</text>
+
+<rect x="502" y="38" width="118" height="30" rx="3" fill="#C75050" opacity=".08" stroke="#C75050" stroke-width=".3"/>
+<text x="561" y="52" text-anchor="middle" class="L" style="font-size:5.5px;fill:#C75050;opacity:.6">COSTUME</text>
+<text x="561" y="62" text-anchor="middle" class="L" style="font-size:4.5px;fill:#C75050;opacity:.4">Áo dài / theme = theater</text>
+
+<text x="30" y="82" class="L" style="font-size:4.5px;fill:#888">← KHÔNG ĐỦ</text>
+<text x="590" y="82" text-anchor="end" class="L" style="font-size:4.5px;fill:#888">QUÁ MỨC →</text>
+</svg>
+</div>
+
+<h3>3 Principles</h3>
+<div class="ig">
+<div class="it"><div class="it-n">1 · Fragrance-neutral vessel</div><div class="it-s">Vải, chất giặt, deodorant — tất cả phải neutral. Staff body không emit mùi nào cạnh tranh với sản phẩm. Ref: SB-001.</div></div>
+<div class="it"><div class="it-n">2 · Craft, not retail</div><div class="it-s">Không polo có logo. Không name badge plastic. Trang phục gợi "artisan" — người làm bằng tay, không phải nhân viên bán hàng.</div></div>
+<div class="it"><div class="it-n">3 · Blend, not stand out</div><div class="it-s">Palette = store palette. Vải = natural texture. Staff trông "thuộc về" không gian như furniture thuộc về store.</div></div>
+</div>
+</div>
+
+<!-- ═══ PALETTE ═══ -->
+<div class="pnl" id="p-pal">
+<h2>Color Palette — Match Store Materials</h2>
+
+<div class="dwg">
+<div class="dwg-label">Approved Color Range</div>
+<svg width="100%" viewBox="0 0 650 100" xmlns="http://www.w3.org/2000/svg">
+<!-- Approved colors -->
+<text x="30" y="12" class="L" style="font-size:6px;fill:var(--teal);font-weight:500">✓ APPROVED</text>
+
+<rect x="30" y="18" width="80" height="50" rx="4" fill="var(--ink)"/>
+<text x="70" y="46" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--cream)">INK/ĐEN</text>
+<text x="70" y="56" text-anchor="middle" class="L" style="font-size:4px;fill:var(--cream);opacity:.5">Primary</text>
+
+<rect x="120" y="18" width="80" height="50" rx="4" fill="var(--wood-dk)"/>
+<text x="160" y="46" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--cream)">NÂU ĐẬM</text>
+<text x="160" y="56" text-anchor="middle" class="L" style="font-size:4px;fill:var(--cream);opacity:.5">Secondary</text>
+
+<rect x="210" y="18" width="80" height="50" rx="4" fill="var(--cream)" stroke="var(--linen)" stroke-width="1"/>
+<text x="250" y="46" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--ink)">CREAM/TRẮNG</text>
+<text x="250" y="56" text-anchor="middle" class="L" style="font-size:4px;fill:var(--ink);opacity:.3">Shirt/Blouse</text>
+
+<rect x="300" y="18" width="80" height="50" rx="4" fill="var(--stone)"/>
+<text x="340" y="46" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--ink)">XÁM ĐÁ</text>
+<text x="340" y="56" text-anchor="middle" class="L" style="font-size:4px;fill:var(--ink);opacity:.3">Neutral option</text>
+
+<rect x="390" y="18" width="80" height="50" rx="4" fill="var(--linen)"/>
+<text x="430" y="46" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--ink)">LINEN/BE</text>
+<text x="430" y="56" text-anchor="middle" class="L" style="font-size:4px;fill:var(--ink);opacity:.3">Summer</text>
+
+<!-- Forbidden -->
+<text x="520" y="12" class="L" style="font-size:6px;fill:#C75050;font-weight:500">✗ FORBIDDEN</text>
+<rect x="520" y="18" width="50" height="50" rx="4" fill="#C75050" opacity=".15" stroke="#C75050" stroke-width=".5"/>
+<text x="545" y="46" text-anchor="middle" class="L" style="font-size:5px;fill:#C75050">ĐỎ</text>
+
+<rect x="580" y="18" width="50" height="50" rx="4" fill="#2B6CB0" opacity=".15" stroke="#2B6CB0" stroke-width=".5"/>
+<text x="605" y="46" text-anchor="middle" class="L" style="font-size:5px;fill:#2B6CB0">XANH</text>
+
+<text x="300" y="85" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--ink);opacity:.35">PALETTE = STORE PALETTE · Ink · Dark Wood · Cream · Stone · Linen · Không bright colors</text>
+</svg>
+</div>
+
+<h3>Fabric Rules</h3>
+<div class="ig">
+<div class="it"><div class="it-n">Natural fibers</div><div class="it-s">Cotton, linen, wool preferred · Natural texture visible. Polyester OK nếu blend ≤30% (giữ form).</div></div>
+<div class="it"><div class="it-n">Fragrance-neutral wash</div><div class="it-s">Giặt bằng nước giặt KHÔNG MÙI (unscented detergent). Không xả vải thơm. Không sấy thơm.</div></div>
+<div class="it"><div class="it-n">Texture</div><div class="it-s">Matte finish · Không shiny · Không sequin · Không pattern bold. Subtle texture OK (linen weave, herringbone nhẹ).</div></div>
+<div class="it"><div class="it-n">Ironing</div><div class="it-s">Wrinkle-free nhưng không over-pressed. Linen tự nhiên hơi nhăn = OK. Nát bẩn = không OK.</div></div>
+</div>
+</div>
+
+<!-- ═══ CORE PIECES ═══ -->
+<div class="pnl" id="p-cor">
+<h2>Core Pieces — Daily Uniform</h2>
+
+<div class="dwg">
+<div class="dwg-label">Standard Outfit · Front View</div>
+<svg width="100%" viewBox="0 0 650 200" xmlns="http://www.w3.org/2000/svg">
+<!-- ── OPTION A: Shirt + Apron ── -->
+<text x="200" y="10" text-anchor="middle" class="L" style="font-size:7px;fill:var(--ink);opacity:.6;font-weight:500">OPTION A · DAILY</text>
+
+<!-- Head -->
+<circle cx="200" cy="28" r="12" fill="var(--linen)" opacity=".5" stroke="var(--ink)" stroke-width=".8" opacity=".3"/>
+<!-- Neck -->
+<line x1="200" y1="40" x2="200" y2="48" stroke="var(--ink)" stroke-width=".8" opacity=".25"/>
+
+<!-- Shirt (cream/white) -->
+<path d="M172,48 L168,52 L155,55 L155,120 L245,120 L245,55 L232,52 L228,48" fill="var(--cream)" stroke="var(--stone)" stroke-width=".7"/>
+<!-- Collar -->
+<path d="M185,48 L192,55 L200,48 L208,55 L215,48" fill="none" stroke="var(--stone)" stroke-width=".7" opacity=".5"/>
+<!-- Sleeves rolled -->
+<rect x="148" y="55" width="12" height="35" rx="3" fill="var(--cream)" stroke="var(--stone)" stroke-width=".5"/>
+<rect x="240" y="55" width="12" height="35" rx="3" fill="var(--cream)" stroke="var(--stone)" stroke-width=".5"/>
+<!-- Roll line -->
+<line x1="148" y1="82" x2="160" y2="82" stroke="var(--stone)" stroke-width=".5" opacity=".4"/>
+<line x1="240" y1="82" x2="252" y2="82" stroke="var(--stone)" stroke-width=".5" opacity=".4"/>
+
+<!-- Apron (dark, long) -->
+<path d="M170,65 L168,165 L232,165 L230,65" fill="var(--ink)" opacity=".3" stroke="var(--ink)" stroke-width=".6"/>
+<!-- Apron strings cross-back -->
+<line x1="170" y1="65" x2="155" y2="72" stroke="var(--ink)" stroke-width=".6" opacity=".2"/>
+<line x1="230" y1="65" x2="245" y2="72" stroke="var(--ink)" stroke-width=".6" opacity=".2"/>
+<!-- Apron pocket -->
+<rect x="185" y="100" width="30" height="22" rx="2" fill="none" stroke="var(--ink)" stroke-width=".4" opacity=".2"/>
+
+<!-- Pants (dark) -->
+<rect x="178" y="118" width="18" height="55" rx="2" fill="var(--ink)" opacity=".22" stroke="var(--ink)" stroke-width=".3"/>
+<rect x="204" y="118" width="18" height="55" rx="2" fill="var(--ink)" opacity=".22" stroke="var(--ink)" stroke-width=".3"/>
+
+<!-- Shoes -->
+<rect x="175" y="170" width="24" height="8" rx="3" fill="var(--ink)" opacity=".3"/>
+<rect x="201" y="170" width="24" height="8" rx="3" fill="var(--ink)" opacity=".3"/>
+
+<!-- Labels -->
+<line x1="245" y1="50" x2="290" y2="38" stroke="var(--dim)" stroke-width=".3"/>
+<text x="295" y="36" class="L" style="font-size:5.5px;fill:var(--dim)">SHIRT: Cotton/Linen</text>
+<text x="295" y="46" class="L" style="font-size:5px;fill:var(--dim);opacity:.5">Cream/White · Collar · Sleeves rolled</text>
+
+<line x1="232" y1="90" x2="290" y2="80" stroke="var(--dim)" stroke-width=".3"/>
+<text x="295" y="78" class="L" style="font-size:5.5px;fill:var(--dim)">APRON: Dark cotton/canvas</text>
+<text x="295" y="88" class="L" style="font-size:5px;fill:var(--dim);opacity:.5">Cross-back · Full length · 1 pocket</text>
+<text x="295" y="98" class="L" style="font-size:5px;fill:var(--dim);opacity:.5">Ink hoặc Dark Brown</text>
+
+<line x1="222" y1="140" x2="290" y2="130" stroke="var(--dim)" stroke-width=".3"/>
+<text x="295" y="128" class="L" style="font-size:5.5px;fill:var(--dim)">PANTS: Chinos/Trousers</text>
+<text x="295" y="138" class="L" style="font-size:5px;fill:var(--dim);opacity:.5">Ink/Dark/Khaki · Slim-straight</text>
+
+<line x1="225" y1="174" x2="290" y2="168" stroke="var(--dim)" stroke-width=".3"/>
+<text x="295" y="166" class="L" style="font-size:5.5px;fill:var(--dim)">SHOES: Leather/Suede</text>
+<text x="295" y="176" class="L" style="font-size:5px;fill:var(--dim);opacity:.5">Dark · Closed-toe · Clean sole</text>
+
+<!-- ── OPTION B: Simple (no apron) ── -->
+<text x="520" y="10" text-anchor="middle" class="L" style="font-size:7px;fill:var(--ink);opacity:.6;font-weight:500">OPTION B · MINIMAL</text>
+
+<circle cx="520" cy="28" r="12" fill="var(--linen)" opacity=".5" stroke="var(--ink)" stroke-width=".8" opacity=".3"/>
+<line x1="520" y1="40" x2="520" y2="48" stroke="var(--ink)" stroke-width=".8" opacity=".25"/>
+<!-- Dark crew-neck or mandarin collar -->
+<path d="M492,48 L488,52 L478,55 L478,120 L562,120 L562,55 L552,52 L548,48" fill="var(--ink)" opacity=".25" stroke="var(--ink)" stroke-width=".6"/>
+<rect x="470" y="55" width="12" height="35" rx="3" fill="var(--ink)" opacity=".22" stroke="var(--ink)" stroke-width=".4"/>
+<rect x="558" y="55" width="12" height="35" rx="3" fill="var(--ink)" opacity=".22" stroke="var(--ink)" stroke-width=".4"/>
+<!-- Pants -->
+<rect x="498" y="118" width="18" height="55" rx="2" fill="var(--ink)" opacity=".22" stroke="var(--ink)" stroke-width=".3"/>
+<rect x="524" y="118" width="18" height="55" rx="2" fill="var(--ink)" opacity=".22" stroke="var(--ink)" stroke-width=".3"/>
+<rect x="495" y="170" width="24" height="8" rx="3" fill="var(--ink)" opacity=".3"/>
+<rect x="521" y="170" width="24" height="8" rx="3" fill="var(--ink)" opacity=".3"/>
+
+<!-- Labels B -->
+<text x="520" y="78" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--cream);opacity:.55">DARK TOP</text>
+<text x="520" y="90" text-anchor="middle" class="L" style="font-size:5px;fill:var(--cream);opacity:.45">Crew / Mandarin</text>
+
+<text x="520" y="192" text-anchor="middle" class="L" style="font-size:5px;fill:var(--ink);opacity:.4">No apron · Cleaner look</text>
+</svg>
+</div>
+
+<table class="tbl">
+<tr><th>Piece</th><th>Spec</th><th>Qty/Staff</th><th>Notes</th></tr>
+<tr><td>Shirt/Blouse</td><td>Cotton or linen · Cream/White · Collar (button-down or band)</td><td>3</td><td>Sleeves rolled ¾ = craft signal</td></tr>
+<tr><td>Dark top (alt)</td><td>Cotton · Ink/Black · Crew-neck or mandarin collar</td><td>2</td><td>Minimal option · No logo visible</td></tr>
+<tr><td>Apron</td><td>Heavy cotton canvas · Cross-back straps · Full length to knee</td><td>2</td><td>Ink or Dark Brown · 1 chest pocket (pen + scent strip)</td></tr>
+<tr><td>Pants</td><td>Chinos or trousers · Slim-straight · Ink/Dark/Khaki</td><td>3</td><td>Không jeans rách · Không jogger · Không shorts</td></tr>
+<tr><td>Shoes</td><td>Leather or suede · Dark · Closed-toe · Non-slip sole</td><td>1–2</td><td>Sneakers OK nếu all-black minimal · Không sandals</td></tr>
+<tr><td>Belt</td><td>Leather or woven · Dark · Minimal buckle</td><td>1</td><td>Visible khi không mặc apron</td></tr>
+</table>
+
+<div class="note"><strong>No logo rule:</strong> Không brand logo visible trên bất kỳ piece nào. Không "MORAQ" thêu trên apron. Staff identification qua apron style + behaviour, không qua branding. Nếu cần ID cho security → name badge đơn giản pin phía trong apron.</div>
+</div>
+
+<!-- ═══ LAB BOOTH ═══ -->
+<div class="pnl" id="p-lab">
+<h2>Lab Booth — Additional PPE</h2>
+<p>Staff trong Lab Booth cần bảo hộ thêm khi compound. Vẫn giữ aesthetic — không trông như phòng thí nghiệm bệnh viện.</p>
+
+<div class="dwg">
+<div class="dwg-label">Lab Booth Outfit Additions</div>
+<svg width="100%" viewBox="0 0 600 110" xmlns="http://www.w3.org/2000/svg">
+<!-- Gloves -->
+<rect x="30" y="15" width="120" height="80" rx="4" fill="var(--ink)" opacity=".06" stroke="var(--ink)" stroke-width=".5"/>
+<path d="M65,30 L55,28 L52,40 L55,55 L60,58 L60,65 L70,72 L78,72 L82,68 L85,55 L90,50 L88,38 L85,28 L75,25 L70,30 Z" fill="var(--ink)" opacity=".22" stroke="var(--ink)" stroke-width=".6"/>
+<text x="90" y="42" text-anchor="middle" class="L" style="font-size:6.5px;fill:var(--ink);opacity:.6;font-weight:500">NITRILE</text>
+<text x="90" y="55" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--ink);opacity:.4">Đen · Powder-free</text>
+<text x="90" y="66" text-anchor="middle" class="L" style="font-size:5px;fill:var(--ink);opacity:.35">Thay mỗi session</text>
+
+<!-- Safety glasses -->
+<rect x="180" y="15" width="120" height="80" rx="4" fill="var(--ink)" opacity=".06" stroke="var(--ink)" stroke-width=".5"/>
+<rect x="210" y="35" width="60" height="18" rx="8" fill="none" stroke="var(--ink)" stroke-width="1.2" opacity=".3"/>
+<line x1="270" y1="44" x2="280" y2="42" stroke="var(--ink)" stroke-width=".8" opacity=".2"/>
+<line x1="210" y1="44" x2="200" y2="42" stroke="var(--ink)" stroke-width=".8" opacity=".2"/>
+<line x1="238" y1="53" x2="242" y2="53" stroke="var(--ink)" stroke-width=".5" opacity=".15"/>
+<text x="240" y="70" text-anchor="middle" class="L" style="font-size:6.5px;fill:var(--ink);opacity:.6;font-weight:500">KÍNH BẢO HỘ</text>
+<text x="240" y="82" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--ink);opacity:.4">Clear · Minimal frame</text>
+
+<!-- Dedicated apron -->
+<rect x="330" y="15" width="120" height="80" rx="4" fill="var(--ink)" opacity=".06" stroke="var(--ink)" stroke-width=".5"/>
+<rect x="368" y="28" width="44" height="55" rx="2" fill="var(--ink)" opacity=".18" stroke="var(--ink)" stroke-width=".5"/>
+<!-- Cross-back straps -->
+<line x1="370" y1="28" x2="362" y2="22" stroke="var(--ink)" stroke-width=".5" opacity=".15"/>
+<line x1="410" y1="28" x2="418" y2="22" stroke="var(--ink)" stroke-width=".5" opacity=".15"/>
+<text x="390" y="60" text-anchor="middle" class="L" style="font-size:5px;fill:var(--cream);opacity:.4">LAB</text>
+<text x="390" y="95" text-anchor="middle" class="L" style="font-size:6.5px;fill:var(--ink);opacity:.6;font-weight:500">TẠP DỀ LAB</text>
+
+<!-- Hair tie -->
+<rect x="480" y="15" width="100" height="80" rx="4" fill="var(--ink)" opacity=".06" stroke="var(--ink)" stroke-width=".5"/>
+<circle cx="530" cy="42" r="14" fill="none" stroke="var(--ink)" stroke-width=".8" opacity=".25"/>
+<path d="M518,32 Q530,22 542,32" fill="none" stroke="var(--ink)" stroke-width=".6" opacity=".2"/>
+<!-- Hair lines -->
+<path d="M520,42 Q525,55 530,58 Q535,55 540,42" fill="none" stroke="var(--ink)" stroke-width=".5" opacity=".12"/>
+<!-- Elastic -->
+<circle cx="530" cy="35" r="4" fill="none" stroke="var(--ink)" stroke-width=".8" opacity=".2"/>
+<text x="530" y="75" text-anchor="middle" class="L" style="font-size:6.5px;fill:var(--ink);opacity:.6;font-weight:500">BUỘC TÓC</text>
+<text x="530" y="87" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--ink);opacity:.4">Tóc dài buộc gọn</text>
+</svg>
+</div>
+
+<table class="tbl">
+<tr><th>Item</th><th>Spec</th><th>When</th></tr>
+<tr><td>Nitrile gloves</td><td>Black · Powder-free · Size S/M/L</td><td>Khi compound · Thay mỗi session</td></tr>
+<tr><td>Safety glasses</td><td>Clear lens · Minimal frame (không lab goggles chunky)</td><td>Khi pour alcohol/concentrates</td></tr>
+<tr><td>Lab apron</td><td>Dedicated apron cho lab · Giặt riêng · Không mặc ra ngoài booth</td><td>Trong Lab Booth</td></tr>
+<tr><td>Hair tie</td><td>Dark color · Simple elastic</td><td>Tóc dài phải buộc khi trong lab</td></tr>
+</table>
+
+<div class="warn"><strong>Aesthetic rule cho PPE:</strong> Găng tay đen (không xanh/trắng medical). Kính clear minimal frame (không goggles công nghiệp). Khách nhìn qua kính Lab Booth thấy "artisan" không phải "scientist".</div>
+</div>
+
+<!-- ═══ GROOMING ═══ -->
+<div class="pnl" id="p-gro">
+<h2>Grooming — Fragrance-Neutral Protocol</h2>
+
+<h3>The #1 Rule: Fragrance Neutral</h3>
+<div class="ig">
+<div class="it"><div class="it-n">Nước hoa cá nhân</div><div class="it-s">KHÔNG mặc nước hoa cá nhân đi làm. Zero fragrance on body. Staff là vessel trung tính cho sản phẩm MORAQ.</div></div>
+<div class="it"><div class="it-n">Deodorant</div><div class="it-s">Unscented deodorant only. Không spray body mist. Không roll-on thơm. Store cung cấp deodorant unscented nếu cần.</div></div>
+<div class="it"><div class="it-n">Shampoo/Soap</div><div class="it-s">Dùng unscented hoặc very mild scent. Không dầu gội thơm nồng. Scent phải bay hết trước ca làm.</div></div>
+<div class="it"><div class="it-n">Laundry</div><div class="it-s">Nước giặt unscented. Không xả vải thơm. Không viên thơm. Đồ MORAQ giặt riêng, không giặt chung đồ thường.</div></div>
+</div>
+
+<h3>Hair + Nails + Skin</h3>
+<div class="ig">
+<div class="it"><div class="it-n">Hair</div><div class="it-s">Gọn gàng · Tóc dài buộc · Không sáp/gel thơm · Màu tóc tự nhiên hoặc subtle (không neon)</div></div>
+<div class="it"><div class="it-n">Nails</div><div class="it-s">Ngắn + sạch · Không sơn móng (Lab Booth: bắt buộc). Front counter: sơn nude/clear OK</div></div>
+<div class="it"><div class="it-n">Skin</div><div class="it-s">Kem dưỡng unscented OK · Không body lotion thơm · Tay sạch khô trước khi cầm sản phẩm</div></div>
+<div class="it"><div class="it-n">Makeup</div><div class="it-s">Natural / minimal · Không heavy foundation thơm · Lip products fragrance-free preferred</div></div>
+</div>
+
+<h3>Jewelry + Accessories</h3>
+<div class="ig">
+<div class="it"><div class="it-n">Watch</div><div class="it-s">1 chiếc · Minimal design · Không smartwatch lớn · Không Apple Watch với band sáng màu</div></div>
+<div class="it"><div class="it-n">Rings</div><div class="it-s">Max 2 · Nhẹ nhàng · Lab Booth: tháo hết (hygiene)</div></div>
+<div class="it"><div class="it-n">Earrings</div><div class="it-s">Small studs OK · Không dangle · Không hoops lớn</div></div>
+<div class="it"><div class="it-n">Glasses</div><div class="it-s">Minimal frame · Dark or transparent · Không mirror lens · Không colored frames nổi bật</div></div>
+</div>
+
+<div class="note"><strong>Sniff test mỗi sáng:</strong> Trước ca, manager ngửi tay + cổ tay staff ở khoảng cách 15cm. Nếu detect bất kỳ fragrance nào → staff phải rửa lại / thay đồ. Đây là non-negotiable. Ref: SB-001 Fragrance-Neutral Vessel Protocol.</div>
+</div>
+
+<!-- ═══ FORBIDDEN ═══ -->
+<div class="pnl" id="p-for">
+<h2>Forbidden — Tuyệt đối không</h2>
+
+<table class="tbl">
+<tr><th>✗ Item</th><th>Reason</th></tr>
+<tr><td>Polo shirt có logo</td><td>Retail uniform signal · "Nhân viên bán hàng" → mất craft perception</td></tr>
+<tr><td>Brand name thêu/in trên đồ</td><td>"MORAQ" trên apron/shirt = billboard · Staff identity qua behaviour</td></tr>
+<tr><td>Name badge plastic</td><td>Corporate/retail signal · Nếu cần ID → pin nhỏ đơn giản trong apron</td></tr>
+<tr><td>Bright colors / Neon</td><td>Visual noise · Cạnh tranh với sản phẩm display</td></tr>
+<tr><td>Jeans rách / Distressed</td><td>Casual signal quá mức · Không match craft aesthetic</td></tr>
+<tr><td>Shorts / Sandals / Flip-flops</td><td>Quá casual · Safety concern (chai đổ, nước nóng)</td></tr>
+<tr><td>Strong patterns (plaid, stripe bold)</td><td>Visual noise · Staff nên blend, không stand out</td></tr>
+<tr><td>Heavy perfume / Body spray</td><td>#1 violation · Cạnh tranh với sản phẩm = phá hủy experience</td></tr>
+<tr><td>Scented hand cream</td><td>Transfer scent sang sản phẩm/packaging khi cầm</td></tr>
+<tr><td>Headphones / AirPods visible</td><td>"Không available" signal · Disconnect từ khách</td></tr>
+</table>
+
+<div class="warn"><strong>Fragrance violation = nghiêm trọng nhất.</strong> Staff mặc nước hoa đi làm = toàn bộ scent experience của khách bị compromise. Khách thử hương A nhưng mũi đã bị saturate bởi perfume staff → không phân biệt được. 1 lần vi phạm = nhắc nhở. 2 lần = cảnh cáo. 3 lần = xem xét sa thải.</div>
+</div>
+
+<div class="ft"><span>MORAQ · UNI-001 · UNIFORM & DRESS CODE · V1.0</span><span>CONFIDENTIAL · APR 2026</span></div>
+<script>
+document.addEventListener('DOMContentLoaded',function(){var btns=document.querySelectorAll('.tb');var pnls=document.querySelectorAll('.pnl');btns.forEach(function(b){b.addEventListener('click',function(){var t=this.getAttribute('data-t');btns.forEach(function(x){x.classList.remove('on')});pnls.forEach(function(x){x.classList.remove('on')});this.classList.add('on');document.getElementById('p-'+t).classList.add('on');window.scrollTo({top:0,behavior:'smooth'});});});});
+</script>
+</body>
+</html>

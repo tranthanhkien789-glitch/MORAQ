@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MORAQ — MUS-001 · Music & Playlist Spec</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1A1916;--teal:#0F6E56;--amber:#854F0B;--cream:#FAF9F6;--linen:#E8DFD0;--stone:#C8C0B4;--wood-dk:#3E3020;--wood-lt:#B8A88C;--metal:#4A4A4A;--dim:#854F0B;--call:#0F6E56}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:#F4F3EF;color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased}
+.hdr{background:var(--ink);padding:2rem 2.5rem 1.2rem}
+.hdr-r{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.12em;color:var(--cream);opacity:.35;margin-bottom:.5rem;text-transform:uppercase}
+.hdr h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:1.5rem;color:var(--cream);line-height:1.35}
+.hdr h1 em{font-style:italic;color:var(--linen);opacity:.6}
+.hdr-d{font-size:.75rem;color:var(--linen);opacity:.4;margin-top:.4rem;max-width:760px;line-height:1.7}
+.tabs{display:flex;background:var(--ink);padding:0 2.5rem;overflow-x:auto;border-bottom:1px solid rgba(232,223,208,.08);gap:.1rem}
+.tb{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.06em;text-transform:uppercase;color:var(--cream);opacity:.45;background:none;border:none;border-bottom:2px solid transparent;padding:.6rem .7rem;cursor:pointer;transition:all .2s;white-space:nowrap}
+.tb:hover{opacity:.7}.tb.on{opacity:1;color:var(--teal);border-bottom-color:var(--teal)}
+.pnl{display:none;padding:1.4rem 2.5rem 2rem;max-width:1020px;margin:0 auto}.pnl.on{display:block}
+h2{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.25rem;margin:1.6rem 0 .6rem;padding-top:1.3rem;border-top:1px solid rgba(0,0,0,.06)}h2:first-child{border-top:none;padding-top:0}
+h3{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1rem;margin:1.1rem 0 .4rem;color:var(--teal)}
+p{font-size:.78rem;opacity:.55;margin-bottom:.55rem;line-height:1.8}p strong{opacity:1;font-weight:600}
+.dwg{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:6px;padding:1rem;margin:.7rem 0;overflow-x:auto}
+.dwg-label{font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);opacity:.3;margin-bottom:.5rem}
+.tbl{width:100%;border-collapse:collapse;margin:.5rem 0;font-size:.72rem}.tbl th{font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.06em;text-transform:uppercase;text-align:left;padding:.4rem .5rem;background:var(--ink);color:var(--cream);opacity:.6}.tbl td{padding:.35rem .5rem;border-bottom:1px solid rgba(0,0,0,.04);vertical-align:top;line-height:1.5}.tbl td:first-child{font-weight:500;width:130px}.tbl tr:nth-child(even) td{background:#FAFAF8}
+.ig{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin:.4rem 0}
+.it{background:#FAFAF8;border:1px solid rgba(0,0,0,.04);border-radius:4px;padding:.5rem .7rem}.it-n{font-family:'DM Mono',monospace;font-size:.52rem;font-weight:500;margin-bottom:.1rem;color:var(--ink)}.it-s{font-size:.66rem;opacity:.4;line-height:1.5}
+.note{background:var(--ink);color:var(--linen);padding:.5rem .8rem;border-radius:4px;margin:.5rem 0;font-size:.7rem;line-height:1.7;opacity:.7}.note strong{color:var(--cream);opacity:1}
+.warn{background:rgba(133,79,11,.06);border-left:3px solid var(--amber);padding:.45rem .75rem;margin:.5rem 0;font-size:.7rem;line-height:1.6;color:var(--ink);opacity:.55}
+.L{font-family:'DM Mono',monospace;letter-spacing:.3px}
+.ft{max-width:1020px;margin:1.2rem auto;padding:0 2.5rem;display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:.42rem;letter-spacing:.08em;opacity:.15;text-transform:uppercase}
+@media(max-width:700px){.hdr,.tabs,.pnl{padding-left:1rem;padding-right:1rem}.ig{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="hdr">
+<div class="hdr-r"><span>MORAQ</span><span>MUS-001 · V1.0 · APR 2026</span></div>
+<h1>Music & Playlist Spec<br><em>Sonic Identity · BPM 72–78 · Invisible Soundtrack</em></h1>
+<div class="hdr-d">Âm nhạc là lớp sensory thứ 3 (sau scent + lighting). Nguyên tắc: khách không nhận ra đang có nhạc — chỉ cảm thấy không gian "đúng". Ref: SB-001.</div>
+</div>
+<div class="tabs">
+<button class="tb on" data-t="phi">Philosophy</button>
+<button class="tb" data-t="par">Parameters</button>
+<button class="tb" data-t="gen">Genre Guide</button>
+<button class="tb" data-t="day">Daypart Schedule</button>
+<button class="tb" data-t="src">Source + Tech</button>
+<button class="tb" data-t="for">Forbidden</button>
+</div>
+
+<!-- ═══ PHILOSOPHY ═══ -->
+<div class="pnl on" id="p-phi">
+<h2>Philosophy — Invisible Soundtrack</h2>
+<p><strong>"Khách không nhận ra đang có nhạc — chỉ cảm thấy không gian đúng."</strong> Nếu khách hỏi "bài gì đang phát?" → nhạc quá nổi bật → sai. Nếu tắt nhạc và khách cảm thấy "thiếu gì đó" → đúng.</p>
+
+<div class="dwg">
+<div class="dwg-label">Sonic Layer trong Sensory Stack</div>
+<svg width="100%" viewBox="0 0 650 100" xmlns="http://www.w3.org/2000/svg">
+<!-- 3 sensory layers -->
+<rect x="30" y="10" width="190" height="75" rx="4" fill="var(--amber)" opacity=".08" stroke="var(--amber)" stroke-width=".5"/>
+<text x="125" y="38" text-anchor="middle" class="L" style="font-size:7px;fill:var(--amber);font-weight:500">SCENT</text>
+<text x="125" y="52" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--amber);opacity:.5">Layer 1 · Primary</text>
+<text x="125" y="64" text-anchor="middle" class="L" style="font-size:5px;fill:var(--amber);opacity:.35">Diffuser + Products</text>
+<text x="125" y="74" text-anchor="middle" class="L" style="font-size:5px;fill:var(--amber);opacity:.35">Ref: SB-001</text>
+
+<rect x="230" y="10" width="190" height="75" rx="4" fill="var(--dim)" opacity=".08" stroke="var(--dim)" stroke-width=".5"/>
+<text x="325" y="38" text-anchor="middle" class="L" style="font-size:7px;fill:var(--dim);font-weight:500">LIGHTING</text>
+<text x="325" y="52" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--dim);opacity:.5">Layer 2 · Visual</text>
+<text x="325" y="64" text-anchor="middle" class="L" style="font-size:5px;fill:var(--dim);opacity:.35">2700K · Gradient</text>
+<text x="325" y="74" text-anchor="middle" class="L" style="font-size:5px;fill:var(--dim);opacity:.35">Ref: LID-001</text>
+
+<rect x="430" y="10" width="190" height="75" rx="4" fill="var(--teal)" opacity=".08" stroke="var(--teal)" stroke-width=".5"/>
+<text x="525" y="38" text-anchor="middle" class="L" style="font-size:7px;fill:var(--teal);font-weight:500">MUSIC</text>
+<text x="525" y="52" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--teal);opacity:.5">Layer 3 · Sonic</text>
+<text x="525" y="64" text-anchor="middle" class="L" style="font-size:5px;fill:var(--teal);opacity:.35">BPM 72–78 · 40–45dB</text>
+<text x="525" y="74" text-anchor="middle" class="L" style="font-size:5px;fill:var(--teal);opacity:.35">THIS DOCUMENT</text>
+</svg>
+</div>
+
+<h3>3 Rules</h3>
+<div class="ig">
+<div class="it"><div class="it-n">1 · Background, never foreground</div><div class="it-s">Nhạc phải ở dưới mức conversation. 2 người nói chuyện ở 60cm tại counter phải thoải mái. Nhạc không bao giờ là lý do khách chú ý.</div></div>
+<div class="it"><div class="it-n">2 · No lyrics in Vietnamese</div><div class="it-s">Lời hát tiếng Việt sẽ bị "nghe" — não tự động decode ngôn ngữ mẹ đẻ. Instrumental preferred. English/French/Japanese OK ở volume thấp.</div></div>
+<div class="it"><div class="it-n">3 · Consistent texture</div><div class="it-s">Không có track nào "nổi bật" hơn track khác. Toàn playlist phải có cùng energy level — như dòng nước chảy đều.</div></div>
+</div>
+
+<div class="note"><strong>Test đơn giản:</strong> Đứng ở counter 5 phút. Nếu bạn có thể mô tả lại bài nhạc vừa nghe → nhạc quá nổi. Nếu bạn chỉ nhớ "có nhạc" nhưng không nhớ bài gì → đúng.</div>
+</div>
+
+<!-- ═══ PARAMETERS ═══ -->
+<div class="pnl" id="p-par">
+<h2>Audio Parameters — Technical Specs</h2>
+
+<div class="dwg">
+<div class="dwg-label">Volume + BPM Sweet Spot</div>
+<svg width="100%" viewBox="0 0 650 115" xmlns="http://www.w3.org/2000/svg">
+<!-- Volume meter -->
+<text x="80" y="12" text-anchor="middle" class="L" style="font-size:6px;fill:#888;letter-spacing:1px">VOLUME (dB)</text>
+<rect x="30" y="18" width="100" height="12" rx="2" fill="var(--ink)" opacity=".06"/>
+<rect x="30" y="18" width="40" height="12" rx="2" fill="var(--teal)" opacity=".25"/>
+<text x="50" y="27" text-anchor="middle" class="L" style="font-size:5px;fill:var(--teal)">40–45dB</text>
+<text x="80" y="27" class="L" style="font-size:4px;fill:#bbb">50</text>
+<text x="100" y="27" class="L" style="font-size:4px;fill:#bbb">60</text>
+<text x="120" y="27" class="L" style="font-size:4px;fill:#C75050;opacity:.5">70+</text>
+<text x="30" y="42" class="L" style="font-size:5px;fill:var(--teal);opacity:.5">✓ MORAQ zone</text>
+<text x="100" y="42" class="L" style="font-size:5px;fill:#C75050;opacity:.4">✗ Quá to</text>
+
+<!-- BPM meter -->
+<text x="350" y="12" text-anchor="middle" class="L" style="font-size:6px;fill:#888;letter-spacing:1px">BPM (TEMPO)</text>
+<rect x="230" y="18" width="240" height="12" rx="2" fill="var(--ink)" opacity=".06"/>
+<rect x="310" y="18" width="50" height="12" rx="2" fill="var(--teal)" opacity=".25"/>
+<text x="255" y="27" class="L" style="font-size:4px;fill:#bbb">60</text>
+<text x="295" y="27" class="L" style="font-size:4px;fill:#bbb">70</text>
+<text x="335" y="27" text-anchor="middle" class="L" style="font-size:5px;fill:var(--teal)">72–78</text>
+<text x="375" y="27" class="L" style="font-size:4px;fill:#bbb">80</text>
+<text x="415" y="27" class="L" style="font-size:4px;fill:#bbb">90</text>
+<text x="440" y="27" class="L" style="font-size:4px;fill:#C75050;opacity:.5">100+</text>
+<text x="310" y="42" class="L" style="font-size:5px;fill:var(--teal);opacity:.5">✓ Resting heart rate</text>
+
+<!-- Frequency response -->
+<text x="570" y="12" text-anchor="middle" class="L" style="font-size:6px;fill:#888;letter-spacing:1px">EQ BIAS</text>
+<rect x="510" y="18" width="120" height="50" rx="3" fill="var(--ink)" opacity=".04"/>
+<!-- EQ curve simplified -->
+<polyline points="515,55 530,48 550,35 570,30 590,32 610,40 625,50" fill="none" stroke="var(--teal)" stroke-width="1" opacity=".4"/>
+<text x="570" y="75" text-anchor="middle" class="L" style="font-size:5px;fill:var(--teal);opacity:.5">MID-WARM BIAS</text>
+<text x="570" y="86" text-anchor="middle" class="L" style="font-size:4.5px;fill:#888">Cut sub-bass · Boost mids</text>
+<text x="570" y="96" text-anchor="middle" class="L" style="font-size:4.5px;fill:#888">Roll off &gt;12kHz</text>
+</svg>
+</div>
+
+<table class="tbl">
+<tr><th>Parameter</th><th>Target</th><th>Tolerance</th><th>Rationale</th></tr>
+<tr><td>Volume</td><td>40–45 dB SPL</td><td>±3 dB</td><td>Dưới conversation level (60dB). Conversation tại 60cm không bị ảnh hưởng</td></tr>
+<tr><td>BPM</td><td>72–78</td><td>±5</td><td>= Resting heart rate. Tạo cảm giác calm, unhurried. Ref: SB-001</td></tr>
+<tr><td>Max volume</td><td>50 dB (locked)</td><td>—</td><td>Staff remote có max cap. Không thể vặn quá 50dB</td></tr>
+<tr><td>Stereo width</td><td>Narrow–Mono</td><td>—</td><td>Ceiling speakers → mono hoặc narrow stereo. Không cần soundstage</td></tr>
+<tr><td>EQ</td><td>Mid-warm</td><td>—</td><td>Cut sub-bass (&lt;80Hz), slight boost 200–800Hz, roll off &gt;12kHz. Warm nhưng không boomy</td></tr>
+<tr><td>Crossfade</td><td>6–8 seconds</td><td>—</td><td>Không silence gap. Không abrupt cut. Smooth crossfade</td></tr>
+<tr><td>Shuffle</td><td>Smart shuffle</td><td>—</td><td>Không lặp trong 4h. Không 2 track cùng artist liên tiếp</td></tr>
+</table>
+</div>
+
+<!-- ═══ GENRE GUIDE ═══ -->
+<div class="pnl" id="p-gen">
+<h2>Genre Guide — What Fits, What Doesn't</h2>
+
+<h3>✓ Approved Genres</h3>
+<table class="tbl">
+<tr><th>Genre</th><th>Sub-genre</th><th>Energy</th><th>Examples (vibe, not playlist)</th></tr>
+<tr><td>Ambient</td><td>Ambient, drone, texture</td><td>Very low</td><td>Brian Eno "Music for Airports" vibe · Nils Frahm textures</td></tr>
+<tr><td>Neo-classical</td><td>Modern classical, piano</td><td>Low</td><td>Ólafur Arnalds · Max Richter · Ludovico Einaudi (slower pieces)</td></tr>
+<tr><td>Jazz</td><td>Cool jazz, bossa nova</td><td>Low–Med</td><td>Bill Evans trio · Chet Baker · João Gilberto (vocal OK — không Việt)</td></tr>
+<tr><td>Downtempo</td><td>Trip-hop, chillout</td><td>Low–Med</td><td>Bonobo · Tycho · Thievery Corporation (instrumental preferred)</td></tr>
+<tr><td>World/Fusion</td><td>Japanese ambient, Balinese</td><td>Low</td><td>Ryuichi Sakamoto · Hélène Grimaud · Kitaro (slower works)</td></tr>
+<tr><td>Acoustic</td><td>Solo guitar, solo piano</td><td>Low</td><td>Andrew York · Satie · Debussy (selected pieces)</td></tr>
+</table>
+
+<h3>✗ Forbidden Genres</h3>
+<table class="tbl">
+<tr><th>Genre</th><th>Reason</th></tr>
+<tr><td>V-Pop / Vietnamese lyrics</td><td>Brain auto-decodes → conscious listening → breaks immersion</td></tr>
+<tr><td>K-Pop / J-Pop</td><td>Too energetic · Wrong BPM · Cultural signal mismatch</td></tr>
+<tr><td>EDM / House / Techno</td><td>BPM 120+ · Energy quá cao · Club signal</td></tr>
+<tr><td>Hip-Hop / Rap</td><td>Lyrics dominant · BPM variable · Wrong demographic signal</td></tr>
+<tr><td>Rock / Metal / Punk</td><td>Aggressive energy · Distortion frequency clashes với không gian</td></tr>
+<tr><td>Top 40 / Chart hits</td><td>Recognizable → conscious listening · "Radio station" signal</td></tr>
+<tr><td>Christmas / Holiday music</td><td>Seasonal cliché · MORAQ không theo retail calendar</td></tr>
+<tr><td>Meditation / Spa music</td><td>Quá passive · Wind chimes / whale sounds = spa signal, không phải craft</td></tr>
+</table>
+
+<div class="dwg">
+<div class="dwg-label">Energy Spectrum · MORAQ Zone</div>
+<svg width="100%" viewBox="0 0 650 55" xmlns="http://www.w3.org/2000/svg">
+<rect x="30" y="10" width="590" height="18" rx="3" fill="var(--ink)" opacity=".06"/>
+<!-- Zone markers -->
+<rect x="30" y="10" width="80" height="18" rx="3" fill="#C75050" opacity=".08"/>
+<text x="70" y="22" text-anchor="middle" class="L" style="font-size:4.5px;fill:#C75050;opacity:.6">SPA/MEDITATION</text>
+<text x="70" y="32" text-anchor="middle" class="L" style="font-size:4px;fill:#C75050;opacity:.4">Quá passive</text>
+
+<rect x="130" y="10" width="200" height="18" rx="0" fill="var(--teal)" opacity=".12"/>
+<text x="230" y="22" text-anchor="middle" class="L" style="font-size:5.5px;fill:var(--teal);font-weight:500">MORAQ ZONE</text>
+<text x="230" y="32" text-anchor="middle" class="L" style="font-size:4.5px;fill:var(--teal);opacity:.5">Ambient · Neo-classical · Cool jazz · Downtempo</text>
+
+<rect x="350" y="10" width="80" height="18" rx="0" fill="#C75050" opacity=".06"/>
+<text x="390" y="22" text-anchor="middle" class="L" style="font-size:4.5px;fill:#C75050;opacity:.5">CAFÉ/RETAIL</text>
+<text x="390" y="32" text-anchor="middle" class="L" style="font-size:4px;fill:#C75050;opacity:.4">Quá active</text>
+
+<rect x="450" y="10" width="170" height="18" rx="3" fill="#C75050" opacity=".08"/>
+<text x="535" y="22" text-anchor="middle" class="L" style="font-size:4.5px;fill:#C75050;opacity:.6">CLUB/BAR/GYM</text>
+<text x="535" y="32" text-anchor="middle" class="L" style="font-size:4px;fill:#C75050;opacity:.4">Wrong signal</text>
+
+<!-- Scale -->
+<text x="30" y="48" class="L" style="font-size:4.5px;fill:#888">← PASSIVE</text>
+<text x="580" y="48" text-anchor="end" class="L" style="font-size:4.5px;fill:#888">ACTIVE →</text>
+</svg>
+</div>
+
+<div class="warn"><strong>Acid test:</strong> Tưởng tượng staff đang compound hương trong Lab Booth, khách ngồi front counter quan sát. Bài nhạc có hỗ trợ moment đó không? Nếu nhạc gây distraction hoặc sai mood → loại.</div>
+</div>
+
+<!-- ═══ DAYPART SCHEDULE ═══ -->
+<div class="pnl" id="p-day">
+<h2>Daypart Schedule — Energy Flow trong ngày</h2>
+
+<div class="dwg">
+<div class="dwg-label">Daily Energy Curve</div>
+<svg width="100%" viewBox="0 0 650 110" xmlns="http://www.w3.org/2000/svg">
+<!-- Time axis -->
+<line x1="50" y1="80" x2="620" y2="80" stroke="var(--ink)" stroke-width=".4" opacity=".15"/>
+<text x="95" y="95" text-anchor="middle" class="L" style="font-size:5.5px;fill:#888">10:00</text>
+<text x="215" y="95" text-anchor="middle" class="L" style="font-size:5.5px;fill:#888">12:00</text>
+<text x="335" y="95" text-anchor="middle" class="L" style="font-size:5.5px;fill:#888">15:00</text>
+<text x="455" y="95" text-anchor="middle" class="L" style="font-size:5.5px;fill:#888">18:00</text>
+<text x="575" y="95" text-anchor="middle" class="L" style="font-size:5.5px;fill:#888">21:00</text>
+
+<!-- Energy curve -->
+<polyline points="50,60 95,55 170,48 215,45 280,42 335,40 400,42 455,38 520,40 575,45 620,55" fill="none" stroke="var(--teal)" stroke-width="1.5" opacity=".4"/>
+<!-- Fill under curve -->
+<polygon points="50,60 95,55 170,48 215,45 280,42 335,40 400,42 455,38 520,40 575,45 620,55 620,80 50,80" fill="var(--teal)" opacity=".04"/>
+
+<!-- Daypart labels -->
+<text x="140" y="18" text-anchor="middle" class="L" style="font-size:6px;fill:var(--teal);font-weight:500">MORNING</text>
+<text x="140" y="28" text-anchor="middle" class="L" style="font-size:5px;fill:var(--teal);opacity:.4">Gentlest · Solo piano</text>
+
+<text x="335" y="12" text-anchor="middle" class="L" style="font-size:6px;fill:var(--teal);font-weight:500">AFTERNOON</text>
+<text x="335" y="22" text-anchor="middle" class="L" style="font-size:5px;fill:var(--teal);opacity:.4">Peak · Cool jazz + downtempo</text>
+
+<text x="530" y="18" text-anchor="middle" class="L" style="font-size:6px;fill:var(--teal);font-weight:500">EVENING</text>
+<text x="530" y="28" text-anchor="middle" class="L" style="font-size:5px;fill:var(--teal);opacity:.4">Warmest · Deep ambient</text>
+
+<!-- Energy axis -->
+<text x="40" y="42" text-anchor="end" class="L" style="font-size:4.5px;fill:#888">HIGH</text>
+<text x="40" y="75" text-anchor="end" class="L" style="font-size:4.5px;fill:#888">LOW</text>
+</svg>
+</div>
+
+<table class="tbl">
+<tr><th>Daypart</th><th>Time</th><th>Energy</th><th>Genre bias</th><th>Volume</th><th>BPM</th></tr>
+<tr><td>Morning Open</td><td>10:00–12:00</td><td>Gentlest</td><td>Solo piano · Ambient · Neo-classical</td><td>38–42 dB</td><td>68–74</td></tr>
+<tr><td>Midday</td><td>12:00–14:00</td><td>Slight lift</td><td>Acoustic guitar · Light bossa · Ambient jazz</td><td>40–44 dB</td><td>72–76</td></tr>
+<tr><td>Afternoon Peak</td><td>14:00–18:00</td><td>Peak (still calm)</td><td>Cool jazz trio · Downtempo · World fusion</td><td>42–46 dB</td><td>74–78</td></tr>
+<tr><td>Evening</td><td>18:00–20:00</td><td>Warm wind-down</td><td>Deep ambient · Neo-classical · Strings</td><td>40–44 dB</td><td>70–76</td></tr>
+<tr><td>Late Close</td><td>20:00–21:00</td><td>Softest</td><td>Pure ambient · Drone textures · Solo piano</td><td>38–42 dB</td><td>66–72</td></tr>
+</table>
+
+<div class="ig">
+<div class="it"><div class="it-n">Transition rule</div><div class="it-s">Crossfade giữa dayparts tự nhiên — không abrupt change. Playlist engine auto-blend dựa trên time. Không manual switch.</div></div>
+<div class="it"><div class="it-n">Special events</div><div class="it-s">Launch events, VIP sessions: founder có thể override playlist. Nhưng vẫn giữ BPM 72–78 và volume ≤48dB.</div></div>
+</div>
+</div>
+
+<!-- ═══ SOURCE + TECH ═══ -->
+<div class="pnl" id="p-src">
+<h2>Source + Technical Setup</h2>
+
+<h3>Streaming Platform</h3>
+<div class="ig">
+<div class="it"><div class="it-n">Primary</div><div class="it-s">Spotify Premium Business (hoặc Soundtrack Your Brand) · License cho commercial use · Không dùng personal account</div></div>
+<div class="it"><div class="it-n">Backup</div><div class="it-s">Pre-downloaded offline playlists trên dedicated tablet/phone · Trong trường hợp mất internet</div></div>
+<div class="it"><div class="it-n">Curated by</div><div class="it-s">Founder hoặc designated music curator · Staff KHÔNG tự chọn nhạc · Chỉ play curated playlists</div></div>
+<div class="it"><div class="it-n">Update frequency</div><div class="it-s">Playlist refresh mỗi 2 tuần · Thêm tracks mới · Loại tracks cũ · Giữ tổng 200+ tracks rotation</div></div>
+</div>
+
+<h3>Playlist Structure</h3>
+<table class="tbl">
+<tr><th>Playlist</th><th>Tracks</th><th>Duration</th><th>Use</th></tr>
+<tr><td>MORAQ · Morning</td><td>40–50</td><td>~3h</td><td>10:00–12:00 · Gentlest</td></tr>
+<tr><td>MORAQ · Afternoon</td><td>60–80</td><td>~5h</td><td>12:00–18:00 · Core hours</td></tr>
+<tr><td>MORAQ · Evening</td><td>40–50</td><td>~3h</td><td>18:00–21:00 · Wind-down</td></tr>
+<tr><td>MORAQ · Offline Backup</td><td>100+</td><td>~6h</td><td>No internet fallback</td></tr>
+</table>
+
+<h3>Hardware</h3>
+<div class="ig">
+<div class="it"><div class="it-n">Source device</div><div class="it-s">Dedicated tablet/phone trong BOH · Bluetooth to amp · NOT staff personal phone</div></div>
+<div class="it"><div class="it-n">Amplifier</div><div class="it-s">Compact stereo amp trong BOH · 2×30W min · Bluetooth + aux input · Volume remote</div></div>
+<div class="it"><div class="it-n">Speakers</div><div class="it-s">2–4× ceiling mount · 3"–4" full range · Flush trong trần giả · Ref: MEP-001</div></div>
+<div class="it"><div class="it-n">Volume control</div><div class="it-s">Wireless remote cho staff (volume only) · Max cap locked at 50dB · Không thể override</div></div>
+</div>
+
+<div class="note"><strong>Dedicated device rule:</strong> Source device PHẢI là dedicated (không phải phone cá nhân của staff). Lý do: không bị notification sounds, không bị gọi điện cắt nhạc, không bị staff tự đổi playlist.</div>
+</div>
+
+<!-- ═══ FORBIDDEN ═══ -->
+<div class="pnl" id="p-for">
+<h2>Forbidden — Tuyệt đối không</h2>
+
+<table class="tbl">
+<tr><th>✗ Forbidden</th><th>Lý do</th></tr>
+<tr><td>Staff chọn nhạc cá nhân</td><td>Inconsistent brand experience · Mỗi ca khác nhạc = không có sonic identity</td></tr>
+<tr><td>Radio FM/AM</td><td>Ads + DJ talk + random genre = phá vỡ atmosphere hoàn toàn</td></tr>
+<tr><td>YouTube (có ads)</td><td>Ads interrupt = worst possible experience · Không commercial license</td></tr>
+<tr><td>TV news / talkshow</td><td>Conversation noise = attention thief · Không bao giờ có TV trong store</td></tr>
+<tr><td>Notification sounds</td><td>Phone beep / ding = kills ambient → dedicated device only</td></tr>
+<tr><td>Silence</td><td>Không nhạc = "có gì sai" feeling · Uncomfortable silence amplifies every other sound</td></tr>
+<tr><td>Volume war giữa staff</td><td>Staff A thích to, staff B thích nhỏ → volume lock + preset = giải quyết</td></tr>
+<tr><td>Nhạc theo request khách</td><td>MORAQ không phải quán cà phê. Sonic identity do brand quyết định, không do khách</td></tr>
+</table>
+
+<h3>Exception Protocol</h3>
+<div class="ig">
+<div class="it"><div class="it-n">Founder override</div><div class="it-s">Chỉ founder hoặc store manager có quyền thay playlist ngoài curated list. Phải giữ BPM 72–78.</div></div>
+<div class="it"><div class="it-n">Equipment failure</div><div class="it-s">Bluetooth disconnect → switch sang offline backup playlist. Amp die → silence OK tạm thời (fix ASAP).</div></div>
+<div class="it"><div class="it-n">Khách complain</div><div class="it-s">"Nhạc quá to" → giảm 2–3dB, ghi log. "Không thích nhạc" → polite decline, không thay. Ghi log report cho founder.</div></div>
+<div class="it"><div class="it-n">Special events</div><div class="it-s">Launch / VIP: founder có thể curate riêng. Vẫn trong MORAQ genre guide. Không bao giờ DJ live hay karaoke.</div></div>
+</div>
+
+<div class="warn"><strong>Final test:</strong> Close your eyes trong store 30 giây. Scent + lighting (qua eyelids) + music phải tạo một feeling thống nhất: calm, crafted, intentional. Nếu music "gợi nhớ" đến bất kỳ nơi nào khác (quán cà phê, spa, mall, gym, club) → sai playlist.</div>
+</div>
+
+<div class="ft"><span>MORAQ · MUS-001 · MUSIC & PLAYLIST SPEC · V1.0</span><span>CONFIDENTIAL · APR 2026</span></div>
+<script>
+document.addEventListener('DOMContentLoaded',function(){var btns=document.querySelectorAll('.tb');var pnls=document.querySelectorAll('.pnl');btns.forEach(function(b){b.addEventListener('click',function(){var t=this.getAttribute('data-t');btns.forEach(function(x){x.classList.remove('on')});pnls.forEach(function(x){x.classList.remove('on')});this.classList.add('on');document.getElementById('p-'+t).classList.add('on');window.scrollTo({top:0,behavior:'smooth'});});});});
+</script>
+</body>
+</html>
