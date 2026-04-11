@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MORAQ · L0 Constants · Root Lock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap&subset=vietnamese" rel="stylesheet">
+<style>
+:root {
+  --ink:    #1A1916;
+  --teal:   #0F6E56;
+  --teal-d: #085041;
+  --teal-l: #E1F5EE;
+  --amber:  #854F0B;
+  --amber-d:#633806;
+  --amber-l:#FAEEDA;
+  --cream:  #FAF9F6;
+  --linen:  #E8DFD0;
+  --warm-2: #C4B49A;
+  --warm-3: #8C7A62;
+  --red-l:  #FCEBEB;
+  --red:    #A32D2D;
+  --gap-xs: 4px; --gap-s: 8px; --gap-m: 16px; --gap-l: 28px; --gap-xl: 48px;
+  --r: 0px;
+  --sidebar-w: 220px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 400;
+  line-height: 1.8;
+  color: var(--ink);
+  background: var(--cream);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── LAYOUT ─── */
+.shell { display: flex; min-height: 100vh; }
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--ink);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+.sb-brand {
+  padding: 28px 24px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.sb-brand-word {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: 20px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--cream);
+  display: block;
+}
+.sb-brand-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  color: rgba(250,249,246,.4);
+  display: block;
+  margin-top: 4px;
+}
+.sb-section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(250,249,246,.3);
+  padding: 20px 24px 8px;
+}
+.sb-nav { list-style: none; flex: 1; }
+.sb-nav li {}
+.sb-nav button {
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(250,249,246,.55);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px;
+  font-weight: 400;
+  text-align: left;
+  transition: all .15s;
+  border-left: 2px solid transparent;
+}
+.sb-nav button:hover { color: var(--cream); background: rgba(255,255,255,.04); }
+.sb-nav button.active { color: var(--cream); background: rgba(255,255,255,.06); border-left-color: var(--teal); }
+.sb-nav .count {
+  margin-left: auto;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: rgba(250,249,246,.25);
+}
+.sb-nav .count.done { color: var(--teal); }
+.sb-footer {
+  padding: 16px 24px 24px;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+.root-hash-block { margin-top: 0; }
+.rh-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(250,249,246,.3);
+  display: block;
+  margin-bottom: 6px;
+}
+.rh-value {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: rgba(250,249,246,.5);
+  word-break: break-all;
+  line-height: 1.6;
+}
+.rh-value.locked { color: var(--teal); }
+
+/* ─── MAIN ─── */
+.main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.topbar {
+  padding: 20px 40px;
+  border-bottom: 1px solid var(--linen);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--cream);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.topbar-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: 22px;
+  letter-spacing: .03em;
+  flex: 1;
+}
+.topbar-subtitle {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--warm-3);
+}
+.progress-bar {
+  height: 2px;
+  background: var(--linen);
+  width: 120px;
+  border-radius: 1px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--teal);
+  width: 0%;
+  transition: width .4s ease;
+}
+.btn-lock-all {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  background: var(--ink);
+  color: var(--cream);
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.btn-lock-all:hover { background: var(--teal-d); }
+.btn-lock-all.done { background: var(--teal); }
+
+.content { padding: 40px; max-width: 860px; }
+
+/* ─── SECTION ─── */
+.section { display: none; animation: fadeIn .2s ease; }
+.section.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.section-header { margin-bottom: 32px; }
+.section-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--teal);
+  display: block;
+  margin-bottom: 8px;
+}
+.section-title-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: 36px;
+  letter-spacing: -.01em;
+  color: var(--ink);
+  line-height: 1.15;
+}
+.section-desc {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--warm-3);
+  max-width: 560px;
+  line-height: 1.7;
+}
+
+/* ─── CONSTANT CARD ─── */
+.const-card {
+  border: 1px solid var(--linen);
+  background: white;
+  margin-bottom: 16px;
+  transition: border-color .2s;
+}
+.const-card:hover { border-color: var(--warm-2); }
+.const-card.is-locked { border-color: var(--teal); }
+.const-card.is-locked .cc-header { background: #F0FAF6; }
+
+.cc-header {
+  padding: 14px 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border-bottom: 1px solid var(--linen);
+  cursor: pointer;
+  background: var(--cream);
+  transition: background .15s;
+}
+.cc-header:hover { background: white; }
+.cc-id {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .1em;
+  color: var(--warm-3);
+  min-width: 140px;
+  padding-top: 2px;
+}
+.cc-name {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink);
+  flex: 1;
+}
+.cc-status {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 2px;
+}
+.status-draft { background: var(--amber-l); color: var(--amber-d); }
+.status-locked { background: var(--teal-l); color: var(--teal-d); }
+.status-forbidden { background: var(--red-l); color: var(--red); }
+
+.cc-body { padding: 20px; display: none; }
+.cc-body.open { display: block; }
+
+.field-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--warm-3);
+  display: block;
+  margin-bottom: 6px;
+}
+.const-textarea {
+  width: 100%;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px;
+  line-height: 1.8;
+  color: var(--ink);
+  background: var(--cream);
+  border: 1px solid var(--linen);
+  padding: 12px 14px;
+  resize: vertical;
+  min-height: 72px;
+  outline: none;
+  transition: border-color .15s;
+  -webkit-hyphens: none;
+  hyphens: none;
+}
+.const-textarea:focus { border-color: var(--teal); background: white; }
+.const-textarea:disabled { opacity: .6; cursor: default; background: var(--linen); }
+
+.fields-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+.field-block {
+  padding: 12px;
+  border: 1px solid var(--linen);
+  background: var(--cream);
+}
+.field-block.blue { border-left: 2px solid #185FA5; }
+.field-block.teal { border-left: 2px solid var(--teal); }
+.field-block.purple { border-left: 2px solid #534AB7; }
+.field-block.amber { border-left: 2px solid var(--amber); }
+.field-block.red { border-left: 2px solid var(--red); }
+.field-note {
+  font-size: 11.5px;
+  color: var(--warm-3);
+  line-height: 1.65;
+}
+
+.cc-footer {
+  padding: 12px 20px;
+  border-top: 1px solid var(--linen);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.hash-display {
+  font-family: 'DM Mono', monospace;
+  font-size: 9.5px;
+  color: var(--warm-2);
+  flex: 1;
+}
+.hash-display span { color: var(--teal); }
+.btn-lock {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  background: none;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.btn-lock:hover { background: var(--ink); color: var(--cream); }
+.btn-lock.locked { background: var(--teal); border-color: var(--teal); color: white; cursor: default; }
+.btn-unlock {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  background: none;
+  border: none;
+  color: var(--warm-3);
+  cursor: pointer;
+  padding: 6px 8px;
+  transition: color .15s;
+}
+.btn-unlock:hover { color: var(--amber); }
+
+/* ─── COLOR SWATCHES ─── */
+.swatch-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 8px; }
+.swatch { padding: 0; }
+.swatch-rect { height: 40px; width: 100%; }
+.swatch-info { padding: 6px 0; }
+.swatch-name { font-size: 11px; font-weight: 500; color: var(--ink); }
+.swatch-hex { font-family: 'DM Mono', monospace; font-size: 9.5px; color: var(--warm-3); }
+
+/* ─── CEREMONY STEPS ─── */
+.ritual-steps { margin-top: 8px; }
+.ritual-step {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--linen);
+}
+.ritual-step:last-child { border-bottom: none; }
+.step-num {
+  width: 28px; height: 28px;
+  border: 1px solid var(--linen);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--warm-3);
+  flex-shrink: 0;
+}
+.step-content {}
+.step-name { font-size: 13px; font-weight: 500; }
+.step-desc { font-size: 12px; color: var(--warm-3); line-height: 1.6; margin-top: 2px; }
+.step-trigger {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--teal);
+  margin-top: 4px;
+  letter-spacing: .04em;
+}
+
+/* ─── FORBIDDEN ─── */
+.forbidden-list { margin-top: 8px; }
+.forbidden-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--linen);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.forbidden-item:last-child { border-bottom: none; }
+.forbidden-x {
+  color: var(--red);
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  padding-top: 2px;
+  flex-shrink: 0;
+}
+
+/* ─── FRACTAL VIZ ─── */
+.fractal-chain {
+  background: var(--ink);
+  padding: 20px 24px;
+  margin-top: 32px;
+}
+.fc-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(250,249,246,.35);
+  margin-bottom: 16px;
+}
+.fc-nodes { display: flex; flex-direction: column; gap: 4px; }
+.fc-node {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  padding: 6px 10px;
+  border-left: 2px solid rgba(255,255,255,.1);
+  color: rgba(250,249,246,.4);
+  transition: all .2s;
+}
+.fc-node.locked { color: var(--cream); border-left-color: var(--teal); }
+.fc-node .node-hash { font-size: 8.5px; color: rgba(250,249,246,.25); margin-left: 8px; }
+.fc-node.locked .node-hash { color: rgba(15,110,86,.8); }
+
+/* ─── SUMMARY PANEL ─── */
+.summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 24px; }
+.summary-card {
+  padding: 16px;
+  border: 1px solid var(--linen);
+  background: white;
+}
+.summary-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: 36px;
+  color: var(--teal);
+  line-height: 1;
+}
+.summary-label { font-size: 11px; color: var(--warm-3); margin-top: 4px; }
+
+/* ─── EXPORT ─── */
+.export-block {
+  margin-top: 32px;
+  padding: 24px;
+  border: 1px solid var(--teal);
+  background: var(--teal-l);
+}
+.export-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: 22px;
+  color: var(--teal-d);
+  margin-bottom: 8px;
+}
+.export-desc { font-size: 12.5px; color: var(--teal-d); line-height: 1.7; margin-bottom: 16px; }
+.btn-export {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  background: var(--teal);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background .15s;
+  margin-right: 8px;
+}
+.btn-export:hover { background: var(--teal-d); }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ─── SIDEBAR ─── -->
+<aside class="sidebar">
+  <div class="sb-brand">
+    <span class="sb-brand-word">MORAQ</span>
+    <span class="sb-brand-sub">L0 · Root Constants · v1.0</span>
+  </div>
+  <div class="sb-section-label">Categories</div>
+  <ul class="sb-nav" id="sbNav">
+    <li><button onclick="showSection('identity')" class="active" data-sec="identity">Danh tính gốc <span class="count" id="cnt-identity">0/4</span></button></li>
+    <li><button onclick="showSection('invariants')" data-sec="invariants">7 Invariants <span class="count" id="cnt-invariants">0/7</span></button></li>
+    <li><button onclick="showSection('voice')" data-sec="voice">Brand Voice <span class="count" id="cnt-voice">0/5</span></button></li>
+    <li><button onclick="showSection('colors')" data-sec="colors">Colour System <span class="count" id="cnt-colors">0/3</span></button></li>
+    <li><button onclick="showSection('typography')" data-sec="typography">Typography <span class="count" id="cnt-typography">0/4</span></button></li>
+    <li><button onclick="showSection('sensory')" data-sec="sensory">Sensory Signature <span class="count" id="cnt-sensory">0/4</span></button></li>
+    <li><button onclick="showSection('ritual')" data-sec="ritual">Counter Ritual <span class="count" id="cnt-ritual">0/1</span></button></li>
+    <li><button onclick="showSection('forbidden')" data-sec="forbidden">Forbidden List <span class="count" id="cnt-forbidden">0/1</span></button></li>
+  </ul>
+  <div class="sb-footer">
+    <div class="root-hash-block">
+      <span class="rh-label">Root Hash</span>
+      <div class="rh-value" id="rootHashDisplay">— chưa khoá —</div>
+    </div>
+  </div>
+</aside>
+
+<!-- ─── MAIN ─── -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title" id="topbarTitle">Danh tính gốc</div>
+      <div class="topbar-subtitle">MORAQ Experience Graph · L0 Universal Constants</div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <span id="progressLabel" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--warm-3)">0/24</span>
+    <button class="btn-lock-all" id="btnLockAll" onclick="lockAll()">↓ Lock All</button>
+  </div>
+
+  <div class="content">
+
+    <!-- ═══ 1. IDENTITY ═══ -->
+    <div class="section active" id="sec-identity">
+      <div class="section-header">
+        <span class="section-eyebrow">L0 · 01 · Constant Layer</span>
+        <div class="section-title-text">Danh tính gốc</div>
+        <div class="section-desc">Bốn hằng số nền móng. Mọi quyết định vận hành, visual, verbal, spatial đều trace về đây. Không thay đổi trừ khi Codex thay đổi.</div>
+      </div>
+
+      <div class="const-card" id="card-IDENTITY-001">
+        <div class="cc-header" onclick="toggleCard('IDENTITY-001')">
+          <span class="cc-id">MORAQ-L0-ID-001</span>
+          <span class="cc-name">Mission</span>
+          <span class="cc-status status-draft" id="status-IDENTITY-001">Draft</span>
+        </div>
+        <div class="cc-body" id="body-IDENTITY-001">
+          <label class="field-label">Giá trị hằng số</label>
+          <textarea class="const-textarea" id="val-IDENTITY-001" rows="3">Chứng minh rằng có thể xây dựng một thế giới dựa trên sự thật — bắt đầu từ một chai nước hoa.</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue">
+              <span class="field-label">Từ ngữ</span>
+              <div class="field-note">Không dùng "luxury", "cao cấp" trừ khi đi kèm bằng chứng cụ thể. Không bao giờ kết thúc bằng tuyên bố chung chung — phải anchor vào hành động vật lý.</div>
+            </div>
+            <div class="field-block teal">
+              <span class="field-label">Luồng thông tin</span>
+              <div class="field-note">Mission → anchor mọi quyết định vận hành. Khi ai hỏi "tại sao làm vậy?" trace về đây. Phải xuất hiện ngầm trong mọi content, không cần nói thẳng.</div>
+            </div>
+            <div class="field-block purple">
+              <span class="field-label">Kết nối fractal</span>
+              <div class="field-note">Parent: Founder Codex (Thanh Thanh). Children: Vision, Position, mọi SOP, mọi touchpoint copy, mọi nhân sự onboarding script.</div>
+            </div>
+          </div>
+          <div class="cc-footer">
+            <span class="hash-display" id="hash-IDENTITY-001">—</span>
+            <button class="btn-lock" id="lock-IDENTITY-001" onclick="lockCard('IDENTITY-001')">Lock ↓</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="const-card" id="card-IDENTITY-002">
+        <div class="cc-header" onclick="toggleCard('IDENTITY-002')">
+          <span class="cc-id">MORAQ-L0-ID-002</span>
+          <span class="cc-name">Vision</span>
+          <span class="cc-status status-draft" id="status-IDENTITY-002">Draft</span>
+        </div>
+        <div class="cc-body" id="body-IDENTITY-002">
+          <label class="field-label">Giá trị hằng số</label>
+          <textarea class="const-textarea" id="val-IDENTITY-002" rows="3">Trở thành tiêu chuẩn mà người Việt dùng để đo "thế nào là thương hiệu thật."</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue">
+              <span class="field-label">Từ ngữ</span>
+              <div class="field-note">"Tiêu chuẩn" không phải "số 1" — đây là về quality benchmark, không phải market share. "Thương hiệu thật" định nghĩa lại category.</div>
+            </div>
+            <div class="field-block teal">
+              <span class="field-label">Luồng thông tin</span>
+              <div class="field-note">Vision → điều hướng mọi quyết định scale. Khi có cơ hội mở rộng: "cái này có đưa MORAQ về hướng tiêu chuẩn không?" là câu hỏi gate.</div>
+            </div>
+            <div class="field-block purple">
+              <span class="field-label">Kết nối fractal</span>
+              <div class="field-note">Parent: Mission. Siblings: Position. Children: Arc Invariant (#6), Scale Gate Scorecard (12_SCALE), Investor narrative.</div>
+            </div>
+          </div>
+          <div class="cc-footer">
+            <span class="hash-display" id="hash-IDENTITY-002">—</span>
+            <button class="btn-lock" id="lock-IDENTITY-002" onclick="lockCard('IDENTITY-002')">Lock ↓</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="const-card" id="card-IDENTITY-003">
+        <div class="cc-header" onclick="toggleCard('IDENTITY-003')">
+          <span class="cc-id">MORAQ-L0-ID-003</span>
+          <span class="cc-name">Market Position</span>
+          <span class="cc-status status-draft" id="status-IDENTITY-003">Draft</span>
+        </div>
+        <div class="cc-body" id="body-IDENTITY-003">
+          <label class="field-label">Giá trị hằng số</label>
+          <textarea class="const-textarea" id="val-IDENTITY-003" rows="3">Accessible luxury — chất lượng Le Labo, giá người Việt tiếp cận được. Bespoke. Pha chế tại chỗ. IFRA-certified. Gap 5–7× về giá so với benchmark quốc tế trong khi chất lượng nguyên liệu tương đương.</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue">
+              <span class="field-label">Từ ngữ</span>
+              <div class="field-note">"Accessible" không phải "rẻ". "Bespoke" không phải "custom". "Pha chế tại chỗ" không phải "pha sẵn". "IFRA-certified" luôn đi kèm khi nói về chất lượng.</div>
+            </div>
+            <div class="field-block teal">
+              <span class="field-label">Luồng thông tin</span>
+              <div class="field-note">Position → pricing architecture → product brief → communication. Gap 5-7× là số cụ thể phải xuất hiện trong investor narrative và press material.</div>
+            </div>
+            <div class="field-block purple">
+              <span class="field-label">Kết nối fractal</span>
+              <div class="field-note">Parent: Mission + Vision. Children: Pricing Architecture (FIN-002), Competitive Landscape (BIZ-012), Counter Ritual (SOP-004), all product labels.</div>
+            </div>
+          </div>
+          <div class="cc-footer">
+            <span class="hash-display" id="hash-IDENTITY-003">—</span>
+            <button class="btn-lock" id="lock-IDENTITY-003" onclick="lockCard('IDENTITY-003')">Lock ↓</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="const-card" id="card-IDENTITY-004">
+        <div class="cc-header" onclick="toggleCard('IDENTITY-004')">
+          <span class="cc-id">MORAQ-L0-ID-004</span>
+          <span class="cc-name">Founder State Sequence</span>
+          <span class="cc-status status-draft" id="status-IDENTITY-004">Draft</span>
+        </div>
+        <div class="cc-body" id="body-IDENTITY-004">
+          <label class="field-label">Giá trị hằng số</label>
+          <textarea class="const-textarea" id="val-IDENTITY-004" rows="3">Tự do → Thoải mái → Sẵn sàng. Trình tự không đảo ngược. Đây là trạng thái founder cần có trước khi trao đi — và là trạng thái MORAQ tạo ra điều kiện để khách hàng cảm nhận được trong 30 phút họ ở đây.</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue">
+              <span class="field-label">Từ ngữ</span>
+              <div class="field-note">Ba từ này không phải slogan — là trạng thái vận hành. Khi nhân sự không "tự do" (chưa hiểu đủ) → không được phép "trao đi" cho khách hàng.</div>
+            </div>
+            <div class="field-block teal">
+              <span class="field-label">Luồng thông tin</span>
+              <div class="field-note">Sequence này điều hướng: nhân sự onboarding (phải đạt "tự do" về kiến thức trước khi serve) → store experience design (30 phút ở MORAQ = mini-sequence này) → post-purchase feeling.</div>
+            </div>
+            <div class="field-block purple">
+              <span class="field-label">Kết nối fractal</span>
+              <div class="field-note">Parent: Founder Codex cá nhân. Children: HR Training Program (5-day), Counter Ritual sequence, Customer Journey SOP-003, Store Experience Design.</div>
+            </div>
+          </div>
+          <div class="cc-footer">
+            <span class="hash-display" id="hash-IDENTITY-004">—</span>
+            <button class="btn-lock" id="lock-IDENTITY-004" onclick="lockCard('IDENTITY-004')">Lock ↓</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="fractal-chain">
+        <div class="fc-title">Hash Chain · Danh tính gốc</div>
+        <div class="fc-nodes" id="chain-identity"></div>
+      </div>
+    </div>
+
+    <!-- ═══ 2. INVARIANTS ═══ -->
+    <div class="section" id="sec-invariants">
+      <div class="section-header">
+        <span class="section-eyebrow">L0 · 02 · Constant Layer</span>
+        <div class="section-title-text">7 Invariants</div>
+        <div class="section-desc">Bảy bất biến của thương hiệu. Không thay đổi trừ khi Codex thay đổi. Mỗi invariant là một lens để đánh giá mọi quyết định kinh doanh.</div>
+      </div>
+
+      <div class="const-card" id="card-INV-001">
+        <div class="cc-header" onclick="toggleCard('INV-001')">
+          <span class="cc-id">MORAQ-L0-INV-001</span>
+          <span class="cc-name">① The Tension — Gap nào tồn tại?</span>
+          <span class="cc-status status-draft" id="status-INV-001">Draft</span>
+        </div>
+        <div class="cc-body" id="body-INV-001">
+          <label class="field-label">Giá trị hằng số</label>
+          <textarea class="const-textarea" id="val-INV-001" rows="4">Gap 5–7× về giá trong khi chất lượng nguyên liệu IFRA-certified tương đương Le Labo là moat thị trường. MORAQ mở ra phân khúc mới: accessible luxury cho người Việt không cần compromise. Đây là lý do MORAQ tồn tại.</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue"><span class="field-label">Từ ngữ</span><div class="field-note">Luôn dùng con số cụ thể (5-7×) khi nói về gap. Không vague. "Accessible" không bao giờ đứng một mình — luôn đi kèm "chất lượng tương đương".</div></div>
+            <div class="field-block teal"><span class="field-label">Luồng thông tin</span><div class="field-note">Tension → anchor pricing conversation → justify value proposition → appear in investor pitch slide 1 → appear in every PR message.</div></div>
+            <div class="field-block purple"><span class="field-label">Kết nối fractal</span><div class="field-note">Children: Pricing Architecture, Competitive Matrix, Investor Deck narrative, all product label copy, B2B gifting pitch.</div></div>
+          </div>
+          <div class="cc-footer"><span class="hash-display" id="hash-INV-001">—</span><button class="btn-lock" id="lock-INV-001" onclick="lockCard('INV-001')">Lock ↓</button></div>
+        </div>
+      </div>
+
+      <div class="const-card" id="card-INV-002">
+        <div class="cc-header" onclick="toggleCard('INV-002')">
+          <span class="cc-id">MORAQ-L0-INV-002</span>
+          <span class="cc-name">② The Method — Làm bằng cách nào?</span>
+          <span class="cc-status status-draft" id="status-INV-002">Draft</span>
+        </div>
+        <div class="cc-body" id="body-INV-002">
+          <label class="field-label">Giá trị hằng số</label>
+          <textarea class="const-textarea" id="val-INV-002" rows="4">Method là show — không ẩn. Quy trình pha chế visible, khách thấy từng bước. Staff giải thích từng bước trong lúc làm. Tone conversational, không lecture. Đây là craft — show the craft. Không giấu công cụ vào ngăn kéo như magic trick.</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue"><span class="field-label">Từ ngữ</span><div class="field-note">"Visible process" không phải "demo". Staff nói "để mình chỉ bạn xem..." không phải "bây giờ tôi sẽ làm...". Active, conversational, không performative.</div></div>
+            <div class="field-block teal"><span class="field-label">Luồng thông tin</span><div class="field-note">Method → Counter Ritual choreography → store layout (counter phải visible) → staff training (narration skills) → digital content strategy (how-it's-made series).</div></div>
+            <div class="field-block purple"><span class="field-label">Kết nối fractal</span><div class="field-note">Children: SOP-004 Counter Ritual, Store Layout (SPC-002), Staff Training Day 3 module, Digital content series "Làm thế nào nước hoa của bạn được tạo ra".</div></div>
+          </div>
+          <div class="cc-footer"><span class="hash-display" id="hash-INV-002">—</span><button class="btn-lock" id="lock-INV-002" onclick="lockCard('INV-002')">Lock ↓</button></div>
+        </div>
+      </div>
+
+      <div class="const-card" id="card-INV-003">
+        <div class="cc-header" onclick="toggleCard('INV-003')">
+          <span class="cc-id">MORAQ-L0-INV-003</span>
+          <span class="cc-name">③ The Moat — Tại sao chỉ MORAQ?</span>
+          <span class="cc-status status-draft" id="status-INV-003">Draft</span>
+        </div>
+        <div class="cc-body" id="body-INV-003">
+          <label class="field-label">Giá trị hằng số</label>
+          <textarea class="const-textarea" id="val-INV-003" rows="4">Personalisation ritual: không ai khác có chai này. IFRA-certified visible tại counter. Real name on real bottle = uniqueness felt. Để copy MORAQ phải copy toàn bộ hệ thống tư duy — không phải chỉ hình thức bên ngoài.</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue"><span class="field-label">Từ ngữ</span><div class="field-note">"IFRA-certified" không phải jargon — là proof. Đặt tên người lên chai không phải service — là statement. "Chai này không tồn tại trước khi bạn đến" là copy chuẩn.</div></div>
+            <div class="field-block teal"><span class="field-label">Luồng thông tin</span><div class="field-note">Moat → personalisation step trong Counter Ritual → engraving/labeling process → packaging design → CRM data capture (tên, dịp, chai đã tạo).</div></div>
+            <div class="field-block purple"><span class="field-label">Kết nối fractal</span><div class="field-note">Children: SOP-004 (engraving step), Packaging System (PRD-004 label design), CRM data schema (TCH-002), Social UGC strategy.</div></div>
+          </div>
+          <div class="cc-footer"><span class="hash-display" id="hash-INV-003">—</span><button class="btn-lock" id="lock-INV-003" onclick="lockCard('INV-003')">Lock ↓</button></div>
+        </div>
+      </div>
+
+      <div class="const-card" id="card-INV-004">
+        <div class="cc-header" onclick="toggleCard('INV-004')">
+          <span class="cc-id">MORAQ-L0-INV-004</span>
+          <span class="cc-name">④ The Value — Ai được lợi gì?</span>
+          <span class="cc-status status-draft" id="status-INV-004">Draft</span>
+        </div>
+        <div class="cc-body" id="body-INV-004">
+          <label class="field-label">Giá trị hằng số</label>
+          <textarea class="const-textarea" id="val-INV-004" rows="4">Value được framed theo người nhận, không phải người mua. Chai nước hoa là artifact của một trải nghiệm — bằng chứng vật lý rằng hành trình vừa xảy ra là thật. Gifting: mỗi người trong nhóm được đối xử riêng.</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue"><span class="field-label">Từ ngữ</span><div class="field-note">"Artifact" không phải "sản phẩm". Value communication luôn đặt người nhận làm subject: "Người nhận được..." không phải "Bạn mua được...".</div></div>
+            <div class="field-block teal"><span class="field-label">Luồng thông tin</span><div class="field-note">Value framing → Gift Guide content → B2B landing page → Corporate gifting SOP-005 → packaging insert copy → all pricing justification language.</div></div>
+            <div class="field-block purple"><span class="field-label">Kết nối fractal</span><div class="field-note">Children: SOP-005 B2B Gifting, Gift Guide content (MKT-004), Packaging insert design, Corporate pricing tier, B2B landing page copy.</div></div>
+          </div>
+          <div class="cc-footer"><span class="hash-display" id="hash-INV-004">—</span><button class="btn-lock" id="lock-INV-004" onclick="lockCard('INV-004')">Lock ↓</button></div>
+        </div>
+      </div>
+
+      <div class="const-card" id="card-INV-005">
+        <div class="cc-header" onclick="toggleCard('INV-005')">
+          <span class="cc-id">MORAQ-L0-INV-005</span>
+          <span class="cc-name">⑤ The Belief — Tin vào điều gì?</span>
+          <span class="cc-status status-draft" id="status-INV-005">Draft</span>
+        </div>
+        <div class="cc-body" id="body-INV-005">
+          <label class="field-label">Giá trị hằng số</label>
+          <textarea class="const-textarea" id="val-INV-005" rows="4">MORAQ tin rằng có thể xây dựng một thế giới dựa trên sự thật. Integrity visible hằng ngày: không discount sign, staff từ chối đề xuất sản phẩm không phù hợp, không countdown timer giả. Một cam kết không giữ được xóa toàn bộ những gì đã xây dựng.</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue"><span class="field-label">Từ ngữ</span><div class="field-note">"Integrity" không phải "chất lượng". Belief phải visible trong hành động — không phải trong tuyên bố. Không dùng "cam kết" nếu không thể thực hiện ngay.</div></div>
+            <div class="field-block teal"><span class="field-label">Luồng thông tin</span><div class="field-note">Belief → mọi SOP (staff từ chối upsell khi không phù hợp) → pricing policy (no hidden fees) → complaint protocol → all external communication.</div></div>
+            <div class="field-block purple"><span class="field-label">Kết nối fractal</span><div class="field-note">Children: Forbidden List (L0 âm), SOP-008 Crisis Handling, Employee Handbook (HR-005), all marketing copy review checklist.</div></div>
+          </div>
+          <div class="cc-footer"><span class="hash-display" id="hash-INV-005">—</span><button class="btn-lock" id="lock-INV-005" onclick="lockCard('INV-005')">Lock ↓</button></div>
+        </div>
+      </div>
+
+      <div class="const-card" id="card-INV-006">
+        <div class="cc-header" onclick="toggleCard('INV-006')">
+          <span class="cc-id">MORAQ-L0-INV-006</span>
+          <span class="cc-name">⑥ The Arc — Đang ở đâu, đến đâu?</span>
+          <span class="cc-status status-draft" id="status-INV-006">Draft</span>
+        </div>
+        <div class="cc-body" id="body-INV-006">
+          <label class="field-label">Giá trị hằng số</label>
+          <textarea class="const-textarea" id="val-INV-006" rows="4">Không over-promise về scale. Về stage: "Chúng tôi là thương hiệu nhỏ, craft, đang lớn lên." Founder story visible — người thật, hành trình thật. Scale chỉ khi có thể giữ nguyên vẹn tính toàn vẹn. Scale = nhân rủi ro nếu foundation chưa đúng.</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue"><span class="field-label">Từ ngữ</span><div class="field-note">"Đang lớn lên" không phải "đang mở rộng". Honest về stage không phải weakness — là brand signal. "Nếu store 1, đừng pretend store 4" là rule cứng.</div></div>
+            <div class="field-block teal"><span class="field-label">Luồng thông tin</span><div class="field-note">Arc → Scale Gate Scorecard (must pass before opening next location) → About page copy → investor narrative (honest về milestones) → all PR statements.</div></div>
+            <div class="field-block purple"><span class="field-label">Kết nối fractal</span><div class="field-note">Children: Scale Gate Scorecard (SCL-001), Investor Deck arc narrative, About page, Founder social media bio, PMO readiness gates.</div></div>
+          </div>
+          <div class="cc-footer"><span class="hash-display" id="hash-INV-006">—</span><button class="btn-lock" id="lock-INV-006" onclick="lockCard('INV-006')">Lock ↓</button></div>
+        </div>
+      </div>
+
+      <div class="const-card" id="card-INV-007">
+        <div class="cc-header" onclick="toggleCard('INV-007')">
+          <span class="cc-id">MORAQ-L0-INV-007</span>
+          <span class="cc-name">⑦ The Seed — Người mới cần gì đầu tiên?</span>
+          <span class="cc-status status-draft" id="status-INV-007">Draft</span>
+        </div>
+        <div class="cc-body" id="body-INV-007">
+          <label class="field-label">Giá trị hằng số</label>
+          <textarea class="const-textarea" id="val-INV-007" rows="4">Câu hỏi đầu tiên của staff không phải "Bạn muốn gì?" mà là "Bạn đã từng đến MORAQ chưa?" — từ câu trả lời đó, mọi thứ còn lại được dẫn dắt. First-timer: specific onboarding protocol. Trial size visible tại cửa: entry point thấp = seed planted.</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue"><span class="field-label">Từ ngữ</span><div class="field-note">Câu hỏi seed là verbatim: "Bạn đã từng đến MORAQ chưa?" — không paraphrase. Câu này là phân nhánh của toàn bộ customer journey tree.</div></div>
+            <div class="field-block teal"><span class="field-label">Luồng thông tin</span><div class="field-note">Seed question → branches: [Yes → returning protocol] / [No → first-timer onboarding]. First-timer path → CRM capture → D3 trigger activation → loyalty building.</div></div>
+            <div class="field-block purple"><span class="field-label">Kết nối fractal</span><div class="field-note">Children: SOP-003 Customer Journey (opening question), CRM first-contact protocol (TCH-002), Digital: homepage "What is this place?" above fold, Fragrance quiz entry.</div></div>
+          </div>
+          <div class="cc-footer"><span class="hash-display" id="hash-INV-007">—</span><button class="btn-lock" id="lock-INV-007" onclick="lockCard('INV-007')">Lock ↓</button></div>
+        </div>
+      </div>
+
+      <div class="fractal-chain">
+        <div class="fc-title">Hash Chain · 7 Invariants</div>
+        <div class="fc-nodes" id="chain-invariants"></div>
+      </div>
+    </div>
+
+    <!-- ═══ 3. VOICE ═══ -->
+    <div class="section" id="sec-voice">
+      <div class="section-header">
+        <span class="section-eyebrow">L0 · 03 · Constant Layer</span>
+        <div class="section-title-text">Brand Voice</div>
+        <div class="section-desc">Sáu thuộc tính nhân cách + quy tắc ngôn ngữ. Mọi văn bản, mọi lời nói của MORAQ phải pass 6 attributes này.</div>
+      </div>
+
+      <div class="const-card" id="card-VOICE-001">
+        <div class="cc-header" onclick="toggleCard('VOICE-001')">
+          <span class="cc-id">MORAQ-L0-VC-001</span>
+          <span class="cc-name">6 Personality Attributes</span>
+          <span class="cc-status status-draft" id="status-VOICE-001">Draft</span>
+        </div>
+        <div class="cc-body" id="body-VOICE-001">
+          <label class="field-label">Giá trị hằng số</label>
+          <textarea class="const-textarea" id="val-VOICE-001" rows="6">Craft: Tỉ mỉ, không vội. Chú tâm hiện diện trong mọi chi tiết.
+Honest: Nói được làm được. Khi có lỗi — thừa nhận trước khi ai hỏi.
+Intimate: Mỗi người một trải nghiệm. Không có giao tiếp "mass".
+Knowledgeable: Educate, không lecture. Chia sẻ để người khác hiểu.
+Local: Vietnamese, không wannabe. Tiếng Việt tự nhiên. Không pretend là brand nước ngoài.
+Accessible: Premium không phải xa xỉ. MORAQ là nơi bạn thuộc về — không phải nơi phải xứng đáng.</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue"><span class="field-label">Từ ngữ</span><div class="field-note">Mỗi piece of content phải check: "Cái này có thể hiện ít nhất 1 trong 6 attributes không?" Nếu không → không phải content của MORAQ dù đúng về thông tin.</div></div>
+            <div class="field-block teal"><span class="field-label">Luồng thông tin</span><div class="field-note">6 attributes → content brief checklist → staff script tone guide → all copywriting review → photography direction (mỗi ảnh transmit ≥1 attribute).</div></div>
+            <div class="field-block purple"><span class="field-label">Kết nối fractal</span><div class="field-note">Children: Brand Voice Guide (COD-002), Photography Brief (MKT-002), Content Strategy (MKT-001), Staff training Day 2 (communication), all social captions.</div></div>
+          </div>
+          <div class="cc-footer"><span class="hash-display" id="hash-VOICE-001">—</span><button class="btn-lock" id="lock-VOICE-001" onclick="lockCard('VOICE-001')">Lock ↓</button></div>
+        </div>
+      </div>
+
+      <div class="const-card" id="card-VOICE-002">
+        <div class="cc-header" onclick="toggleCard('VOICE-002')">
+          <span class="cc-id">MORAQ-L0-VC-002</span>
+          <span class="cc-name">Vietnamese-First Rules</span>
+          <span class="cc-status status-draft" id="status-VOICE-002">Draft</span>
+        </div>
+        <div class="cc-body" id="body-VOICE-002">
+          <label class="field-label">Giá trị hằng số</label>
+          <textarea class="const-textarea" id="val-VOICE-002" rows="5">Tiếng Việt tự nhiên — không dùng tiếng Anh để trông "cool". Code-switch có chủ đích khi technical term không có equivalent tốt. Không auto-hyphenate. Line height body min 1.8. Không dùng italic cho body text (diacritics clash). Test đầy đủ: ắ ặ ổ ỗ ợ ữ tất cả 5 tones × 6+ vowels trước production.</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue"><span class="field-label">Từ ngữ</span><div class="field-note">"Pha chế tại chỗ" không phải "bespoke blending". "Nước hoa cá nhân hoá" không phải "personalized fragrance". Tiếng Việt là primary — English chỉ khi cần thiết.</div></div>
+            <div class="field-block teal"><span class="field-label">Luồng thông tin</span><div class="field-note">Viet-first rule → all copy brief → designer specs (font loading vietnamese subset) → dev specs (CSS hyphens: none) → QA checklist pre-production.</div></div>
+            <div class="field-block purple"><span class="field-label">Kết nối fractal</span><div class="field-note">Children: Typography System (L0 layer), Web developer specs (TCH-003), Print production guide, Staff script language guide, Social media caption format.</div></div>
+          </div>
+          <div class="cc-footer"><span class="hash-display" id="hash-VOICE-002">—</span><button class="btn-lock" id="lock-VOICE-002" onclick="lockCard('VOICE-002')">Lock ↓</button></div>
+        </div>
+      </div>
+
+      <div class="const-card" id="card-VOICE-003">
+        <div class="cc-header" onclick="toggleCard('VOICE-003')">
+          <span class="cc-id">MORAQ-L0-VC-003</span>
+          <span class="cc-name">3 Customer Archetypes</span>
+          <span class="cc-status status-draft" id="status-VOICE-003">Draft</span>
+        </div>
+        <div class="cc-body" id="body-VOICE-003">
+          <label class="field-label">Giá trị hằng số</label>
+          <textarea class="const-textarea" id="val-VOICE-003" rows="5">Người Kết Nối: "Tôi cảm thấy được nhìn thấy ở đây." — kết nối với brand story, quay lại, dẫn người thân đến, không so sánh giá.
+Người Tò Mò: "Tôi nghe kể — cần tự kiểm chứng." — đến qua word-of-mouth, thường dẫn theo người khác ngay lần đầu.
+Người Trung Thành Qua Thử Thách: "Tôi thấy bạn thật — nên tôi ở lại." — gặp sự cố, cách MORAQ xử lý quyết định họ ở lại.</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue"><span class="field-label">Từ ngữ</span><div class="field-note">Không phân loại theo demographics — theo mối quan hệ với sự thật. Communication phải reach được cả 3. Không có khách hàng nào là "người lạ" lần thứ hai.</div></div>
+            <div class="field-block teal"><span class="field-label">Luồng thông tin</span><div class="field-note">3 archetypes → CRM segmentation logic → staff recognition protocol → content tone calibration → post-purchase journey branching → crisis handling protocol.</div></div>
+            <div class="field-block purple"><span class="field-label">Kết nối fractal</span><div class="field-note">Children: Customer Archetype doc (BIZ-011), CRM protocol (TCH-002) segments, SOP-003 Customer Journey branching, SOP-008 Crisis (archetype 3 trigger).</div></div>
+          </div>
+          <div class="cc-footer"><span class="hash-display" id="hash-VOICE-003">—</span><button class="btn-lock" id="lock-VOICE-003" onclick="lockCard('VOICE-003')">Lock ↓</button></div>
+        </div>
+      </div>
+
+      <div class="const-card" id="card-VOICE-004">
+        <div class="cc-header" onclick="toggleCard('VOICE-004')">
+          <span class="cc-id">MORAQ-L0-VC-004</span>
+          <span class="cc-name">Đạo MORAQ — 5 Operating Principles</span>
+          <span class="cc-status status-draft" id="status-VOICE-004">Draft</span>
+        </div>
+        <div class="cc-body" id="body-VOICE-004">
+          <label class="field-label">Giá trị hằng số</label>
+          <textarea class="const-textarea" id="val-VOICE-004" rows="6">① Tác vụ như nghi lễ — Mỗi tác vụ nhỏ nhất cũng mang tinh thần chủ đích, trang trọng, hiện diện đầy đủ.
+② Sẵn sàng trước khi cần — Setup, prep, check trước khi người cần đến. Không reactive.
+③ Nhất quán không đồng nhất — Coherence không phải uniformity. Cùng tinh thần, không nhất thiết cùng form.
+④ Lỗi là cơ hội — Mỗi sự cố được xử lý đúng tạo ra archetype 3 (Người Trung Thành Qua Thử Thách).
+⑤ Document trước khi scale — Nếu chưa document được, chưa được phép nhân ra.</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue"><span class="field-label">Từ ngữ</span><div class="field-note">5 principles này là fractal — xuất hiện ở mọi tầng từ nhãn kho đến investor deck. Khi nhân sự không biết phải làm gì → hỏi: principle nào áp dụng ở đây?</div></div>
+            <div class="field-block amber"><span class="field-label">Antifragile</span><div class="field-note">Principle ④: Khi xảy ra lỗi → không che, không defend → xử lý đúng → document thành case study → update SOP → system mạnh hơn lỗi đó.</div></div>
+            <div class="field-block purple"><span class="field-label">Kết nối fractal</span><div class="field-note">Children: tất cả SOP (P1 mỗi SOP đều cite principle nào áp dụng), Employee Handbook (HR-005), Crisis Protocol (SOP-008), Scale Gate (principle ⑤ là prerequisite).</div></div>
+          </div>
+          <div class="cc-footer"><span class="hash-display" id="hash-VOICE-004">—</span><button class="btn-lock" id="lock-VOICE-004" onclick="lockCard('VOICE-004')">Lock ↓</button></div>
+        </div>
+      </div>
+
+      <div class="const-card" id="card-VOICE-005">
+        <div class="cc-header" onclick="toggleCard('VOICE-005')">
+          <span class="cc-id">MORAQ-L0-VC-005</span>
+          <span class="cc-name">Value Chain — 6 bậc trải nghiệm</span>
+          <span class="cc-status status-draft" id="status-VOICE-005">Draft</span>
+        </div>
+        <div class="cc-body" id="body-VOICE-005">
+          <label class="field-label">Giá trị hằng số</label>
+          <textarea class="const-textarea" id="val-VOICE-005" rows="6">① Được hiểu — Nhân sự nhận ra bạn là ai trước khi hỏi bạn muốn gì.
+② Được trải nghiệm — Không gian thiết kế để 5 giác quan không có xung đột.
+③ Được trò chuyện — Cuộc trò chuyện thật, không phải script bán hàng.
+④ Được kết nối — Cảm giác thuộc về, người tạo ra và người nhận là một phần của cùng một thứ.
+⑤ Được cá nhân hoá — Chai này không tồn tại trước khi bạn đến. Tạo ra cho bạn, mang tên bạn.
+⑥ Được chứng thực — Mọi thứ họ cảm từ màn hình — có mặt ở đây, thật, có thể chạm được.</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue"><span class="field-label">Từ ngữ</span><div class="field-note">6 bậc này là chuỗi không đảo ngược. Bậc ① phải xảy ra trước bậc ②. Khi design bất kỳ touchpoint nào: "đây là bậc mấy?" và "bậc trước đã đủ chưa?"</div></div>
+            <div class="field-block teal"><span class="field-label">Luồng thông tin</span><div class="field-note">6 bậc → thiết kế từng zone của store theo bậc tương ứng → online journey mirrors phải cover đủ 6 bậc → KPI measurement per bậc.</div></div>
+            <div class="field-block purple"><span class="field-label">Kết nối fractal</span><div class="field-note">Children: Store Experience Design (SPC-001), Customer Journey SOP-003, Online UX spec (TCH-003), KPI Library (MSR-002) — mỗi KPI map về 1 bậc.</div></div>
+          </div>
+          <div class="cc-footer"><span class="hash-display" id="hash-VOICE-005">—</span><button class="btn-lock" id="lock-VOICE-005" onclick="lockCard('VOICE-005')">Lock ↓</button></div>
+        </div>
+      </div>
+
+      <div class="fractal-chain">
+        <div class="fc-title">Hash Chain · Brand Voice</div>
+        <div class="fc-nodes" id="chain-voice"></div>
+      </div>
+    </div>
+
+    <!-- ═══ 4. COLORS ═══ -->
+    <div class="section" id="sec-colors">
+      <div class="section-header">
+        <span class="section-eyebrow">L0 · 04 · Constant Layer</span>
+        <div class="section-title-text">Colour System</div>
+        <div class="section-desc">Tất cả giá trị màu chính thức — HEX, CMYK, Pantone. Mọi production đều trace về đây. Không tự ý điều chỉnh.</div>
+      </div>
+
+      <div class="const-card" id="card-COLOR-001">
+        <div class="cc-header" onclick="toggleCard('COLOR-001')">
+          <span class="cc-id">MORAQ-L0-CLR-001</span>
+          <span class="cc-name">Primary 5 — Digital Palette</span>
+          <span class="cc-status status-draft" id="status-COLOR-001">Draft</span>
+        </div>
+        <div class="cc-body" id="body-COLOR-001">
+          <label class="field-label">Giá trị hằng số</label>
+          <div class="swatch-grid">
+            <div class="swatch"><div class="swatch-rect" style="background:#1A1916;"></div><div class="swatch-info"><div class="swatch-name">MORAQ Ink</div><div class="swatch-hex">#1A1916 · PMS Black 7 C</div></div></div>
+            <div class="swatch"><div class="swatch-rect" style="background:#0F6E56;"></div><div class="swatch-info"><div class="swatch-name">MORAQ Teal</div><div class="swatch-hex">#0F6E56 · PMS 7723 C</div></div></div>
+            <div class="swatch"><div class="swatch-rect" style="background:#854F0B;"></div><div class="swatch-info"><div class="swatch-name">MORAQ Amber</div><div class="swatch-hex">#854F0B · PMS 1545 C</div></div></div>
+            <div class="swatch"><div class="swatch-rect" style="background:#FAF9F6; border:1px solid #E8DFD0;"></div><div class="swatch-info"><div class="swatch-name">MORAQ Cream</div><div class="swatch-hex">#FAF9F6 · PMS 9103 C</div></div></div>
+            <div class="swatch"><div class="swatch-rect" style="background:#E8DFD0;"></div><div class="swatch-info"><div class="swatch-name">MORAQ Linen</div><div class="swatch-hex">#E8DFD0 · PMS 9183 C</div></div></div>
+          </div>
+          <textarea class="const-textarea" id="val-COLOR-001" rows="3" style="margin-top:12px">Ink CMYK: C0·M2·Y6·K91 (adjusted để giảm yellow cast — proof print trước production). Temperature Opposition: Teal (165°) ↔ Amber (33°) = 132° — đối lập nhiệt độ có chủ đích: cool craftsmanship vs warm heritage.</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue"><span class="field-label">Từ ngữ</span><div class="field-note">Khi mention màu trong copy: "Teal" không phải "xanh ngọc". "Cream" không phải "kem". Màu MORAQ có tên riêng — dùng tên riêng đó trong tất cả briefs.</div></div>
+            <div class="field-block teal"><span class="field-label">Luồng thông tin</span><div class="field-note">Color constants → designer brief → CSS variables → print production spec → store material selection → packaging artwork. Luôn proof print trước run lớn.</div></div>
+            <div class="field-block purple"><span class="field-label">Kết nối fractal</span><div class="field-note">Children: Web CSS variables (TCH-003), Print production guide, Store fitout material spec (SPC-003), Packaging artwork brief (SUP-004), Social media template colors.</div></div>
+          </div>
+          <div class="cc-footer"><span class="hash-display" id="hash-COLOR-001">—</span><button class="btn-lock" id="lock-COLOR-001" onclick="lockCard('COLOR-001')">Lock ↓</button></div>
+        </div>
+      </div>
+
+      <div class="const-card" id="card-COLOR-002">
+        <div class="cc-header" onclick="toggleCard('COLOR-002')">
+          <span class="cc-id">MORAQ-L0-CLR-002</span>
+          <span class="cc-name">Physical Materials — Store &amp; Packaging</span>
+          <span class="cc-status status-draft" id="status-COLOR-002">Draft</span>
+        </div>
+        <div class="cc-body" id="body-COLOR-002">
+          <label class="field-label">Giá trị hằng số</label>
+          <div class="swatch-grid">
+            <div class="swatch"><div class="swatch-rect" style="background:#D4C5B0;"></div><div class="swatch-info"><div class="swatch-name">Travertine</div><div class="swatch-hex">Counter top · Display</div></div></div>
+            <div class="swatch"><div class="swatch-rect" style="background:#4A3728;"></div><div class="swatch-info"><div class="swatch-name">Dark Oak</div><div class="swatch-hex">Frame · Cabinetry · Shelving</div></div></div>
+            <div class="swatch"><div class="swatch-rect" style="background:#B89A60;"></div><div class="swatch-info"><div class="swatch-name">Aged Brass</div><div class="swatch-hex">Fixtures · Handles — No Chrome</div></div></div>
+            <div class="swatch"><div class="swatch-rect" style="background:#8C7A62;"></div><div class="swatch-info"><div class="swatch-name">Concrete</div><div class="swatch-hex">Flooring · Terrazzo</div></div></div>
+          </div>
+          <textarea class="const-textarea" id="val-COLOR-002" rows="3" style="margin-top:12px">NO CHROME anywhere. Aged Brass only for metal fixtures. No white walls — Cream (#FAF9F6) or Linen (#E8DFD0) surfaces. Travertine counter is non-negotiable for counter ritual zone (tactile experience).</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue"><span class="field-label">Từ ngữ</span><div class="field-note">"Aged Brass" không phải "gold". "Travertine" không phải "đá marble". "Dark Oak" không phải "gỗ tối". Vật liệu có tên chính thức trong brief.</div></div>
+            <div class="field-block amber"><span class="field-label">Antifragile</span><div class="field-note">Nếu budget không đủ travertine thật → dùng travertine-finish laminate TRƯỚC — đừng thay bằng marble, granit, hay bất kỳ vật liệu khác dù "đẹp hơn".</div></div>
+            <div class="field-block purple"><span class="field-label">Kết nối fractal</span><div class="field-note">Children: Store Fitout Specs (SPC-003), Equipment List (SPC-004), Contractor brief checklist, Store Experience Design zones (SPC-001).</div></div>
+          </div>
+          <div class="cc-footer"><span class="hash-display" id="hash-COLOR-002">—</span><button class="btn-lock" id="lock-COLOR-002" onclick="lockCard('COLOR-002')">Lock ↓</button></div>
+        </div>
+      </div>
+
+      <div class="const-card" id="card-COLOR-003">
+        <div class="cc-header" onclick="toggleCard('COLOR-003')">
+          <span class="cc-id">MORAQ-L0-CLR-003</span>
+          <span class="cc-name">WCAG Accessibility + Approved Combinations</span>
+          <span class="cc-status status-draft" id="status-COLOR-003">Draft</span>
+        </div>
+        <div class="cc-body" id="body-COLOR-003">
+          <label class="field-label">Giá trị hằng số</label>
+          <textarea class="const-textarea" id="val-COLOR-003" rows="5">✓ Teal on Cream: 5.9:1 AA — Primary. ✓ Cream on Ink: 16.7:1 AAA — Premium. ✓ Amber on Cream: 6.4:1 AA — Warm emphasis.
+× Teal Mid (#5DCAA5) on Cream: 1.9:1 FAIL — decoration only. × Amber Mid (#EF9F27) on Cream: 2.1:1 FAIL — decoration only.
+Logo: Cormorant Garamond weight 300, letter-spacing .2em, uppercase. Không bold (600+). Không gradient. Không distort. Clear space = chiều cao chữ M tất cả 4 phía.</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue"><span class="field-label">Từ ngữ</span><div class="field-note">Accessibility không phải option — là tiêu chuẩn. Mọi text phải pass WCAG AA tối thiểu. AAA preferred cho body text. Check trước khi approve design.</div></div>
+            <div class="field-block teal"><span class="field-label">Luồng thông tin</span><div class="field-note">WCAG matrix → designer checklist → QA review → pre-production approval. Không production nếu chưa pass accessibility check.</div></div>
+            <div class="field-block purple"><span class="field-label">Kết nối fractal</span><div class="field-note">Children: Design System (DSN-001), Web developer spec (TCH-003), Print artwork QA checklist, Social template review, Signage production spec.</div></div>
+          </div>
+          <div class="cc-footer"><span class="hash-display" id="hash-COLOR-003">—</span><button class="btn-lock" id="lock-COLOR-003" onclick="lockCard('COLOR-003')">Lock ↓</button></div>
+        </div>
+      </div>
+
+      <div class="fractal-chain">
+        <div class="fc-title">Hash Chain · Colour System</div>
+        <div class="fc-nodes" id="chain-colors"></div>
+      </div>
+    </div>
+
+    <!-- ═══ 5. TYPOGRAPHY ═══ -->
+    <div class="section" id="sec-typography">
+      <div class="section-header">
+        <span class="section-eyebrow">L0 · 05 · Constant Layer</span>
+        <div class="section-title-text">Typography System</div>
+        <div class="section-desc">Ba typefaces, ba vai trò rõ ràng. Vietnamese-first trong mọi quyết định. Không thay thế, không mix thêm font thứ tư.</div>
+      </div>
+
+      <div class="const-card" id="card-TYPO-001">
+        <div class="cc-header" onclick="toggleCard('TYPO-001')">
+          <span class="cc-id">MORAQ-L0-TYP-001</span>
+          <span class="cc-name">Cormorant Garamond — Display & Heritage</span>
+          <span class="cc-status status-draft" id="status-TYPO-001">Draft</span>
+        </div>
+        <div class="cc-body" id="body-TYPO-001">
+          <label class="field-label">Giá trị hằng số</label>
+          <textarea class="const-textarea" id="val-TYPO-001" rows="4">Weights: 300 (primary display), 400, 500, Italic 300. Không dùng bold 600+. Scale: Display 80px LS −.02em / H1 48px LS −.01em / H2 28px LS 0. Role: editorial, heritage, brand moments, headings. Không dùng cho body text — diacritics cần DM Sans ở size nhỏ.</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue"><span class="field-label">Từ ngữ</span><div class="field-note">Cormorant = editorial voice. Khi dùng Cormorant, content phải deserve it — không dùng cho operational text, label, caption nhỏ. Reserve cho moments có impact.</div></div>
+            <div class="field-block teal"><span class="field-label">Luồng thông tin</span><div class="field-note">Cormorant usage → phải load Google Fonts với subset "vietnamese". Không assume Latin đủ. Test đầy đủ tất cả diacritics trước production.</div></div>
+            <div class="field-block purple"><span class="field-label">Kết nối fractal</span><div class="field-note">Children: Web font loading spec (TCH-003), Print artwork spec, Signage production, Store wall text, Packaging headline treatment.</div></div>
+          </div>
+          <div class="cc-footer"><span class="hash-display" id="hash-TYPO-001">—</span><button class="btn-lock" id="lock-TYPO-001" onclick="lockCard('TYPO-001')">Lock ↓</button></div>
+        </div>
+      </div>
+
+      <div class="const-card" id="card-TYPO-002">
+        <div class="cc-header" onclick="toggleCard('TYPO-002')">
+          <span class="cc-id">MORAQ-L0-TYP-002</span>
+          <span class="cc-name">DM Sans — Body & UI</span>
+          <span class="cc-status status-draft" id="status-TYPO-002">Draft</span>
+        </div>
+        <div class="cc-body" id="body-TYPO-002">
+          <label class="field-label">Giá trị hằng số</label>
+          <textarea class="const-textarea" id="val-TYPO-002" rows="4">Weights: 300, 400, 500. Body: 15px, Regular 400, LH 1.8 (tiếng Việt — không giảm xuống 1.6). Không dùng italic cho body text Việt — diacritics clash. Không auto-hyphenate. CSS: font-smoothing antialiased; hyphens: none. Lead: 18px Light Italic (chỉ cho intro paragraphs, English only).</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue"><span class="field-label">Từ ngữ</span><div class="field-note">DM Sans 400 là default voice của MORAQ trong operational text. Không dùng 300 (quá mỏng trên màn hình nhỏ) ngoại trừ large display contexts.</div></div>
+            <div class="field-block amber"><span class="field-label">Antifragile</span><div class="field-note">Khi font không load được → fallback: 'DM Sans', 'Helvetica Neue', sans-serif. Không fallback về system-ui (render inconsistent). Test offline rendering.</div></div>
+            <div class="field-block purple"><span class="field-label">Kết nối fractal</span><div class="field-note">Children: CSS framework (TCH-003), Email template spec, Print body text spec, Staff uniform handbook typography, All SOP document formatting.</div></div>
+          </div>
+          <div class="cc-footer"><span class="hash-display" id="hash-TYPO-002">—</span><button class="btn-lock" id="lock-TYPO-002" onclick="lockCard('TYPO-002')">Lock ↓</button></div>
+        </div>
+      </div>
+
+      <div class="const-card" id="card-TYPO-003">
+        <div class="cc-header" onclick="toggleCard('TYPO-003')">
+          <span class="cc-id">MORAQ-L0-TYP-003</span>
+          <span class="cc-name">DM Mono — Technical & Authenticity</span>
+          <span class="cc-status status-draft" id="status-TYPO-003">Draft</span>
+        </div>
+        <div class="cc-body" id="body-TYPO-003">
+          <label class="field-label">Giá trị hằng số</label>
+          <textarea class="const-textarea" id="val-TYPO-003" rows="4">Weights: 300, 400. Size: 10–12px. Letter-spacing: +.08–.12em. Uppercase cho labels và eyebrows. Role: labels, metadata, SKU codes, batch numbers, certification marks, separator (·), technical specs trên packaging. Signal: precision và authenticity — dùng khi muốn nói "đây là thật, đây là data, đây là không tô vẽ."</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue"><span class="field-label">Từ ngữ</span><div class="field-note">DM Mono nói bằng facts. Khi dùng Mono = signal "đây là thông tin kỹ thuật có thể verify được". Không dùng cho emotional copy. Separator: · (U+00B7 middle dot).</div></div>
+            <div class="field-block teal"><span class="field-label">Luồng thông tin</span><div class="field-note">Mono → packaging label spec (IFRA number, batch code, volume) → store signage metadata → web label/caption → invoice/receipt design → all technical documentation.</div></div>
+            <div class="field-block purple"><span class="field-label">Kết nối fractal</span><div class="field-note">Children: Packaging label template (SUP-004), Receipt design, Store signage metadata layer, Web CSS label style, Product certification display.</div></div>
+          </div>
+          <div class="cc-footer"><span class="hash-display" id="hash-TYPO-003">—</span><button class="btn-lock" id="lock-TYPO-003" onclick="lockCard('TYPO-003')">Lock ↓</button></div>
+        </div>
+      </div>
+
+      <div class="const-card" id="card-TYPO-004">
+        <div class="cc-header" onclick="toggleCard('TYPO-004')">
+          <span class="cc-id">MORAQ-L0-TYP-004</span>
+          <span class="cc-name">Shape & Graphic Language</span>
+          <span class="cc-status status-draft" id="status-TYPO-004">Draft</span>
+        </div>
+        <div class="cc-body" id="body-TYPO-004">
+          <label class="field-label">Giá trị hằng số</label>
+          <textarea class="const-textarea" id="val-TYPO-004" rows="5">Border radius: 0px packaging/print/signage (sharp = craft precision). 4px UI cards/tags. Pill: chỉ cho tags/badges.
+Dividers: 1px Ink 12% opacity ngang. 2px MORAQ Teal cho section breaks.
+No gradients. No drop shadows. No glow. No busy backgrounds. No decorative patterns (only: subtle grain 5-8% opacity, repeat watermark wordmark 15%, single diagonal rule).
+Photography: 2700–3000K, intimate documentary, off-center, 40%+ negative space. No studio flash.</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue"><span class="field-label">Từ ngữ</span><div class="field-note">Sharp corners = craft precision. Không softness không cần thiết. Mỗi element phải serve communication — không có decoration thuần túy. Sparse = quality signal.</div></div>
+            <div class="field-block amber"><span class="field-label">Antifragile</span><div class="field-note">Khi designer muốn thêm gì đó "đẹp hơn": hỏi "element này serve gì?" Nếu không trả lời được → không thêm. Less is more chỉ đúng khi cái còn lại thật sự tốt.</div></div>
+            <div class="field-block purple"><span class="field-label">Kết nối fractal</span><div class="field-note">Children: Design System (DSN-001/002), Photography Brief (MKT-002), Print production spec, Store signage design, Web UI component library, Packaging design brief.</div></div>
+          </div>
+          <div class="cc-footer"><span class="hash-display" id="hash-TYPO-004">—</span><button class="btn-lock" id="lock-TYPO-004" onclick="lockCard('TYPO-004')">Lock ↓</button></div>
+        </div>
+      </div>
+
+      <div class="fractal-chain">
+        <div class="fc-title">Hash Chain · Typography System</div>
+        <div class="fc-nodes" id="chain-typography"></div>
+      </div>
+    </div>
+
+    <!-- ═══ 6. SENSORY ═══ -->
+    <div class="section" id="sec-sensory">
+      <div class="section-header">
+        <span class="section-eyebrow">L0 · 06 · Constant Layer</span>
+        <div class="section-title-text">Sensory Signature</div>
+        <div class="section-desc">Không gian MORAQ phải đạt trạng thái "5 giác quan không có xung đột". Mỗi hằng số sensory là điều kiện cần — không phải tùy chọn.</div>
+      </div>
+
+      <div class="const-card" id="card-SENS-001">
+        <div class="cc-header" onclick="toggleCard('SENS-001')">
+          <span class="cc-id">MORAQ-L0-SNS-001</span>
+          <span class="cc-name">Visual Environment</span>
+          <span class="cc-status status-draft" id="status-SENS-001">Draft</span>
+        </div>
+        <div class="cc-body" id="body-SENS-001">
+          <label class="field-label">Giá trị hằng số</label>
+          <textarea class="const-textarea" id="val-SENS-001" rows="4">Lighting: 2700–3000K. Natural diffused preferred. No harsh artificial flash. Shadows soft và warm. Golden hour hoặc overcast daylight là reference aesthetic. Color environment: Cream/Linen walls, Travertine counter, Dark Oak frame, Aged Brass fixtures. No white walls. No chrome. Counter visible từ entrance.</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue"><span class="field-label">Từ ngữ</span><div class="field-note">Lighting spec là số cụ thể: 2700-3000K. Không vague ("ấm"). Contractor phải present light mock-up trước khi install. Approval required từ founder.</div></div>
+            <div class="field-block amber"><span class="field-label">Antifragile</span><div class="field-note">Nếu store location có natural light poor → bù bằng dimmable warm LED 2700K, không bù bằng whiter light. Warm = non-negotiable. Bright = separate decision.</div></div>
+            <div class="field-block purple"><span class="field-label">Kết nối fractal</span><div class="field-note">Children: SPC-003 Fitout Specs (lighting section), SPC-004 Equipment List (LED spec), Store contractor brief, Photography Spec (match store lighting for online coherence).</div></div>
+          </div>
+          <div class="cc-footer"><span class="hash-display" id="hash-SENS-001">—</span><button class="btn-lock" id="lock-SENS-001" onclick="lockCard('SENS-001')">Lock ↓</button></div>
+        </div>
+      </div>
+
+      <div class="const-card" id="card-SENS-002">
+        <div class="cc-header" onclick="toggleCard('SENS-002')">
+          <span class="cc-id">MORAQ-L0-SNS-002</span>
+          <span class="cc-name">Olfactory Environment</span>
+          <span class="cc-status status-draft" id="status-SENS-002">Draft</span>
+        </div>
+        <div class="cc-body" id="body-SENS-002">
+          <label class="field-label">Giá trị hằng số</label>
+          <textarea class="const-textarea" id="val-SENS-002" rows="4">Store ambient scent: neutral-to-subtle base (không cạnh tranh với products). Tester protocol: coffee beans available để reset olfactory. Khi demo nhiều hương: từ nhẹ nhất đến nặng nhất. Không mix hơn 3 hương trong một session. Ventilation đủ để không accumulate. IFRA-certified ingredients — không compromise.</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue"><span class="field-label">Từ ngữ</span><div class="field-note">Mô tả hương dùng language của trải nghiệm, không chemistry: "warm như afternoon sun" không phải "tonka bean and vanilla". Staff phải có Scent Grammar vocabulary.</div></div>
+            <div class="field-block teal"><span class="field-label">Luồng thông tin</span><div class="field-note">Olfactory signature → Scent Library (PRD-004) [cần build] → Counter Ritual demo sequence → Staff narration script → Digital scent description copy.</div></div>
+            <div class="field-block purple"><span class="field-label">Kết nối fractal</span><div class="field-note">Children: PRD-004 Scent Library (cần build — P2 priority), SOP-007 Sensory Calibration, Counter Ritual (SOP-004), Sensory Spec Sheet (SPC-005), Staff Training Day 4.</div></div>
+          </div>
+          <div class="cc-footer"><span class="hash-display" id="hash-SENS-002">—</span><button class="btn-lock" id="lock-SENS-002" onclick="lockCard('SENS-002')">Lock ↓</button></div>
+        </div>
+      </div>
+
+      <div class="const-card" id="card-SENS-003">
+        <div class="cc-header" onclick="toggleCard('SENS-003')">
+          <span class="cc-id">MORAQ-L0-SNS-003</span>
+          <span class="cc-name">Tactile Environment</span>
+          <span class="cc-status status-draft" id="status-SENS-003">Draft</span>
+        </div>
+        <div class="cc-body" id="body-SENS-003">
+          <label class="field-label">Giá trị hằng số</label>
+          <textarea class="const-textarea" id="val-SENS-003" rows="4">Touch sequence: door handle (first physical contact → material matters) → entry surface → counter top (Travertine — cool, textured, solid). Packaging: weight substantial, không lightweight. Paper: uncoated stock, tactile. Ribbon: fabric, không synthetic. Glass bottle: substantial, không plastic-feel. Staff handover: two hands, eye contact, no rush.</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue"><span class="field-label">Từ ngữ</span><div class="field-note">"Substantial" không phải "heavy". "Tactile" không phải "rough". Touch vocabulary: warm, cool, textured, smooth, weighted, balanced. Train staff để describe touch khi handover.</div></div>
+            <div class="field-block amber"><span class="field-label">Antifragile</span><div class="field-note">Khi budget ép buộc compromise: packaging weight được giảm TRƯỚC counter material. Counter Travertine là hardest to compromise. Door handle material là second-hardest.</div></div>
+            <div class="field-block purple"><span class="field-label">Kết nối fractal</span><div class="field-note">Children: SUP-004 Packaging Specs (weight, material), SPC-003 Fitout Specs (counter material, door handle), SOP-004 Counter Ritual (handover step), Packaging Production (SUP-010).</div></div>
+          </div>
+          <div class="cc-footer"><span class="hash-display" id="hash-SENS-003">—</span><button class="btn-lock" id="lock-SENS-003" onclick="lockCard('SENS-003')">Lock ↓</button></div>
+        </div>
+      </div>
+
+      <div class="const-card" id="card-SENS-004">
+        <div class="cc-header" onclick="toggleCard('SENS-004')">
+          <span class="cc-id">MORAQ-L0-SNS-004</span>
+          <span class="cc-name">Acoustic Environment</span>
+          <span class="cc-status status-draft" id="status-SENS-004">Draft</span>
+        </div>
+        <div class="cc-body" id="body-SENS-004">
+          <label class="field-label">Giá trị hằng số</label>
+          <textarea class="const-textarea" id="val-SENS-004" rows="4">Volume: conversation-friendly — staff voice phải nghe rõ ở counter mà không cần raise voice. Background: ambient instrumental, không lyrics (tiếng không cạnh tranh với staff narration). Tempo: 60–80 BPM (pace của ritual). No electronic dance, no pop, no obvious genre. Sound design cần được approved trước khi open.</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue"><span class="field-label">Từ ngữ</span><div class="field-note">Acoustic spec là functional: "staff phải nghe được khách nói ở counter mà không lean in" là testable criterion. Playlist curation là brand decision, không discretion của staff on shift.</div></div>
+            <div class="field-block teal"><span class="field-label">Luồng thông tin</span><div class="field-note">Acoustic spec → playlist curation (founder approval) → volume calibration checklist (SOP opening protocol) → staff training (không tự đổi playlist/volume).</div></div>
+            <div class="field-block purple"><span class="field-label">Kết nối fractal</span><div class="field-note">Children: SPC-005 Sensory Spec Sheet (acoustic section), SOP-001 Opening Protocol (volume check step), SOP-007 Sensory Calibration, Equipment List (speaker spec).</div></div>
+          </div>
+          <div class="cc-footer"><span class="hash-display" id="hash-SENS-004">—</span><button class="btn-lock" id="lock-SENS-004" onclick="lockCard('SENS-004')">Lock ↓</button></div>
+        </div>
+      </div>
+
+      <div class="fractal-chain">
+        <div class="fc-title">Hash Chain · Sensory Signature</div>
+        <div class="fc-nodes" id="chain-sensory"></div>
+      </div>
+    </div>
+
+    <!-- ═══ 7. RITUAL ═══ -->
+    <div class="section" id="sec-ritual">
+      <div class="section-header">
+        <span class="section-eyebrow">L0 · 07 · Constant Layer</span>
+        <div class="section-title-text">Counter Ritual Sequence</div>
+        <div class="section-desc">Choreography của nghi lễ pha chế. Trình tự không đảo ngược. Đây là trái tim của MORAQ — mọi touchpoint khác phải dẫn vào đây hoặc kế thừa từ đây.</div>
+      </div>
+
+      <div class="const-card" id="card-RITUAL-001">
+        <div class="cc-header" onclick="toggleCard('RITUAL-001')">
+          <span class="cc-id">MORAQ-L0-RTL-001</span>
+          <span class="cc-name">5-Step Counter Ritual — Trình tự bất biến</span>
+          <span class="cc-status status-draft" id="status-RITUAL-001">Draft</span>
+        </div>
+        <div class="cc-body" id="body-RITUAL-001">
+          <label class="field-label">Giá trị hằng số — 5 bước theo trình tự</label>
+          <div class="ritual-steps">
+            <div class="ritual-step">
+              <div class="step-num">01</div>
+              <div class="step-content">
+                <div class="step-name">Recognition — Nhận diện</div>
+                <div class="step-desc">Câu hỏi bắt buộc: "Bạn đã từng đến MORAQ chưa?" Từ câu trả lời này, toàn bộ session được dẫn dắt. [Có] → returning protocol. [Chưa] → first-timer onboarding. Không skip bước này dù store đông.</div>
+                <div class="step-trigger">→ TRIGGERS: CRM lookup · First-timer / Returning path · Session tone calibration</div>
+              </div>
+            </div>
+            <div class="ritual-step">
+              <div class="step-num">02</div>
+              <div class="step-content">
+                <div class="step-name">Discovery — Khám phá</div>
+                <div class="step-desc">Dẫn dắt khám phá không phải upsell. Staff hỏi về occasion, mood, người nhận — không phải "bạn thích hương gì?". Tester sequence: nhẹ → nặng. Max 3 hương per session. Coffee beans reset giữa tester.</div>
+                <div class="step-trigger">→ TRIGGERS: Scent Library reference · Tester protocol · Occasion-based recommendation flow</div>
+              </div>
+            </div>
+            <div class="ritual-step">
+              <div class="step-num">03</div>
+              <div class="step-content">
+                <div class="step-name">Visible Blending — Pha chế visible</div>
+                <div class="step-desc">Khách thấy từng bước — không ẩn. Staff narrate trong lúc làm: tone conversational, không lecture, không im lặng. Công cụ visible trên counter. Method là show. Tốc độ: deliberate — không vội, không perform.</div>
+                <div class="step-trigger">→ TRIGGERS: Counter layout config · Staff narration script · Timing guide (không rush dù queue)</div>
+              </div>
+            </div>
+            <div class="ritual-step">
+              <div class="step-num">04</div>
+              <div class="step-content">
+                <div class="step-name">Personalisation — Cá nhân hoá</div>
+                <div class="step-desc">Engraving hoặc labeling tên khách. "Chai này không tồn tại trước khi bạn đến." Staff xác nhận tên trước khi engrave/label. Không rush bước này — đây là moment of permanence.</div>
+                <div class="step-trigger">→ TRIGGERS: Engraving equipment · Label print system · Name confirmation protocol · CRM capture (tên, hương, dịp)</div>
+              </div>
+            </div>
+            <div class="ritual-step">
+              <div class="step-num">05</div>
+              <div class="step-content">
+                <div class="step-name">Handover — Trao tặng</div>
+                <div class="step-desc">Two hands. Eye contact. Brief moment of acknowledgment trước khi trao. Packaging: ribbon tied in front of customer, không pre-packaged. "Cảm ơn bạn đã để MORAQ là người tạo ra điều này." CRM D3 trigger activated. Không rush exit.</div>
+                <div class="step-trigger">→ TRIGGERS: CRM D3/D7/D60 journey activation · Packaging completion · Exit protocol · Departure zone handoff</div>
+              </div>
+            </div>
+          </div>
+          <textarea class="const-textarea" id="val-RITUAL-001" rows="3" style="margin-top:16px">Duration chuẩn: 25–35 phút per session. Không schedule quá 2 sessions cùng lúc nếu chỉ 1 staff. Không có maximum khi khách cần thêm thời gian. Rush = violation của Invariant ①②③.</textarea>
+          <div class="fields-grid">
+            <div class="field-block blue"><span class="field-label">Từ ngữ</span><div class="field-note">Ritual không phải "process" hay "procedure". Staff không "phục vụ" mà "đồng hành". Language reflects equality: cả hai cùng tạo ra thứ gì đó.</div></div>
+            <div class="field-block amber"><span class="field-label">Antifragile</span><div class="field-note">Khi store đông → extend wait time, không compress ritual. Khi engraving machine hỏng → handwrite tên với calligraphy pen (chuẩn bị sẵn) → đây là MORE personal, không phải kém hơn.</div></div>
+            <div class="field-block purple"><span class="field-label">Kết nối fractal</span><div class="field-note">Children: SOP-004 Counter Ritual (full choreography doc), SOP-003 Customer Journey, CRM D-day triggers (TCH-002), Store layout (P3 zone), Staff Training Day 3+4.</div></div>
+          </div>
+          <div class="cc-footer"><span class="hash-display" id="hash-RITUAL-001">—</span><button class="btn-lock" id="lock-RITUAL-001" onclick="lockCard('RITUAL-001')">Lock ↓</button></div>
+        </div>
+      </div>
+
+      <div class="fractal-chain">
+        <div class="fc-title">Hash Chain · Counter Ritual</div>
+        <div class="fc-nodes" id="chain-ritual"></div>
+      </div>
+    </div>
+
+    <!-- ═══ 8. FORBIDDEN ═══ -->
+    <div class="section" id="sec-forbidden">
+      <div class="section-header">
+        <span class="section-eyebrow">L0 · 08 · Constant Layer — Hằng số âm</span>
+        <div class="section-title-text">Forbidden List</div>
+        <div class="section-desc">Những thứ MORAQ không bao giờ làm. Danh sách này có tính kế thừa vĩnh viễn — thêm vào khi có bằng chứng, không bao giờ rút ra.</div>
+      </div>
+
+      <div class="const-card" id="card-FORB-001">
+        <div class="cc-header" onclick="toggleCard('FORB-001')">
+          <span class="cc-id">MORAQ-L0-FRB-001</span>
+          <span class="cc-name">Complete Forbidden List — Không bao giờ</span>
+          <span class="cc-status status-forbidden" id="status-FORB-001">Permanent</span>
+        </div>
+        <div class="cc-body" id="body-FORB-001">
+          <label class="field-label">Hằng số âm — Chỉ thêm, không bao giờ xóa</label>
+          <div class="forbidden-list">
+            <div class="forbidden-item"><span class="forbidden-x">×</span><span>Discount sign trên sản phẩm. Flash sale. Countdown timer. Scarcity giả tạo. Bất kỳ urgency tactic nào dựa trên nỗi sợ.</span></div>
+            <div class="forbidden-item"><span class="forbidden-x">×</span><span>Staff upsell sản phẩm không phù hợp với khách. "Thêm" chỉ khi khách hỏi hoặc khi staff tin thật sự sẽ serve khách tốt hơn.</span></div>
+            <div class="forbidden-item"><span class="forbidden-x">×</span><span>Scale khi chưa giữ được tính toàn vẹn. Mở store 2 khi store 1 chưa pass Scale Gate Scorecard (SCL-001).</span></div>
+            <div class="forbidden-item"><span class="forbidden-x">×</span><span>Paid acquisition trong giai đoạn khởi đầu (MORAQ 1.0 đạt 1.8B/tháng với 0đ paid acquisition — đây là bằng chứng word-of-mouth đủ nếu experience đúng).</span></div>
+            <div class="forbidden-item"><span class="forbidden-x">×</span><span>Pretend là brand nước ngoài. Tiếng Anh không phải quality signal. Local = strength, không phải weakness.</span></div>
+            <div class="forbidden-item"><span class="forbidden-x">×</span><span>Logo gradients, rounded corners trên packaging (0px border radius), chrome fixtures, white walls, harsh lighting &gt;3200K.</span></div>
+            <div class="forbidden-item"><span class="forbidden-x">×</span><span>Italic cho body text tiếng Việt. Auto-hyphenate tiếng Việt. Font thứ 4 ngoài 3 approved typefaces.</span></div>
+            <div class="forbidden-item"><span class="forbidden-x">×</span><span>Rush Counter Ritual dù queue. Compress ritual dưới 20 phút dù lý do gì. Skip bước Recognition (câu hỏi seed).</span></div>
+            <div class="forbidden-item"><span class="forbidden-x">×</span><span>Over-promise về scale, về số lượng store sắp mở, về timeline không confirmed. "Nếu store 1, đừng pretend store 4."</span></div>
+            <div class="forbidden-item"><span class="forbidden-x">×</span><span>Đưa vào bất kỳ thứ gì chưa được xác thực bởi founder. "Tôi có trước rồi mới trao đi. Tôi không thể cho người khác thứ mình chưa sống qua."</span></div>
+          </div>
+          <textarea class="const-textarea" id="val-FORB-001" rows="3" style="margin-top:16px">Khi có ai đề xuất làm một trong những điều trên: câu hỏi đúng không phải "tại sao không?" mà là "làm thế nào để đạt cùng mục tiêu mà không vi phạm nguyên tắc này?"</textarea>
+          <div class="cc-footer"><span class="hash-display" id="hash-FORB-001">—</span><button class="btn-lock" id="lock-FORB-001" onclick="lockCard('FORB-001')">Lock ↓</button></div>
+        </div>
+      </div>
+
+      <div class="fractal-chain">
+        <div class="fc-title">Hash Chain · Forbidden List</div>
+        <div class="fc-nodes" id="chain-forbidden"></div>
+      </div>
+
+      <!-- SUMMARY after all sections -->
+      <div style="margin-top:40px;">
+        <span class="section-eyebrow">Export &amp; Seal</span>
+        <div class="summary-grid" id="summaryGrid">
+          <div class="summary-card"><div class="summary-num" id="sumLocked">0</div><div class="summary-label">Constants locked</div></div>
+          <div class="summary-card"><div class="summary-num" id="sumTotal">24</div><div class="summary-label">Total constants</div></div>
+          <div class="summary-card"><div class="summary-num" id="sumPct">0%</div><div class="summary-label">Root hash ready</div></div>
+        </div>
+        <div class="export-block" id="exportBlock" style="display:none;">
+          <div class="export-title">L0 Constants — Root Sealed</div>
+          <div class="export-desc">Tất cả constants đã được khoá. Root hash đã được tạo. Mọi L1 Zone Node và L2 Touchpoint Node từ đây trở đi kế thừa hash này làm parent. Bất kỳ thay đổi nào ở L0 sẽ yêu cầu re-lock và propagate xuống toàn bộ cây.</div>
+          <button class="btn-export" onclick="exportJSON()">↓ Export JSON</button>
+          <button class="btn-export" onclick="copyRootHash()" style="background:var(--ink)">Copy Root Hash</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+</div><!-- /shell -->
+
+<script>
+// ─── DATA ───
+const SECTIONS = {
+  identity:   { title: 'Danh tính gốc',     cards: ['IDENTITY-001','IDENTITY-002','IDENTITY-003','IDENTITY-004'] },
+  invariants: { title: '7 Invariants',       cards: ['INV-001','INV-002','INV-003','INV-004','INV-005','INV-006','INV-007'] },
+  voice:      { title: 'Brand Voice',        cards: ['VOICE-001','VOICE-002','VOICE-003','VOICE-004','VOICE-005'] },
+  colors:     { title: 'Colour System',      cards: ['COLOR-001','COLOR-002','COLOR-003'] },
+  typography: { title: 'Typography System',  cards: ['TYPO-001','TYPO-002','TYPO-003','TYPO-004'] },
+  sensory:    { title: 'Sensory Signature',  cards: ['SENS-001','SENS-002','SENS-003','SENS-004'] },
+  ritual:     { title: 'Counter Ritual',     cards: ['RITUAL-001'] },
+  forbidden:  { title: 'Forbidden List',     cards: ['FORB-001'] },
+};
+
+const lockedState = {}; // cardId → { hash, value }
+
+// ─── NAV ───
+function showSection(sec) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('sec-' + sec).classList.add('active');
+  document.querySelectorAll('#sbNav button').forEach(b => b.classList.remove('active'));
+  document.querySelector(`[data-sec="${sec}"]`).classList.add('active');
+  document.getElementById('topbarTitle').textContent = SECTIONS[sec].title;
+}
+
+// ─── TOGGLE CARD ───
+function toggleCard(id) {
+  const body = document.getElementById('body-' + id);
+  body.classList.toggle('open');
+}
+
+// ─── HASH ───
+async function sha256(msg) {
+  const enc = new TextEncoder();
+  const buf = await crypto.subtle.digest('SHA-256', enc.encode(msg));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('').slice(0, 40);
+}
+
+async function lockCard(id) {
+  const val = document.getElementById('val-' + id);
+  if (!val) return;
+  const content = val.value.trim();
+  const prevHash = Object.values(lockedState).map(s => s.hash).join('') || 'MORAQ-GENESIS';
+  const hash = await sha256(prevHash + id + content);
+  
+  lockedState[id] = { hash, value: content };
+
+  // Update UI
+  const statusEl = document.getElementById('status-' + id);
+  if (statusEl) { statusEl.textContent = 'Locked'; statusEl.className = 'cc-status status-locked'; }
+  
+  const lockBtn = document.getElementById('lock-' + id);
+  if (lockBtn) { lockBtn.textContent = '✓ Locked'; lockBtn.classList.add('locked'); lockBtn.disabled = true; }
+  
+  if (val) val.disabled = true;
+  
+  const card = document.getElementById('card-' + id);
+  if (card) card.classList.add('is-locked');
+
+  const hashEl = document.getElementById('hash-' + id);
+  if (hashEl) hashEl.innerHTML = `<span>${hash.slice(0,8)}…${hash.slice(-8)}</span> · ${new Date().toISOString().slice(0,16)}`;
+
+  await updateRootHash();
+  updateCounts();
+  updateChains();
+}
+
+async function updateRootHash() {
+  const all = Object.entries(lockedState).map(([k, v]) => k + ':' + v.hash).join('|');
+  if (!all) return;
+  const root = await sha256('MORAQ-L0-ROOT:' + all);
+  const el = document.getElementById('rootHashDisplay');
+  el.textContent = root.slice(0,8) + '…' + root.slice(-8);
+  el.className = 'rh-value locked';
+  
+  const total = Object.keys(lockedState).length;
+  const allCards = Object.values(SECTIONS).flatMap(s => s.cards).length;
+  const pct = Math.round(total / allCards * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `${total}/${allCards}`;
+  document.getElementById('sumLocked').textContent = total;
+  document.getElementById('sumPct').textContent = pct + '%';
+  
+  if (total === allCards) {
+    document.getElementById('btnLockAll').textContent = '✓ All Locked';
+    document.getElementById('btnLockAll').classList.add('done');
+    document.getElementById('exportBlock').style.display = 'block';
+  }
+}
+
+function updateCounts() {
+  for (const [sec, data] of Object.entries(SECTIONS)) {
+    const locked = data.cards.filter(id => lockedState[id]).length;
+    const el = document.getElementById('cnt-' + sec);
+    if (el) {
+      el.textContent = `${locked}/${data.cards.length}`;
+      el.className = locked === data.cards.length ? 'count done' : 'count';
+    }
+  }
+}
+
+function updateChains() {
+  for (const [sec, data] of Object.entries(SECTIONS)) {
+    const chain = document.getElementById('chain-' + sec);
+    if (!chain) continue;
+    chain.innerHTML = data.cards.map(id => {
+      const locked = lockedState[id];
+      const name = document.querySelector(`#card-${id} .cc-name`)?.textContent || id;
+      const shortId = id;
+      return `<div class="fc-node ${locked ? 'locked' : ''}">${shortId} · ${name.slice(0,40)}${locked ? ` <span class="node-hash">${locked.hash.slice(0,12)}…</span>` : ''}</div>`;
+    }).join('');
+  }
+}
+
+async function lockAll() {
+  for (const [sec, data] of Object.entries(SECTIONS)) {
+    for (const id of data.cards) {
+      if (!lockedState[id]) {
+        // open card first
+        const body = document.getElementById('body-' + id);
+        if (body && !body.classList.contains('open')) body.classList.add('open');
+        await lockCard(id);
+        await new Promise(r => setTimeout(r, 80));
+      }
+    }
+  }
+}
+
+async function exportJSON() {
+  const root = await sha256('MORAQ-L0-ROOT:' + Object.entries(lockedState).map(([k,v]) => k+':'+v.hash).join('|'));
+  const data = {
+    version: 'MORAQ-L0-v1.0',
+    sealed_at: new Date().toISOString(),
+    root_hash: root,
+    constants: Object.fromEntries(Object.entries(lockedState).map(([k,v]) => [k, {hash: v.hash, value: v.value.slice(0,80)+'…'}]))
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `moraq-l0-constants-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+}
+
+async function copyRootHash() {
+  const root = await sha256('MORAQ-L0-ROOT:' + Object.entries(lockedState).map(([k,v]) => k+':'+v.hash).join('|'));
+  navigator.clipboard?.writeText(root);
+  alert('Root hash copied: ' + root);
+}
+
+// Init chains
+updateChains();
+</script>
+</body>
+</html>
