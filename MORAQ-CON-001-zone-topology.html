@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MORAQ · CON-001 Zone Topology</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1A1916;--teal:#0F6E56;--td:#085041;--tm:#5DCAA5;--amber:#854F0B;--am:#EF9F27;--cream:#FAF9F6;--linen:#E8DFD0;--w3:#8C7A62;--purple:#534AB7;--gold:#B89A60;}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--cream);-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+.hdr{height:46px;min-height:46px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;padding:0 18px;gap:16px;z-index:30}
+.hdr-logo{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:18px;letter-spacing:.1em}
+.hdr-doc{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.22);padding:3px 8px;border:1px solid rgba(255,255,255,.08)}
+.hdr-filters{display:flex;gap:3px;margin-left:auto;align-items:center}
+.f-btn{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.05em;text-transform:uppercase;padding:5px 10px;border:1px solid rgba(255,255,255,.1);background:none;cursor:pointer;color:rgba(255,255,255,.3);transition:all .15s;display:flex;align-items:center;gap:5px}
+.f-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:rgba(255,255,255,.2)}
+.f-btn.active{color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.05)}
+.f-btn.active.exp .f-dot{background:#0F6E56}
+.f-btn.active.dat .f-dot{background:#534AB7}
+.f-btn.active.trg .f-dot{background:#EF9F27}
+.f-btn.active.fin .f-dot{background:#B89A60}
+.f-btn.active.ret .f-dot{background:#5DCAA5}
+.f-sep{width:1px;height:20px;background:rgba(255,255,255,.07);margin:0 3px}
+.body{flex:1;display:flex;overflow:hidden;position:relative}
+.sb{width:196px;min-width:196px;border-right:1px solid rgba(255,255,255,.06);overflow-y:auto;padding:10px 0;background:rgba(0,0,0,.3)}
+.sb-sec{padding:10px 16px 4px;font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.18)}
+.sb-z{display:flex;align-items:center;gap:8px;padding:6px 16px;cursor:pointer;border-left:2px solid transparent;transition:all .12s}
+.sb-z:hover{background:rgba(255,255,255,.04)}
+.sb-z.active{background:rgba(255,255,255,.05);border-left-color:var(--teal)}
+.z-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.z-name{font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.42)}
+.sb-z.active .z-name{color:var(--cream)}
+.map-area{flex:1;position:relative;overflow:hidden;background:#0f0f0d}
+#topo{width:100%;height:100%;display:block}
+.detail{position:absolute;right:0;top:0;bottom:0;width:0;background:#0c0c0a;border-left:1px solid rgba(255,255,255,.07);overflow:hidden;transition:width .22s ease;z-index:20;display:flex;flex-direction:column}
+.detail.open{width:300px}
+.det-close{min-width:300px;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.08);background:#111;flex-shrink:0}
+.det-close-label{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.2)}
+.det-x{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.5);cursor:pointer;padding:4px 10px;border:1px solid rgba(255,255,255,.15);user-select:none;line-height:1;background:rgba(255,255,255,.04)}
+.det-x:hover{color:var(--cream);border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.08)}
+.det-inner{padding:16px 20px;min-width:300px;overflow-y:auto;flex:1}
+.det-ey{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:5px}
+.det-title{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:26px;line-height:1.2;color:var(--cream);margin-bottom:3px}
+.det-sub{font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.28);margin-bottom:14px}
+.det-desc{font-size:12px;color:rgba(255,255,255,.48);line-height:1.75;margin-bottom:14px}
+.det-sh{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.2);margin:14px 0 6px;padding-top:12px;border-top:1px solid rgba(255,255,255,.06)}
+.det-flow{display:flex;align-items:flex-start;gap:7px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:11px;color:rgba(255,255,255,.38);line-height:1.5}
+.det-flow:last-child{border-bottom:none}
+.df-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.det-inv{padding:10px;background:rgba(15,110,86,.08);border:1px solid rgba(15,110,86,.15);margin-top:10px}
+.det-inv-l{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.08em;text-transform:uppercase;color:rgba(15,110,86,.5);margin-bottom:4px}
+.det-inv-t{font-size:11px;color:rgba(255,255,255,.38);line-height:1.6}
+.det-frac{padding:10px;background:rgba(83,74,183,.07);border:1px solid rgba(83,74,183,.15);margin-top:8px}
+.det-frac-l{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.08em;text-transform:uppercase;color:rgba(83,74,183,.5);margin-bottom:4px}
+.det-frac-t{font-size:11px;color:rgba(255,255,255,.38);line-height:1.6}
+.legend{position:absolute;left:12px;bottom:12px;background:rgba(0,0,0,.72);border:1px solid rgba(255,255,255,.07);padding:10px 12px;backdrop-filter:blur(6px)}
+.leg-t{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:7px}
+.leg-i{display:flex;align-items:center;gap:7px;margin-bottom:4px;font-family:'DM Mono',monospace;font-size:7.5px;color:rgba(255,255,255,.32)}
+.ll{height:2px;width:22px;border-radius:1px;flex-shrink:0}
+.leg-sep{height:1px;background:rgba(255,255,255,.06);margin:7px 0}
+.trace-btn{position:absolute;right:12px;bottom:12px;background:var(--teal);color:var(--cream);font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.07em;text-transform:uppercase;padding:8px 14px;cursor:pointer;border:none}
+.trace-btn:hover{background:var(--td)}
+.trace-btn.tracing{background:var(--amber)}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <span class="hdr-logo">MORAQ</span>
+  <span class="hdr-doc">CON-001 · Zone Topology · v1.0</span>
+  <div class="hdr-filters">
+    <button class="f-btn exp active" onclick="toggleFilter('exp',this)"><span class="f-dot"></span>Experience</button>
+    <button class="f-btn dat active" onclick="toggleFilter('dat',this)"><span class="f-dot"></span>Data/CRM</button>
+    <button class="f-btn trg active" onclick="toggleFilter('trg',this)"><span class="f-dot"></span>Trigger</button>
+    <button class="f-btn fin active" onclick="toggleFilter('fin',this)"><span class="f-dot"></span>Financial</button>
+    <button class="f-btn ret active" onclick="toggleFilter('ret',this)"><span class="f-dot"></span>Return</button>
+    <div class="f-sep"></div>
+    <button class="f-btn active" onclick="resetFilters()">All</button>
+  </div>
+</div>
+<div class="body">
+  <div class="sb">
+    <div class="sb-sec">Physical · P1–P6</div>
+    <div class="sb-z" onclick="selectZone('P1')"><span class="z-dot" style="background:rgba(239,159,39,.6)"></span><span class="z-name">P1 · Arrival</span></div>
+    <div class="sb-z" onclick="selectZone('P2')"><span class="z-dot" style="background:rgba(239,159,39,.6)"></span><span class="z-name">P2 · Discovery</span></div>
+    <div class="sb-z" onclick="selectZone('P3')"><span class="z-dot" style="background:var(--teal)"></span><span class="z-name" style="color:rgba(93,202,165,.7)">P3 · Counter Ritual</span></div>
+    <div class="sb-z" onclick="selectZone('P4')"><span class="z-dot" style="background:rgba(239,159,39,.6)"></span><span class="z-name">P4 · Transaction</span></div>
+    <div class="sb-z" onclick="selectZone('P5')"><span class="z-dot" style="background:rgba(239,159,39,.4)"></span><span class="z-name">P5 · Departure</span></div>
+    <div class="sb-z" onclick="selectZone('P6')"><span class="z-dot" style="background:rgba(239,159,39,.2);border:1px dashed rgba(239,159,39,.3)"></span><span class="z-name">P6 · Back-of-House</span></div>
+    <div class="sb-sec">Online · O1–O6</div>
+    <div class="sb-z" onclick="selectZone('O1')"><span class="z-dot" style="background:rgba(15,110,86,.7)"></span><span class="z-name">O1 · Social Discovery</span></div>
+    <div class="sb-z" onclick="selectZone('O2')"><span class="z-dot" style="background:rgba(15,110,86,.7)"></span><span class="z-name">O2 · Landing Zone</span></div>
+    <div class="sb-z" onclick="selectZone('O3')"><span class="z-dot" style="background:rgba(15,110,86,.7)"></span><span class="z-name">O3 · Scent Catalog</span></div>
+    <div class="sb-z" onclick="selectZone('O4')"><span class="z-dot" style="background:rgba(83,74,183,.7)"></span><span class="z-name">O4 · Consultation</span></div>
+    <div class="sb-z" onclick="selectZone('O5')"><span class="z-dot" style="background:rgba(184,154,96,.7)"></span><span class="z-name">O5 · Checkout</span></div>
+    <div class="sb-z" onclick="selectZone('O6')"><span class="z-dot" style="background:rgba(93,202,165,.7)"></span><span class="z-name">O6 · Post-Purchase</span></div>
+    <div class="sb-sec">Foundation</div>
+    <div class="sb-z" onclick="selectZone('L0')"><span class="z-dot" style="background:rgba(255,255,255,.2)"></span><span class="z-name">L0 · Brand Constants</span></div>
+    <div class="sb-sec" style="margin-top:10px">Connections</div>
+    <div class="sb-z" onclick="selectConn('exp')"><span class="z-dot" style="background:#0F6E56"></span><span class="z-name">Experience Flow</span></div>
+    <div class="sb-z" onclick="selectConn('dat')"><span class="z-dot" style="background:#534AB7"></span><span class="z-name">Data / CRM</span></div>
+    <div class="sb-z" onclick="selectConn('trg')"><span class="z-dot" style="background:#EF9F27"></span><span class="z-name">Trigger Flow</span></div>
+    <div class="sb-z" onclick="selectConn('fin')"><span class="z-dot" style="background:#B89A60"></span><span class="z-name">Financial Flow</span></div>
+    <div class="sb-z" onclick="selectConn('ret')"><span class="z-dot" style="background:#5DCAA5"></span><span class="z-name">Return Loop</span></div>
+  </div>
+  <div class="map-area">
+    <svg id="topo" viewBox="0 0 1100 650" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <marker id="a-exp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round"/></marker>
+        <marker id="a-dat" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#534AB7" stroke-width="1.5" stroke-linecap="round"/></marker>
+        <marker id="a-trg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round"/></marker>
+        <marker id="a-fin" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#B89A60" stroke-width="1.5" stroke-linecap="round"/></marker>
+        <marker id="a-ret" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#5DCAA5" stroke-width="1.5" stroke-linecap="round"/></marker>
+      </defs>
+      <!-- WORLD BACKGROUNDS -->
+      <rect x="18" y="56" width="1064" height="236" fill="rgba(239,159,39,.02)"/>
+      <rect x="18" y="304" width="1064" height="220" fill="rgba(15,110,86,.018)"/>
+      <!-- WORLD LABELS -->
+      <text x="30" y="73" font-family="DM Mono" font-size="7.5" fill="rgba(255,255,255,.14)" letter-spacing="4">PHYSICAL WORLD</text>
+      <text x="30" y="318" font-family="DM Mono" font-size="7.5" fill="rgba(255,255,255,.11)" letter-spacing="4">ONLINE WORLD</text>
+      <!-- SEPARATOR -->
+      <line x1="18" y1="296" x2="1082" y2="296" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+      <text x="30" y="293" font-family="DM Mono" font-size="6.5" fill="rgba(255,255,255,.1)">&#8593; Physical</text>
+      <text x="30" y="309" font-family="DM Mono" font-size="6.5" fill="rgba(255,255,255,.08)">&#8595; Online</text>
+
+      <!-- CONNECTIONS -->
+      <!-- EXPERIENCE -->
+      <g id="g-exp">
+        <path d="M152,163 C190,163 204,143 218,143" stroke="#0F6E56" stroke-width="2" fill="none" marker-end="url(#a-exp)" opacity=".9"/>
+        <path d="M324,150 C368,150 406,162 424,165" stroke="#0F6E56" stroke-width="2" fill="none" marker-end="url(#a-exp)" opacity=".9"/>
+        <path d="M574,165 C614,165 654,163 672,163" stroke="#0F6E56" stroke-width="2" fill="none" marker-end="url(#a-exp)" opacity=".9"/>
+        <path d="M780,153 C818,150 842,140 856,140" stroke="#0F6E56" stroke-width="2" fill="none" marker-end="url(#a-exp)" opacity=".9"/>
+        <path d="M152,444 C186,452 208,462 218,462" stroke="#0F6E56" stroke-width="1.5" fill="none" marker-end="url(#a-exp)" opacity=".65"/>
+        <path d="M324,458 C354,456 370,446 378,446" stroke="#0F6E56" stroke-width="1.5" fill="none" marker-end="url(#a-exp)" opacity=".65"/>
+        <path d="M484,440 C508,428 520,400 524,376" stroke="#0F6E56" stroke-width="1.5" fill="none" marker-end="url(#a-exp)" opacity=".35" stroke-dasharray="5 3"/>
+      </g>
+      <!-- DATA/CRM: O4->P3 crosses separator -->
+      <g id="g-dat">
+        <path d="M578,328 C576,280 564,240 550,196" stroke="#534AB7" stroke-width="2.5" fill="none" marker-end="url(#a-dat)" stroke-dasharray="7 3" opacity=".95"/>
+        <text font-family="DM Mono" font-size="7" fill="rgba(83,74,183,.55)" transform="translate(592,268) rotate(-82)">pre-visit brief</text>
+      </g>
+      <!-- TRIGGER -->
+      <g id="g-trg">
+        <path d="M780,163 C916,163 1002,280 966,444" stroke="#EF9F27" stroke-width="2" fill="none" marker-end="url(#a-trg)" stroke-dasharray="8 3" opacity=".9"/>
+        <text font-family="DM Mono" font-size="7" fill="rgba(239,159,39,.5)" transform="translate(986,306) rotate(82)">D0 trigger</text>
+        <path d="M502,193 L502,238" stroke="#EF9F27" stroke-width="1.5" fill="none" marker-end="url(#a-trg)" opacity=".72"/>
+        <path d="M494,238 L494,193" stroke="#EF9F27" stroke-width="1.5" fill="none" marker-end="url(#a-trg)" opacity=".72"/>
+        <text x="432" y="220" font-family="DM Mono" font-size="6.5" fill="rgba(239,159,39,.38)" text-anchor="end">supply</text>
+      </g>
+      <!-- FINANCIAL -->
+      <g id="g-fin">
+        <path d="M672,444 C640,376 604,288 550,196" stroke="#B89A60" stroke-width="1.5" fill="none" marker-end="url(#a-fin)" stroke-dasharray="6 3" opacity=".85"/>
+        <text font-family="DM Mono" font-size="7" fill="rgba(184,154,96,.48)" transform="translate(626,330) rotate(-64)">gift card</text>
+      </g>
+      <!-- RETURN -->
+      <g id="g-ret">
+        <path d="M966,428 C1062,398 1082,34 740,26 C538,20 320,64 270,132" stroke="#5DCAA5" stroke-width="1.5" fill="none" marker-end="url(#a-ret)" stroke-dasharray="7 4" opacity=".72"/>
+        <text x="1056" y="228" font-family="DM Mono" font-size="7" fill="rgba(93,202,165,.38)" transform="rotate(90 1056 228)">D60 return</text>
+        <path d="M856,466 C754,494 554,496 324,472" stroke="#5DCAA5" stroke-width="1" fill="none" marker-end="url(#a-ret)" stroke-dasharray="4 4" opacity=".42"/>
+      </g>
+      <!-- DNA lines subtle -->
+      <line x1="500" y1="544" x2="500" y2="196" stroke="rgba(255,255,255,.07)" stroke-width="1" stroke-dasharray="2 8" opacity=".5"/>
+
+      <!-- PHYSICAL NODES -->
+      <!-- P1: center(100,163), box(46,141,108,44) -->
+      <g id="node-P1" class="zn" onclick="selectZone('P1')" cursor="pointer">
+        <rect x="46" y="141" width="108" height="44" fill="#141210" stroke="rgba(239,159,39,.28)" stroke-width="1"/>
+        <rect x="46" y="141" width="4" height="44" fill="rgba(239,159,39,.55)"/>
+        <text x="100" y="157" font-family="DM Mono" font-size="7" fill="rgba(239,159,39,.5)" text-anchor="middle" letter-spacing=".07em">P1</text>
+        <text x="100" y="171" font-family="DM Mono" font-size="9.5" fill="rgba(255,255,255,.65)" text-anchor="middle">Arrival</text>
+        <text x="100" y="181" font-family="DM Mono" font-size="6.5" fill="rgba(255,255,255,.2)" text-anchor="middle">first impression</text>
+      </g>
+      <!-- P2: center(272,143), box(218,121,108,44) -->
+      <g id="node-P2" class="zn" onclick="selectZone('P2')" cursor="pointer">
+        <rect x="218" y="121" width="108" height="44" fill="#141210" stroke="rgba(239,159,39,.28)" stroke-width="1"/>
+        <rect x="218" y="121" width="4" height="44" fill="rgba(239,159,39,.55)"/>
+        <text x="272" y="137" font-family="DM Mono" font-size="7" fill="rgba(239,159,39,.5)" text-anchor="middle" letter-spacing=".07em">P2</text>
+        <text x="272" y="151" font-family="DM Mono" font-size="9.5" fill="rgba(255,255,255,.65)" text-anchor="middle">Discovery</text>
+        <text x="272" y="161" font-family="DM Mono" font-size="6.5" fill="rgba(255,255,255,.2)" text-anchor="middle">3 phut tu do</text>
+      </g>
+      <!-- P3 HUB: center(500,165), box(426,137,148,56) -->
+      <g id="node-P3" class="zn" onclick="selectZone('P3')" cursor="pointer">
+        <rect x="423" y="134" width="154" height="62" fill="none" stroke="rgba(15,110,86,.18)" stroke-width="3"/>
+        <rect x="426" y="137" width="148" height="56" fill="#071510" stroke="rgba(15,110,86,.6)" stroke-width="1.5"/>
+        <rect x="426" y="137" width="5" height="56" fill="#0F6E56"/>
+        <text x="500" y="155" font-family="DM Mono" font-size="7" fill="rgba(93,202,165,.7)" text-anchor="middle" letter-spacing=".08em">P3 . HUB</text>
+        <text x="500" y="172" font-family="Cormorant Garamond" font-size="16" fill="rgba(255,255,255,.85)" text-anchor="middle">Counter Ritual</text>
+        <text x="500" y="185" font-family="DM Mono" font-size="6.5" fill="rgba(93,202,165,.42)" text-anchor="middle">35 min . all flows converge</text>
+      </g>
+      <!-- P4: center(726,163), box(672,141,108,44) -->
+      <g id="node-P4" class="zn" onclick="selectZone('P4')" cursor="pointer">
+        <rect x="672" y="141" width="108" height="44" fill="#141210" stroke="rgba(239,159,39,.28)" stroke-width="1"/>
+        <rect x="672" y="141" width="4" height="44" fill="rgba(239,159,39,.55)"/>
+        <text x="726" y="157" font-family="DM Mono" font-size="7" fill="rgba(239,159,39,.5)" text-anchor="middle" letter-spacing=".07em">P4</text>
+        <text x="726" y="171" font-family="DM Mono" font-size="9.5" fill="rgba(255,255,255,.65)" text-anchor="middle">Transaction</text>
+        <text x="726" y="181" font-family="DM Mono" font-size="6.5" fill="rgba(255,255,255,.2)" text-anchor="middle">D0 trigger point</text>
+      </g>
+      <!-- P5: center(910,143), box(856,121,108,44) -->
+      <g id="node-P5" class="zn" onclick="selectZone('P5')" cursor="pointer">
+        <rect x="856" y="121" width="108" height="44" fill="#121110" stroke="rgba(239,159,39,.18)" stroke-width="1"/>
+        <rect x="856" y="121" width="4" height="44" fill="rgba(239,159,39,.35)"/>
+        <text x="910" y="137" font-family="DM Mono" font-size="7" fill="rgba(239,159,39,.4)" text-anchor="middle" letter-spacing=".07em">P5</text>
+        <text x="910" y="151" font-family="DM Mono" font-size="9.5" fill="rgba(255,255,255,.52)" text-anchor="middle">Departure</text>
+        <text x="910" y="161" font-family="DM Mono" font-size="6.5" fill="rgba(255,255,255,.18)" text-anchor="middle">olfactory bookend</text>
+      </g>
+      <!-- P6: center(500,258), box(446,238,108,40) — WITHIN PHYSICAL (separator y=296) -->
+      <g id="node-P6" class="zn" onclick="selectZone('P6')" cursor="pointer">
+        <rect x="446" y="238" width="108" height="40" fill="#0f0e0b" stroke="rgba(239,159,39,.16)" stroke-width="1" stroke-dasharray="4 3"/>
+        <text x="500" y="253" font-family="DM Mono" font-size="7" fill="rgba(239,159,39,.28)" text-anchor="middle" letter-spacing=".07em">P6</text>
+        <text x="500" y="266" font-family="DM Mono" font-size="9" fill="rgba(255,255,255,.38)" text-anchor="middle">Back-of-House</text>
+        <text x="500" y="275" font-family="DM Mono" font-size="6" fill="rgba(255,255,255,.14)" text-anchor="middle">invisible backbone</text>
+      </g>
+
+      <!-- ONLINE NODES -->
+      <!-- O1: center(100,444), box(46,422,108,44) -->
+      <g id="node-O1" class="zn" onclick="selectZone('O1')" cursor="pointer">
+        <rect x="46" y="422" width="108" height="44" fill="#091511" stroke="rgba(15,110,86,.28)" stroke-width="1"/>
+        <rect x="46" y="422" width="4" height="44" fill="rgba(15,110,86,.55)"/>
+        <text x="100" y="438" font-family="DM Mono" font-size="7" fill="rgba(93,202,165,.5)" text-anchor="middle" letter-spacing=".07em">O1</text>
+        <text x="100" y="452" font-family="DM Mono" font-size="9.5" fill="rgba(255,255,255,.62)" text-anchor="middle">Social</text>
+        <text x="100" y="462" font-family="DM Mono" font-size="6.5" fill="rgba(255,255,255,.2)" text-anchor="middle">0d acquisition</text>
+      </g>
+      <!-- O2: center(272,462), box(218,440,108,44) -->
+      <g id="node-O2" class="zn" onclick="selectZone('O2')" cursor="pointer">
+        <rect x="218" y="440" width="108" height="44" fill="#091511" stroke="rgba(15,110,86,.28)" stroke-width="1"/>
+        <rect x="218" y="440" width="4" height="44" fill="rgba(15,110,86,.55)"/>
+        <text x="272" y="456" font-family="DM Mono" font-size="7" fill="rgba(93,202,165,.5)" text-anchor="middle" letter-spacing=".07em">O2</text>
+        <text x="272" y="470" font-family="DM Mono" font-size="9.5" fill="rgba(255,255,255,.62)" text-anchor="middle">Landing</text>
+        <text x="272" y="480" font-family="DM Mono" font-size="6.5" fill="rgba(255,255,255,.2)" text-anchor="middle">10s to answer</text>
+      </g>
+      <!-- O3: center(430,444), box(378,422,108,44) -->
+      <g id="node-O3" class="zn" onclick="selectZone('O3')" cursor="pointer">
+        <rect x="378" y="422" width="108" height="44" fill="#091511" stroke="rgba(15,110,86,.28)" stroke-width="1"/>
+        <rect x="378" y="422" width="4" height="44" fill="rgba(15,110,86,.55)"/>
+        <text x="432" y="438" font-family="DM Mono" font-size="7" fill="rgba(93,202,165,.5)" text-anchor="middle" letter-spacing=".07em">O3</text>
+        <text x="432" y="452" font-family="DM Mono" font-size="9.5" fill="rgba(255,255,255,.62)" text-anchor="middle">Scent Catalog</text>
+        <text x="432" y="462" font-family="DM Mono" font-size="6.5" fill="rgba(255,255,255,.2)" text-anchor="middle">not e-commerce</text>
+      </g>
+      <!-- O4: center(578,352), box(524,330,108,44) — ONLINE top row, clearly below separator(296) -->
+      <g id="node-O4" class="zn" onclick="selectZone('O4')" cursor="pointer">
+        <rect x="524" y="330" width="108" height="44" fill="#0c0c1a" stroke="rgba(83,74,183,.42)" stroke-width="1"/>
+        <rect x="524" y="330" width="4" height="44" fill="rgba(83,74,183,.6)"/>
+        <text x="578" y="346" font-family="DM Mono" font-size="7" fill="rgba(83,74,183,.75)" text-anchor="middle" letter-spacing=".07em">O4</text>
+        <text x="578" y="360" font-family="DM Mono" font-size="9.5" fill="rgba(255,255,255,.62)" text-anchor="middle">Consultation</text>
+        <text x="578" y="370" font-family="DM Mono" font-size="6.5" fill="rgba(255,255,255,.2)" text-anchor="middle">feeds P3 brief</text>
+      </g>
+      <!-- O5: center(726,462), box(672,440,108,44) -->
+      <g id="node-O5" class="zn" onclick="selectZone('O5')" cursor="pointer">
+        <rect x="672" y="440" width="108" height="44" fill="#141008" stroke="rgba(184,154,96,.28)" stroke-width="1"/>
+        <rect x="672" y="440" width="4" height="44" fill="rgba(184,154,96,.55)"/>
+        <text x="726" y="456" font-family="DM Mono" font-size="7" fill="rgba(184,154,96,.6)" text-anchor="middle" letter-spacing=".07em">O5</text>
+        <text x="726" y="470" font-family="DM Mono" font-size="9.5" fill="rgba(255,255,255,.62)" text-anchor="middle">Checkout</text>
+        <text x="726" y="480" font-family="DM Mono" font-size="6.5" fill="rgba(255,255,255,.2)" text-anchor="middle">gift card . B2B</text>
+      </g>
+      <!-- O6: center(910,444), box(856,422,108,44) -->
+      <g id="node-O6" class="zn" onclick="selectZone('O6')" cursor="pointer">
+        <rect x="856" y="422" width="108" height="44" fill="#091511" stroke="rgba(93,202,165,.38)" stroke-width="1.5"/>
+        <rect x="856" y="422" width="4" height="44" fill="rgba(93,202,165,.55)"/>
+        <text x="910" y="438" font-family="DM Mono" font-size="7" fill="rgba(93,202,165,.65)" text-anchor="middle" letter-spacing=".07em">O6</text>
+        <text x="910" y="452" font-family="DM Mono" font-size="9.5" fill="rgba(255,255,255,.65)" text-anchor="middle">Post-Purchase</text>
+        <text x="910" y="462" font-family="DM Mono" font-size="6.5" fill="rgba(255,255,255,.22)" text-anchor="middle">D3 . D7 . D60</text>
+      </g>
+
+      <!-- L0 FOUNDATION BAR -->
+      <g id="node-L0" class="zn" onclick="selectZone('L0')" cursor="pointer">
+        <rect x="160" y="544" width="780" height="34" fill="#0a0a09" stroke="rgba(255,255,255,.09)" stroke-width="1" stroke-dasharray="5 4"/>
+        <text x="176" y="563" font-family="DM Mono" font-size="9" fill="rgba(255,255,255,.2)" letter-spacing=".1em">L0</text>
+        <line x1="222" y1="548" x2="222" y2="574" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+        <text x="276" y="563" font-family="DM Mono" font-size="7.5" fill="rgba(255,255,255,.26)" letter-spacing=".04em">COD-001</text>
+        <line x1="348" y1="548" x2="348" y2="574" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+        <text x="396" y="563" font-family="DM Mono" font-size="7.5" fill="rgba(255,255,255,.26)" letter-spacing=".04em">COD-002</text>
+        <line x1="462" y1="548" x2="462" y2="574" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+        <text x="510" y="563" font-family="DM Mono" font-size="7.5" fill="rgba(255,255,255,.26)" letter-spacing=".04em">SCG-001</text>
+        <line x1="578" y1="548" x2="578" y2="574" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+        <text x="624" y="563" font-family="DM Mono" font-size="7.5" fill="rgba(255,255,255,.26)" letter-spacing=".04em">PRD-004</text>
+        <line x1="696" y1="548" x2="696" y2="574" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+        <text x="742" y="563" font-family="DM Mono" font-size="7.5" fill="rgba(255,255,255,.26)" letter-spacing=".04em">BRD-007</text>
+        <line x1="816" y1="548" x2="816" y2="574" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+        <text x="850" y="563" font-family="DM Mono" font-size="7.5" fill="rgba(255,255,255,.22)" letter-spacing=".04em">COD-003</text>
+      </g>
+      <text x="550" y="606" font-family="DM Mono" font-size="6.5" fill="rgba(255,255,255,.08)" text-anchor="middle" letter-spacing="4">FOUNDATION . L0 BRAND CONSTANTS . KHONG THAY DOI</text>
+      <text x="30" y="638" font-family="DM Mono" font-size="6.5" fill="rgba(255,255,255,.08)" letter-spacing=".06em">MORAQ . CON-001 . v1.0 . 12 ZONES . 14 CONNECTIONS . 4 FLOW TYPES</text>
+    </svg>
+
+    <div class="legend">
+      <div class="leg-t">Loai ket noi</div>
+      <div class="leg-i"><div class="ll" style="background:#0F6E56"></div>Experience Flow</div>
+      <div class="leg-i"><div class="ll" style="background:none;border-top:2px dashed #534AB7;height:0;width:22px"></div>Data / CRM</div>
+      <div class="leg-i"><div class="ll" style="background:none;border-top:2px dashed #EF9F27;height:0;width:22px"></div>Trigger</div>
+      <div class="leg-i"><div class="ll" style="background:none;border-top:2px dashed #B89A60;height:0;width:22px"></div>Financial</div>
+      <div class="leg-i"><div class="ll" style="background:none;border-top:2px dashed #5DCAA5;height:0;width:22px"></div>Return Loop</div>
+      <div class="leg-sep"></div>
+      <div class="leg-i"><div style="width:8px;height:8px;background:rgba(239,159,39,.5);border-radius:1px"></div>Physical zone</div>
+      <div class="leg-i"><div style="width:8px;height:8px;background:rgba(15,110,86,.65);border-radius:1px"></div>Online zone</div>
+      <div class="leg-i"><div style="width:8px;height:8px;background:rgba(15,110,86,.9);border-radius:1px;outline:1.5px solid #0F6E56;outline-offset:2px"></div>P3 Central hub</div>
+      <div class="leg-i"><div style="width:8px;height:8px;border:1px dashed rgba(239,159,39,.25);border-radius:1px"></div>P6 Invisible</div>
+    </div>
+    <button class="trace-btn" id="traceBtn" onclick="traceJourney()">&#9654; Trace Customer Journey</button>
+  </div>
+
+  <div class="detail" id="detail">
+    <div class="det-close"><span class="det-close-label">Zone Detail</span><span class="det-x" onclick="closeDetail()" title="ESC to close">&#215; Close</span></div>
+    <div class="det-inner" id="det-body"></div>
+  </div>
+</div>
+
+<script>
+const ZONES={P1:{name:'P1 · Arrival',sub:'First impression · Scent threshold',type:'Physical',desc:'Khoanh khac dau tien. Khach nhan 3 tin hieu trong 10 giay dau: scent → visual → greeting. Thu tu nay quan trong. Khong the lam lai.',flows_in:[],flows_out:[{c:'#0F6E56',t:'P2 Discovery — customer continues journey'}],inv:'INV-007 Seed: First-timer protocol — staff nhan ra → specific onboarding. Trial size visible tai cua.',frac:'Cung pattern: O2 Homepage phai answer "What is this?" trong 10 giay dau. Vat ly hay digital — 10-second rule nhat quan.'},P2:{name:'P2 · Discovery',sub:'Ingredient wall · 3 phut tu do',type:'Physical',desc:'3 phut tu kham pha — khong bi huong dan. Khach duoc phep cam nhan khong gian theo toc do cua ho.',flows_in:[{c:'#0F6E56',t:'P1 — customer enters from arrival'},{c:'#5DCAA5',t:'O6 D60 return loop — returning customers re-enter'}],flows_out:[{c:'#0F6E56',t:'P3 — customer moves to counter when ready'}],inv:'INV-003 Moat: Personalisation ritual — khong ai khac co chai nay.',frac:'O3 mirror: cung "3 minutes freedom" — browse without pressure.'},P3:{name:'P3 · Counter Ritual',sub:'Central Hub · 35 min · All flows converge',type:'Physical · HUB',desc:'Diem hoi tu cua toan bo he thong MORAQ. Moi flows — experience, data, financial, trigger — deu co diem bat dau hoac ket thuc o day. 5 steps: Recognition → Discovery → Pha che → Calibration → Handover.',flows_in:[{c:'#0F6E56',t:'P2 — customer arrives from discovery'},{c:'#534AB7',t:'O4 pre-visit data → staff brief'},{c:'#B89A60',t:'O5 gift card → redemption'}],flows_out:[{c:'#0F6E56',t:'P4 — transaction and packaging'},{c:'#EF9F27',t:'P6 supply bidirectional'}],inv:'INV-002 Method: Quy trinh pha che visible — khach thay tung buoc.',frac:'Fractal node: cung 5-step structure cua P3 ritual xuat hien o O4 form, O6 journey, COD-003 principles.'},P4:{name:'P4 · Transaction',sub:'D0 trigger point · Packaging · Handover',type:'Physical',desc:'Khong phai diem mua hang — diem ket thuc ritual va bat dau relationship. D0 data capture xay ra tai day.',flows_in:[{c:'#0F6E56',t:'P3 — ritual complete'}],flows_out:[{c:'#0F6E56',t:'P5 — customer departs'},{c:'#EF9F27',t:'O6 — D0 trigger activated'}],inv:'INV-005 Belief: Khong co discount sign. Integrity visible.',frac:'Cung pattern voi O5: relationship starting point, not transaction endpoint.'},P5:{name:'P5 · Departure',sub:'Olfactory bookend · Khong phai farewell',type:'Physical',desc:'Olfactory bookend tu dong neu P1 diffuser active. Staff khong goi to "Hen gap lai".',flows_in:[{c:'#0F6E56',t:'P4 — customer departs with chai'}],flows_out:[],inv:'INV-006 Arc: Khong over-promise. Authentic = trust.',frac:'P5 la exit cua physical loop. O6 D60 la exit cua online loop — cung philosophy: khong pressure.'},P6:{name:'P6 · Back-of-House',sub:'Invisible backbone · 3-zone system',type:'Physical',desc:'Khach khong thay nhung experience quality phu thuoc hoan toan vao P6. Zone A (ingredients), Zone B (packaging), Zone C (cleaning).',flows_in:[{c:'#EF9F27',t:'P3 bidirectional supply'},{c:'rgba(255,255,255,.2)',t:'External suppliers'}],flows_out:[{c:'#EF9F27',t:'P6 → P3: ingredients for ritual'}],inv:'INV-001 Tension: Quality khong compromise du khong ai thay.',frac:'COD-003 Principle 5 physical embodiment: Document truoc khi scale.'},O1:{name:'O1 · Social Discovery',sub:'Top-of-funnel · 0d acquisition',type:'Online',desc:'Organic only. 3 content pillars: Craft 40% / Story 35% / Education 25%. Moi post: tao ra cau hoi, khong ban.',flows_in:[],flows_out:[{c:'#0F6E56',t:'O2 Landing — curiosity converts to intent'}],inv:'INV-005: 0d paid acquisition. Xay dung dua tren su that.',frac:'O1→O2→O3 mirrors P1→P2→P3: cung 3-step arc, khac kenh.'},O2:{name:'O2 · Landing Zone',sub:'Answer "What is this?" in 10 seconds',type:'Online',desc:'6 sections: Hero → Proof → How It Works → Scent Preview → Visit Info → Footer.',flows_in:[{c:'#0F6E56',t:'O1 — traffic arrives'},{c:'#5DCAA5',t:'O6 D60 return'}],flows_out:[{c:'#0F6E56',t:'O3 — Kham pha huong CTA'}],inv:'INV-007 Seed: Homepage 10 seconds must answer: "What is this place?"',frac:'Mirror P1: cung 10-second rule.'},O3:{name:'O3 · Scent Catalog',sub:'Not a catalog · A discovery space',type:'Online',desc:'Khong co Add to cart. Scent cards SCG-001 Layer 1. Discovery quiz 3 cau.',flows_in:[{c:'#0F6E56',t:'O2 — user arrives'}],flows_out:[{c:'#0F6E56',t:'O4 — Dat lich CTA'},{c:'#B89A60',t:'O5 — gift card option'}],inv:'INV-003 Moat: Personalisation — khong ai khac co chai nay.',frac:'Mirror P2: cung "3 phut tu do" — browse without pressure.'},O4:{name:'O4 · Consultation',sub:'Pre-visit brief · Feeds P3 staff via CRM',type:'Online',desc:'5 cau hoi Layer 1 — tat ca optional. Submit → CRM record → staff nhan alert → P3 ritual bat dau sau hon.',flows_in:[{c:'#0F6E56',t:'O3 — user decides to book'}],flows_out:[{c:'#534AB7',t:'P3 — D0 data crosses worlds to staff brief'}],inv:'INV-002: FAQ tra loi "why" khong chi "what".',frac:'Digital mirror cua P3 Step 02 Discovery — cung 5 cau hoi Layer 1.'},O5:{name:'O5 · Checkout',sub:'Gift Cards + B2B · Intentionally minimal',type:'Online',desc:'MORAQ khong ban chai online. Chi 2 products: Gift Card va B2B Corporate. Guest checkout only.',flows_in:[{c:'#0F6E56',t:'O3 — gift card CTA'}],flows_out:[{c:'#B89A60',t:'P3 — redeemed at counter'},{c:'#EF9F27',t:'P3 — B2B group session'}],inv:'INV-005: Khong discount, khong flash sale.',frac:'Zone duy nhat khong co physical mirror — constraint creates the moat.'},O6:{name:'O6 · Post-Purchase',sub:'D3 · D7 · D60 · Activates at P4',type:'Online',desc:'Triggered tai P4 D0. 3 touchpoints x 3 channels. Khong upsell, khong urgency. Zalo open rate 70-80%.',flows_in:[{c:'#EF9F27',t:'P4 D0 trigger → 60-day journey'}],flows_out:[{c:'#5DCAA5',t:'P2 — D60 return visit'},{c:'#5DCAA5',t:'O2 — D60 online re-entry'}],inv:'INV-005: Word-of-mouth duoc nuoi duong trong 60 ngay.',frac:'D3/D7/D60 cung arc voi P3 ritual: nhan dien → deepen → release.'},L0:{name:'L0 · Brand Constants',sub:'Nguon goc bat bien · Khong thay doi',type:'Foundation',desc:'Tat ca 12 zones derive tu L0. L0 wins khi co conflict. COD-001/002/003, SCG-001, PRD-004, BRD-007.',flows_in:[],flows_out:[{c:'rgba(255,255,255,.3)',t:'All 12 zones — DNA flows through every touchpoint'}],inv:'Codex khong thay doi. Channel thay doi cach bieu dat Codex.',frac:'L0 la fractal seed — cung mot pattern o moi tang vi cung mot source tao ra tat ca.'}};
+const CONNS={exp:{name:'Experience Flow',c:'#0F6E56',desc:'Hanh trinh cua khach hang qua MORAQ. Converge tai P3.',items:['O1→O2→O3 online discovery','O3→O4 optional consultation','P1→P2→P3→P4→P5 physical ritual']},dat:{name:'Data / CRM Flow',c:'#534AB7',desc:'O4→P3 la connection quan trong nhat — crosses physical/online boundary.',items:['O4 submit → CRM → P3 staff brief','P3 Step01 → CRM record','P3 ritual notes → O6 personalization']},trg:{name:'Trigger Flow',c:'#EF9F27',desc:'Events trong mot zone kich hoat process trong zone khac.',items:['P4 D0 → O6 D3/D7/D60 activated','P3 bidirectional P6 supply','O4 submit → staff Zalo alert']},fin:{name:'Financial Flow',c:'#B89A60',desc:'Chi 2 online transactions — ca hai lead ve P3.',items:['O5 Gift Card → P3 redemption','O5 B2B → P3 group session']},ret:{name:'Return Loop',c:'#5DCAA5',desc:'O6 D60 drives return — tao ra loop, khong phai linear funnel.',items:['O6 D60 → P2 return visit','O6 D60 → O2/O3 online re-entry','Returned customer → new O1 WOM']}};
+
+let activeFilters=new Set(['exp','dat','trg','fin','ret']),isTracing=false,traceTimer=null;
+function applyFilters(){['exp','dat','trg','fin','ret'].forEach(t=>{const g=document.getElementById('g-'+t);if(g)g.style.opacity=activeFilters.has(t)?'1':'0.05';});}
+function toggleFilter(type,btn){if(activeFilters.has(type)){activeFilters.delete(type);btn.classList.remove('active');}else{activeFilters.add(type);btn.classList.add('active');}applyFilters();}
+function resetFilters(){activeFilters=new Set(['exp','dat','trg','fin','ret']);document.querySelectorAll('.f-btn').forEach(b=>b.classList.add('active'));applyFilters();}
+function showDetail(html){document.getElementById('det-body').innerHTML=html; document.getElementById('det-body').scrollTop=0;document.getElementById('detail').classList.add('open');}
+function closeDetail(){document.getElementById('detail').classList.remove('open');document.querySelectorAll('.zn').forEach(n=>n.style.opacity='1');applyFilters();}
+function selectZone(code){const z=ZONES[code];if(!z)return;document.querySelectorAll('.zn').forEach(n=>n.style.opacity='0.35');const node=document.getElementById('node-'+code);if(node)node.style.opacity='1';showDetail(`<div class="det-ey">${z.type}</div><div class="det-title">${z.name}</div><div class="det-sub">${z.sub}</div><div class="det-desc">${z.desc}</div>${z.flows_in.length?`<div class="det-sh">Flows IN</div>${z.flows_in.map(f=>`<div class="det-flow"><span class="df-dot" style="background:${f.c}"></span><span>${f.t}</span></div>`).join('')}`:''}${z.flows_out.length?`<div class="det-sh">Flows OUT</div>${z.flows_out.map(f=>`<div class="det-flow"><span class="df-dot" style="background:${f.c}"></span><span>${f.t}</span></div>`).join('')}`:''}<div class="det-inv"><div class="det-inv-l">Codex Invariant</div><div class="det-inv-t">${z.inv}</div></div><div class="det-frac"><div class="det-frac-l">Fractal Pattern</div><div class="det-frac-t">${z.frac}</div></div>`);}
+function selectConn(type){const c=CONNS[type];if(!c)return;['exp','dat','trg','fin','ret'].forEach(t=>{const g=document.getElementById('g-'+t);if(g)g.style.opacity=t===type?'1':'0.05';});showDetail(`<div class="det-ey">Connection Type</div><div class="det-title" style="color:${c.c}">${c.name}</div><div class="det-desc">${c.desc}</div><div class="det-sh">Connections</div>${c.items.map(i=>`<div class="det-flow"><span class="df-dot" style="background:${c.c}"></span><span>${i}</span></div>`).join('')}`);}
+function traceJourney(){if(isTracing){stopTrace();return;}isTracing=true;document.getElementById('traceBtn').textContent='Stop';document.getElementById('traceBtn').classList.add('tracing');document.querySelectorAll('.zn').forEach(n=>n.style.opacity='0.2');['exp','dat','trg','fin','ret'].forEach(t=>{const g=document.getElementById('g-'+t);if(g)g.style.opacity='0.06';});const seq=['O1','O2','O3','O4','P1','P2','P3','P4','P5','O6'];let i=0;function step(){if(!isTracing)return;if(i>0){const p=document.getElementById('node-'+seq[i-1]);if(p)p.style.opacity='0.45';}if(i>=seq.length){setTimeout(()=>{const rg=document.getElementById('g-ret');if(rg)rg.style.opacity='1';stopTrace();},600);return;}const n=document.getElementById('node-'+seq[i]);if(n)n.style.opacity='1';if(i>=4){const eg=document.getElementById('g-exp');if(eg)eg.style.opacity='0.9';}if(i===7){const tg=document.getElementById('g-trg');if(tg)tg.style.opacity='0.9';}i++;traceTimer=setTimeout(step,680);}step();}
+function stopTrace(){isTracing=false;if(traceTimer)clearTimeout(traceTimer);document.getElementById('traceBtn').textContent='&#9654; Trace Customer Journey';document.getElementById('traceBtn').classList.remove('tracing');document.querySelectorAll('.zn').forEach(n=>n.style.opacity='1');applyFilters();}
+applyFilters();
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape') closeDetail();
+});
+</script>
+</body>
+</html>
