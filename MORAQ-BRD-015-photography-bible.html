@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="color-scheme" content="dark">
+<title>MORAQ Photography Bible</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#0C0B0A!important;color:#fff!important;height:100%}
+.shell{position:fixed;inset:0;background:#0C0B0A;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:flex;flex-direction:column;overflow:hidden}
+.top{height:50px;flex-shrink:0;background:#111010;border-bottom:1px solid #242220;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.tl{display:flex;align-items:center;gap:12px}
+.tbrand{font-family:'Menlo','Monaco','Courier New',monospace;font-size:10px;letter-spacing:.2em;color:#9FE1CB;opacity:.8}
+.tsep{width:1px;height:14px;background:#2A2724}
+.ttitle{font-family:'Georgia','Times New Roman',serif;font-size:13px;font-style:italic;color:rgba(255,255,255,.35)}
+.tdoc{font-family:'Menlo','Monaco','Courier New',monospace;font-size:8px;color:rgba(255,255,255,.2)}
+.body-wrap{flex:1;display:flex;overflow:hidden}
+
+/* SIDEBAR */
+.sb{width:200px;flex-shrink:0;background:#111010;border-right:1px solid #242220;display:flex;flex-direction:column;overflow:hidden}
+.sb-hd{padding:12px 14px 8px;border-bottom:1px solid #242220;flex-shrink:0}
+.sb-ey{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.14em;color:rgba(255,255,255,.25);display:block;margin-bottom:3px}
+.sb-ti{font-family:'Georgia','Times New Roman',serif;font-size:15px;font-weight:300;color:rgba(255,255,255,.7)}
+.sb-list{flex:1;overflow-y:auto;scrollbar-width:none;padding:5px 0}
+.sb-list::-webkit-scrollbar{display:none}
+.sitem{display:flex;align-items:center;gap:9px;padding:9px 14px;cursor:pointer;border-left:2px solid transparent;transition:all .15s}
+.sitem:hover{background:#1A1916}
+.sitem.on{background:#1A1916;border-left-color:var(--c)}
+.si-n{font-family:'Menlo','Monaco','Courier New',monospace;font-size:8px;color:rgba(255,255,255,.2);min-width:18px}
+.sitem.on .si-n{color:var(--c)}
+.si-info{flex:1;min-width:0}
+.si-name{font-size:12px;color:rgba(255,255,255,.45);line-height:1.25;transition:color .15s}
+.sitem.on .si-name,.sitem:hover .si-name{color:rgba(255,255,255,.85)}
+.si-sub{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;color:rgba(255,255,255,.2);margin-top:1px}
+
+/* DETAIL */
+.detail{flex:1;overflow-y:auto;overflow-x:hidden;background:#0C0B0A;scrollbar-width:thin;scrollbar-color:#2A2724 transparent}
+.detail::-webkit-scrollbar{width:3px}
+.detail::-webkit-scrollbar-thumb{background:#2A2724;border-radius:2px}
+.dw{padding:20px;display:flex;flex-direction:column;gap:14px}
+.panel{display:none;flex-direction:column;gap:14px}
+.panel.on{display:flex}
+
+/* Atoms */
+.ey{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7.5px;letter-spacing:.16em;color:var(--c);display:block;margin-bottom:5px}
+.hero-t{font-family:'Georgia','Times New Roman',serif;font-size:clamp(24px,4vw,38px);font-weight:300;line-height:.96;color:#fff}
+.hero-t em{font-style:italic}
+.h2{font-family:'Georgia','Times New Roman',serif;font-size:clamp(18px,2.8vw,26px);font-weight:300;color:#fff;line-height:1.05}
+.h2 em{font-style:italic}
+.lbl{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.1em;color:rgba(255,255,255,.3);display:block;margin-bottom:6px}
+.body{font-size:12px;color:rgba(255,255,255,.55);line-height:1.72}
+.body b{color:rgba(255,255,255,.82);font-weight:400}
+.card{background:#1A1916;border:1px solid #2A2724;border-radius:6px;padding:12px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+
+/* Preview box */
+.prev-box{border-radius:8px;overflow:hidden;position:relative;flex-shrink:0;background:#111}
+.prev-box svg{display:block;width:100%;height:auto}
+.prev-ov{position:absolute;bottom:0;left:0;right:0;padding:10px 14px 9px;background:linear-gradient(transparent,rgba(12,11,10,.92))}
+.prev-name{font-family:'Georgia','Times New Roman',serif;font-size:16px;font-style:italic;color:#fff;margin-bottom:2px}
+.prev-code{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.07em;color:rgba(255,255,255,.38)}
+
+/* Spec card */
+.sc{background:#1A1916;border:1px solid #2A2724;border-radius:6px;padding:11px}
+.sc .lbl{margin-bottom:4px}
+.sc-val{font-size:12px;color:rgba(255,255,255,.75);line-height:1.45}
+.sc-val b{color:#fff;font-weight:400}
+
+/* Must/Never */
+.mnt{background:#1A1916;border:1px solid #2A2724;border-radius:6px;overflow:hidden}
+.mnt-hd{display:flex;background:#141210;border-bottom:1px solid #1A1918}
+.mnt-col{flex:1;padding:8px 12px;font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.1em}
+.mnt-col.must{color:#9FE1CB}.mnt-col.nevr{color:rgba(163,45,45,.7)}
+.mnt-row{display:flex;border-bottom:1px solid #1A1918}
+.mnt-row:last-child{border-bottom:none}
+.mnt-cell{flex:1;padding:9px 12px;font-size:11.5px;line-height:1.55;border-right:1px solid #1A1918;display:flex;align-items:flex-start;gap:6px}
+.mnt-cell:last-child{border-right:none}
+.mc-m{color:rgba(255,255,255,.65)}.mc-n{color:rgba(255,255,255,.38);font-style:italic}
+.dot-m{width:5px;height:5px;border-radius:50%;background:#0F6E56;flex-shrink:0;margin-top:4px}
+.dot-n{width:5px;height:5px;border-radius:50%;background:rgba(163,45,45,.6);flex-shrink:0;margin-top:4px}
+
+/* Rule box */
+.rb{padding:11px 14px;border-radius:0 6px 6px 0;border-left:2px solid var(--c);background:color-mix(in srgb,var(--c) 8%,#0C0B0A)}
+.rb-lbl{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.12em;color:var(--c);display:block;margin-bottom:4px}
+.rb-t{font-size:12px;color:rgba(255,255,255,.52);line-height:1.68;font-style:italic}
+.rb-t b{color:rgba(255,255,255,.8);font-weight:400;font-style:normal}
+
+/* Usage */
+.utags{display:flex;gap:6px;flex-wrap:wrap}
+.utag{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;letter-spacing:.07em;padding:3px 9px;border-radius:12px;border:1px solid}
+
+/* Overview */
+.ov-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ov-card{background:#1A1916;border:1px solid #2A2724;border-radius:6px;overflow:hidden;cursor:pointer;transition:border-color .15s}
+.ov-card:hover{border-color:rgba(255,255,255,.2)}
+.ov-prev{height:70px;position:relative;overflow:hidden;background:#111}
+.ov-prev svg{position:absolute;inset:0;width:100%;height:100%}
+.ov-body{padding:9px 10px}
+.ov-num{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;color:rgba(255,255,255,.22);margin-bottom:2px}
+.ov-name{font-size:12px;color:rgba(255,255,255,.72)}
+.ov-type{font-family:'Menlo','Monaco','Courier New',monospace;font-size:7px;color:rgba(255,255,255,.22);margin-top:1px}
+
+/* Rules list */
+.rule-list{display:flex;flex-direction:column;gap:0}
+.rl-item{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #1A1918;align-items:flex-start}
+.rl-item:last-child{border-bottom:none}
+.rl-num{font-family:'Menlo','Monaco','Courier New',monospace;font-size:9px;color:#9FE1CB;min-width:22px;flex-shrink:0;padding-top:1px}
+.rl-text{font-size:12px;color:rgba(255,255,255,.55);line-height:1.55}
+.rl-text b{color:rgba(255,255,255,.82);font-weight:400}
+
+@media(max-width:580px){
+  .sb{width:160px}
+  .g2,.g3{grid-template-columns:1fr}
+  .ov-grid{grid-template-columns:1fr}
+  .mnt-row{flex-direction:column}
+  .mnt-cell{border-right:none;border-bottom:1px solid #1A1918}
+  .mnt-cell:last-child{border-bottom:none}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+<div class="top">
+  <div class="tl">
+    <div class="tbrand">MORAQ</div><div class="tsep"></div>
+    <div class="ttitle">Photography Bible</div>
+  </div>
+  <div class="tdoc">PB-001 · V1.0</div>
+</div>
+<div class="body-wrap">
+
+<!-- SIDEBAR -->
+<div class="sb">
+  <div class="sb-hd">
+    <span class="sb-ey">9 SHOT TYPES</span>
+    <div class="sb-ti">Visual Language</div>
+  </div>
+  <div class="sb-list" id="nav">
+    <div class="sitem on" data-p="p0" style="--c:#0F6E56"><div class="si-n">—</div><div class="si-info"><div class="si-name">Tổng quan</div><div class="si-sub">OVERVIEW</div></div></div>
+    <div class="sitem" data-p="p1" style="--c:#9FE1CB"><div class="si-n">01</div><div class="si-info"><div class="si-name">Counter Hero</div><div class="si-sub">BRAND ANCHOR</div></div></div>
+    <div class="sitem" data-p="p2" style="--c:#FAC775"><div class="si-n">02</div><div class="si-info"><div class="si-name">Hands-on-Bottle</div><div class="si-sub">HUMAN TOUCH</div></div></div>
+    <div class="sitem" data-p="p3" style="--c:#85B7EB"><div class="si-n">03</div><div class="si-info"><div class="si-name">Environmental Mood</div><div class="si-sub">ATMOSPHERE</div></div></div>
+    <div class="sitem" data-p="p4" style="--c:#C0DD97"><div class="si-n">04</div><div class="si-info"><div class="si-name">Material Detail</div><div class="si-sub">TEXTURE</div></div></div>
+    <div class="sitem" data-p="p5" style="--c:#AFA9EC"><div class="si-n">05</div><div class="si-info"><div class="si-name">Staff Ritual</div><div class="si-sub">IN ACTION</div></div></div>
+    <div class="sitem" data-p="p6" style="--c:#F09595"><div class="si-n">06</div><div class="si-info"><div class="si-name">Unboxing Sequence</div><div class="si-sub">NARRATIVE</div></div></div>
+    <div class="sitem" data-p="p7" style="--c:#FAC775"><div class="si-n">07</div><div class="si-info"><div class="si-name">City Portrait</div><div class="si-sub">LOCAL IDENTITY</div></div></div>
+    <div class="sitem" data-p="p8" style="--c:#9FE1CB"><div class="si-n">08</div><div class="si-info"><div class="si-name">Product Still</div><div class="si-sub">EDITORIAL</div></div></div>
+    <div class="sitem" data-p="p9" style="--c:#FAC775"><div class="si-n">09</div><div class="si-info"><div class="si-name">Discovery Moment</div><div class="si-sub">EMOTIONAL</div></div></div>
+  </div>
+</div>
+
+<!-- DETAIL -->
+<div class="detail"><div class="dw">
+
+<!-- P0: OVERVIEW -->
+<div class="panel on" id="p0" style="--c:#0F6E56">
+  <div>
+    <span class="ey">PHOTOGRAPHY BIBLE · PB-001</span>
+    <div class="hero-t">9 shot types.<br><em>Một visual language.</em></div>
+    <div class="body" style="margin-top:8px;max-width:520px">Tài liệu này không phải "chụp đẹp là được". Mỗi shot type có vai trò cụ thể, thông số kỹ thuật, và danh sách điều không bao giờ được xuất hiện trong frame. <b>Visual consistency là luxury — và nó đến từ quy tắc, không phải inspiration.</b></div>
+  </div>
+  <div class="card">
+    <span class="lbl">5 QUY TẮC TOÀN CẦU — ÁP DỤNG MỌI SHOT</span>
+    <div class="rule-list">
+      <div class="rl-item"><div class="rl-num">R1</div><div class="rl-text"><b>Luôn có dấu vết con người.</b> Tay, bóng, hoặc vật phẩm vừa được chạm vào. Không bao giờ "chai trên nền trắng" kiểu catalog.</div></div>
+      <div class="rl-item"><div class="rl-num">R2</div><div class="rl-text"><b>Ánh sáng 2700K — không exception.</b> Ảnh trong store phải dùng store light hoặc giả lập 2700K warm white. Không flash lạnh trắng.</div></div>
+      <div class="rl-item"><div class="rl-num">R3</div><div class="rl-text"><b>Màu trong brand palette only.</b> Ink, Teal, Amber, Cream, Linen. Vật gì màu ngoài palette trong frame → remove hoặc không chụp.</div></div>
+      <div class="rl-item"><div class="rl-num">R4</div><div class="rl-text"><b>Không staged smiles.</b> Staff không nhìn camera và cười posed. Capture ritual đang xảy ra — candid over posed, luôn luôn.</div></div>
+      <div class="rl-item"><div class="rl-num">R5</div><div class="rl-text"><b>Negative space ≥ 30% mỗi frame.</b> Khoảng trống là phần thiết kế, không phải chỗ lãng phí. Không fill toàn bộ frame với sản phẩm.</div></div>
+    </div>
+  </div>
+  <span class="lbl">9 SHOT TYPES — CLICK ĐỂ XEM CHI TIẾT</span>
+  <div class="ov-grid">
+    <div class="ov-card" data-jump="p1"><div class="ov-prev"><svg viewBox="0 0 200 70" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="70" fill="#1A1916"/><radialGradient id="o1"><stop offset="0%" stop-color="#FAC775" stop-opacity=".4"/><stop offset="100%" stop-color="#1A1916" stop-opacity="0"/></radialGradient><rect width="200" height="70" fill="url(#o1)"/><rect x="0" y="55" width="200" height="15" fill="#2A2724"/><rect x="20" y="32" width="8" height="24" rx="1" fill="#9FE1CB"/><rect x="32" y="26" width="9" height="30" rx="1" fill="#0F6E56"/><rect x="44" y="34" width="7" height="22" rx="1" fill="#085041"/><rect x="88" y="22" width="10" height="34" rx="1" fill="#085041"/><rect x="102" y="16" width="11" height="40" rx="1" fill="#04342C"/><rect x="148" y="24" width="10" height="32" rx="1" fill="#1A1916" stroke="#2A2724" stroke-width=".5"/><rect x="162" y="18" width="11" height="38" rx="1" fill="#1A1916" stroke="#333" stroke-width=".5"/></svg></div><div class="ov-body"><div class="ov-num">01</div><div class="ov-name">Counter Hero</div><div class="ov-type">BRAND ANCHOR</div></div></div>
+    <div class="ov-card" data-jump="p2"><div class="ov-prev"><svg viewBox="0 0 200 70" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="70" fill="#1A1916"/><radialGradient id="o2" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="#FAC775" stop-opacity=".25"/><stop offset="100%" stop-color="#1A1916" stop-opacity="0"/></radialGradient><rect width="200" height="70" fill="url(#o2)"/><rect x="80" y="10" width="40" height="50" rx="4" fill="#0F6E56"/><rect x="84" y="14" width="32" height="10" rx="1" fill="#085041"/><rect x="84" y="28" width="32" height="20" rx="1" fill="#FAF9F6" opacity=".9"/><ellipse cx="72" cy="44" rx="14" ry="22" fill="#C4A882" opacity=".6"/><ellipse cx="128" cy="44" rx="14" ry="22" fill="#C4A882" opacity=".6"/></svg></div><div class="ov-body"><div class="ov-num">02</div><div class="ov-name">Hands-on-Bottle</div><div class="ov-type">HUMAN TOUCH</div></div></div>
+    <div class="ov-card" data-jump="p3"><div class="ov-prev"><svg viewBox="0 0 200 70" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="70" fill="#111"/><radialGradient id="o3" cx="25%" cy="0%" r="70%"><stop offset="0%" stop-color="#FAC775" stop-opacity=".3"/><stop offset="100%" stop-color="#111" stop-opacity="0"/></radialGradient><rect width="200" height="70" fill="url(#o3)"/><rect x="0" y="52" width="200" height="18" fill="#1A1916"/><ellipse cx="100" cy="60" rx="55" ry="12" fill="#FAC775" opacity=".05"/><rect x="40" y="20" width="8" height="34" rx="1" fill="#085041" opacity=".25"/><rect x="52" y="14" width="9" height="40" rx="1" fill="#0F6E56" opacity=".2"/><ellipse cx="100" cy="26" rx="18" ry="22" fill="#1A1612" opacity=".7"/></svg></div><div class="ov-body"><div class="ov-num">03</div><div class="ov-name">Environmental Mood</div><div class="ov-type">ATMOSPHERE</div></div></div>
+    <div class="ov-card" data-jump="p4"><div class="ov-prev"><svg viewBox="0 0 200 70" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="70" fill="#D4C9B5"/><path d="M0 28 Q50 22 100 32 Q150 42 200 28" fill="none" stroke="rgba(160,140,110,.45)" stroke-width="1"/><path d="M0 46 Q60 36 120 50 Q165 58 200 44" fill="none" stroke="rgba(160,140,110,.3)" stroke-width=".8"/><rect x="60" y="8" width="80" height="54" rx="2" fill="#0F6E56"/><ellipse cx="100" cy="22" rx="30" ry="14" fill="none" stroke="#085041" stroke-width="3.5"/><ellipse cx="100" cy="22" rx="12" ry="6" fill="#085041"/></svg></div><div class="ov-body"><div class="ov-num">04</div><div class="ov-name">Material Detail</div><div class="ov-type">TEXTURE</div></div></div>
+    <div class="ov-card" data-jump="p5"><div class="ov-prev"><svg viewBox="0 0 200 70" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="70" fill="#1A1916"/><radialGradient id="o5" cx="50%" cy="0%" r="70%"><stop offset="0%" stop-color="#FAC775" stop-opacity=".35"/><stop offset="100%" stop-color="#1A1916" stop-opacity="0"/></radialGradient><rect width="200" height="70" fill="url(#o5)"/><rect x="0" y="52" width="200" height="18" fill="#2A2724"/><rect x="0" y="50" width="200" height="3" fill="#D4C9B5" opacity=".35"/><rect x="72" y="30" width="56" height="24" rx="1" fill="#242220"/><rect x="72" y="30" width="56" height="7" rx="1" fill="#2E2C28"/><rect x="98" y="30" width="4" height="24" fill="#0F6E56" opacity=".9"/><rect x="50" y="45" rx="6" width="20" height="8" fill="#C4A882" opacity=".5"/><rect x="130" y="45" rx="6" width="20" height="8" fill="#C4A882" opacity=".5"/></svg></div><div class="ov-body"><div class="ov-num">05</div><div class="ov-name">Staff Ritual</div><div class="ov-type">IN ACTION</div></div></div>
+    <div class="ov-card" data-jump="p6"><div class="ov-prev"><svg viewBox="0 0 200 70" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="70" fill="#E8DFD0"/><rect x="30" y="10" width="32" height="50" rx="2" fill="#242220"/><rect x="72" y="14" width="32" height="42" rx="2" fill="#2A2724"/><rect x="114" y="10" width="32" height="50" rx="2" fill="#1A1916"/><rect x="156" y="8" width="36" height="54" rx="2" fill="#0F6E56"/><rect x="118" y="14" width="24" height="32" rx="1" fill="#FAF9F6" opacity=".8"/><rect x="122" y="18" width="16" height="2" rx=".5" fill="#1A1916" opacity=".4"/><rect x="122" y="23" width="12" height="1.5" rx=".5" fill="#1A1916" opacity=".25"/><rect x="160" y="12" width="6" height="42" fill="#085041" opacity=".8"/></svg></div><div class="ov-body"><div class="ov-num">06</div><div class="ov-name">Unboxing Sequence</div><div class="ov-type">NARRATIVE</div></div></div>
+    <div class="ov-card" data-jump="p7"><div class="ov-prev"><svg viewBox="0 0 200 70" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="70" fill="#1A1916"/><radialGradient id="o7" cx="50%" cy="100%" r="80%"><stop offset="0%" stop-color="#0F6E56" stop-opacity=".2"/><stop offset="100%" stop-color="#1A1916" stop-opacity="0"/></radialGradient><rect width="200" height="70" fill="url(#o7)"/><rect x="0" y="40" width="200" height="30" fill="#0A0908"/><rect x="4" y="14" width="12" height="28" fill="#1A1916"/><rect x="20" y="8" width="10" height="34" fill="#1A1916"/><rect x="34" y="16" width="14" height="26" fill="#141210"/><rect x="52" y="6" width="16" height="36" fill="#1A1916"/><rect x="72" y="12" width="12" height="30" fill="#141210"/><rect x="90" y="4" width="20" height="38" fill="#1A1916"/><rect x="86" y="58" width="28" height="10" rx="1" fill="#0F6E56" opacity=".5"/></svg></div><div class="ov-body"><div class="ov-num">07</div><div class="ov-name">City Portrait</div><div class="ov-type">LOCAL IDENTITY</div></div></div>
+    <div class="ov-card" data-jump="p8"><div class="ov-prev"><svg viewBox="0 0 200 70" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="70" fill="#FAF9F6"/><rect x="84" y="6" width="32" height="58" rx="4" fill="#0F6E56"/><rect x="88" y="10" width="24" height="12" rx="1" fill="#085041"/><rect x="90" y="26" width="20" height="26" rx="1" fill="#FAF9F6" opacity=".9"/><rect x="93" y="30" width="14" height="1.5" rx=".5" fill="#1A1916" opacity=".4"/><rect x="93" y="35" width="10" height="1.5" rx=".5" fill="#1A1916" opacity=".25"/><rect x="93" y="40" width="12" height="1.5" rx=".5" fill="#0F6E56" opacity=".4"/><ellipse cx="100" cy="64" rx="20" ry="4" fill="rgba(26,25,22,.1)"/></svg></div><div class="ov-body"><div class="ov-num">08</div><div class="ov-name">Product Still</div><div class="ov-type">EDITORIAL</div></div></div>
+    <div class="ov-card" data-jump="p9"><div class="ov-prev"><svg viewBox="0 0 200 70" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="70" fill="#1A1916"/><radialGradient id="o9" cx="60%" cy="50%" r="50%"><stop offset="0%" stop-color="#FAC775" stop-opacity=".28"/><stop offset="100%" stop-color="#1A1916" stop-opacity="0"/></radialGradient><rect width="200" height="70" fill="url(#o9)"/><rect x="100" y="20" width="30" height="44" rx="2" fill="#0F6E56" opacity=".7"/><rect x="60" y="32" width="46" height="6" rx="1" fill="#E8DFD0" opacity=".4"/><ellipse cx="82" cy="35" rx="18" ry="4" fill="#9FE1CB" opacity=".1"/><ellipse cx="90" cy="56" rx="22" ry="8" fill="#C4A882" opacity=".35"/><ellipse cx="92" cy="50" rx="18" ry="26" fill="#C4A882" opacity=".2"/></svg></div><div class="ov-body"><div class="ov-num">09</div><div class="ov-name">Discovery Moment</div><div class="ov-type">EMOTIONAL</div></div></div>
+  </div>
+</div>
+
+<!-- P1: COUNTER HERO -->
+<div class="panel" id="p1" style="--c:#9FE1CB">
+  <div class="prev-box">
+    <svg viewBox="0 0 560 240" xmlns="http://www.w3.org/2000/svg">
+      <rect width="560" height="240" fill="#1A1916"/>
+      <radialGradient id="c1a" cx="22%" cy="0%" r="55%"><stop offset="0%" stop-color="#FAC775" stop-opacity=".38"/><stop offset="100%" stop-color="#1A1916" stop-opacity="0"/></radialGradient>
+      <radialGradient id="c1b" cx="78%" cy="0%" r="55%"><stop offset="0%" stop-color="#FAC775" stop-opacity=".38"/><stop offset="100%" stop-color="#1A1916" stop-opacity="0"/></radialGradient>
+      <rect width="560" height="240" fill="url(#c1a)"/><rect width="560" height="240" fill="url(#c1b)"/>
+      <rect x="0" y="178" width="560" height="40" fill="#2A2724"/><rect x="0" y="216" width="560" height="24" fill="#201E1C"/>
+      <rect x="44" y="160" width="90" height="20" rx="1" fill="#3A3530"/>
+      <rect x="214" y="154" width="132" height="26" rx="1" fill="#3A3530"/>
+      <rect x="388" y="158" width="128" height="22" rx="1" fill="#3A3530"/>
+      <rect x="58" y="102" width="14" height="58" rx="2" fill="#9FE1CB"/><rect x="76" y="90" width="16" height="70" rx="2" fill="#5DCAA5"/><rect x="96" y="110" width="13" height="50" rx="2" fill="#1D9E75"/>
+      <rect x="228" y="82" width="18" height="72" rx="2" fill="#0F6E56"/><rect x="250" y="70" width="20" height="84" rx="2" fill="#085041"/><rect x="274" y="96" width="16" height="60" rx="2" fill="#04342C"/>
+      <rect x="404" y="78" width="18" height="80" rx="2" fill="#1A1916" stroke="#2A2724" stroke-width=".5"/><rect x="426" y="66" width="20" height="92" rx="2" fill="#1A1916" stroke="#333" stroke-width=".5"/><rect x="450" y="88" width="16" height="70" rx="2" fill="#1A1916" stroke="#2A2724" stroke-width=".5"/>
+      <circle cx="118" cy="7" r="7" fill="#2A2724"/><circle cx="118" cy="7" r="4" fill="#FAC775" opacity=".8"/>
+      <circle cx="442" cy="7" r="7" fill="#2A2724"/><circle cx="442" cy="7" r="4" fill="#FAC775" opacity=".8"/>
+      <text x="280" y="232" font-family="monospace" font-size="6.5" fill="rgba(255,255,255,.2)" text-anchor="middle">OVERHEAD 45° · FULL COUNTER WIDTH · 2700K · BEFORE STORE OPENS</text>
+    </svg>
+    <div class="prev-ov"><div class="prev-name">Counter Hero Shot</div><div class="prev-code">SHOT-01 · BRAND ANCHOR · MANDATORY SETUP DOC</div></div>
+  </div>
+  <div>
+    <span class="ey">SHOT 01 · COUNTER HERO</span>
+    <div class="h2">Brand anchor.<br><em>Mọi thứ đều đúng chỗ.</em></div>
+    <div class="body" style="margin-top:6px">Ảnh tổng thể counter với đầy đủ elements đúng chuẩn. Đây là "reference state" — dùng để calibrate, audit, và train. Chụp đầu mỗi ca tại store mới. Không phải ảnh đẹp — là tài liệu kiểm tra.</div>
+  </div>
+  <div class="g2">
+    <div class="sc"><span class="lbl">ANGLE</span><div class="sc-val">Overhead <b>45°</b> từ phía khách — không nhìn thẳng từ trên xuống</div></div>
+    <div class="sc"><span class="lbl">FOCAL LENGTH</span><div class="sc-val"><b>24–35mm</b> · Đủ wide để thấy toàn counter</div></div>
+    <div class="sc"><span class="lbl">LIGHTING</span><div class="sc-val">Store light tự nhiên · <b>2700K · CRI 95+</b> · Không flash</div></div>
+    <div class="sc"><span class="lbl">TIMING</span><div class="sc-val"><b>Trước khi store mở</b> — không có khách trong frame</div></div>
+    <div class="sc"><span class="lbl">FORMAT</span><div class="sc-val"><b>RAW</b> · Edit white balance sau · Lưu full resolution</div></div>
+    <div class="sc"><span class="lbl">FREQUENCY</span><div class="sc-val">Mỗi khi có thay đổi setup · Tối thiểu 1 lần/tháng</div></div>
+  </div>
+  <div class="mnt">
+    <div class="mnt-hd"><div class="mnt-col must">✓ PHẢI CÓ TRONG FRAME</div><div class="mnt-col nevr">✗ KHÔNG BAO GIỜ</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Scent Grammar order đúng — Fresh trái, Oriental phải</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Điện thoại, cốc nước, vật cá nhân trên quầy</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Marble sạch — không vết nước, không vân tay</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Label giá visible từ angle này</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Riser teak, welcome tray đã setup, coffee beans trong hộp</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Flash trắng — phải dùng store light 2700K</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Negative space ≥ 30% — counter không crowded</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Edit quá sáng — mất warm tone đặc trưng</div></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:6px"><span class="lbl">DÙNG CHO</span><div class="utags"><span class="utag" style="color:#9FE1CB;border-color:#1A4028">Store Setup Audit</span><span class="utag" style="color:#9FE1CB;border-color:#1A4028">Staff Training</span><span class="utag" style="color:#9FE1CB;border-color:#1A4028">Brand Standards Doc</span><span class="utag" style="color:rgba(255,255,255,.3);border-color:#2A2724">Website</span></div></div>
+  <div class="rb"><span class="rb-lbl">RULE</span><div class="rb-t">Counter Hero là <b>document ảnh trước tiên, ảnh đẹp sau</b>. Mọi element phải đúng chuẩn trước khi nhấn shutter. Không chụp rồi edit props ra sau.</div></div>
+</div>
+
+<!-- P2: HANDS ON BOTTLE -->
+<div class="panel" id="p2" style="--c:#FAC775">
+  <div class="prev-box">
+    <svg viewBox="0 0 560 240" xmlns="http://www.w3.org/2000/svg">
+      <rect width="560" height="240" fill="#1A1916"/>
+      <radialGradient id="c2" cx="50%" cy="35%" r="55%"><stop offset="0%" stop-color="#FAC775" stop-opacity=".28"/><stop offset="100%" stop-color="#1A1916" stop-opacity="0"/></radialGradient>
+      <rect width="560" height="240" fill="url(#c2)"/>
+      <rect x="240" y="30" width="80" height="160" rx="8" fill="#0F6E56"/>
+      <rect x="246" y="36" width="68" height="22" rx="2" fill="#085041"/>
+      <rect x="250" y="64" width="60" height="8" rx="1" fill="#9FE1CB" opacity=".3"/>
+      <rect x="248" y="80" width="64" height="72" rx="2" fill="#FAF9F6" opacity=".92"/>
+      <rect x="256" y="88" width="48" height="2" rx="1" fill="#1A1916" opacity=".5"/>
+      <rect x="260" y="94" width="40" height="1.5" rx=".5" fill="#1A1916" opacity=".3"/>
+      <rect x="258" y="100" width="44" height="1.5" rx=".5" fill="#1A1916" opacity=".22"/>
+      <rect x="264" y="108" width="32" height="1.5" rx=".5" fill="#0F6E56" opacity=".4"/>
+      <ellipse cx="222" cy="150" rx="28" ry="55" fill="#C4A882" opacity=".62"/>
+      <ellipse cx="338" cy="150" rx="28" ry="55" fill="#C4A882" opacity=".62"/>
+      <ellipse cx="218" cy="140" rx="24" ry="50" fill="#C4A882" opacity=".38"/>
+      <ellipse cx="342" cy="140" rx="24" ry="50" fill="#C4A882" opacity=".38"/>
+      <linearGradient id="bl" x1="0" x2="1" y1="0" y2="0"><stop offset="0%" stop-color="#1A1916" stop-opacity=".88"/><stop offset="100%" stop-color="#1A1916" stop-opacity="0"/></linearGradient>
+      <linearGradient id="br" x1="0" x2="1" y1="0" y2="0"><stop offset="0%" stop-color="#1A1916" stop-opacity="0"/><stop offset="100%" stop-color="#1A1916" stop-opacity=".88"/></linearGradient>
+      <rect x="0" y="0" width="140" height="240" fill="url(#bl)"/>
+      <rect x="420" y="0" width="140" height="240" fill="url(#br)"/>
+      <text x="280" y="232" font-family="monospace" font-size="6.5" fill="rgba(255,255,255,.2)" text-anchor="middle">EYE LEVEL · f/1.8–2.8 · SHALLOW DOF · WARM SKIN TONE · NO FACE</text>
+    </svg>
+    <div class="prev-ov"><div class="prev-name">Hands-on-Bottle</div><div class="prev-code">SHOT-02 · HUMAN TOUCH · SOCIAL HERO</div></div>
+  </div>
+  <div>
+    <span class="ey">SHOT 02 · HANDS-ON-BOTTLE</span>
+    <div class="h2">Con người chạm vào sản phẩm.<br><em>Ritual, không phải pose.</em></div>
+    <div class="body" style="margin-top:6px">Shot quan trọng nhất cho social media. Có tay người = có ritual. Shallow depth of field làm chai và tay trở thành sole subject. Không bao giờ chụp chai đơn độc không có bàn tay.</div>
+  </div>
+  <div class="g2">
+    <div class="sc"><span class="lbl">APERTURE</span><div class="sc-val"><b>f/1.8 – f/2.8</b> · Shallow DOF — background blur nhẹ</div></div>
+    <div class="sc"><span class="lbl">ANGLE</span><div class="sc-val"><b>Eye level</b> hoặc hơi thấp · Không overhead</div></div>
+    <div class="sc"><span class="lbl">HANDS</span><div class="sc-val">Nail <b>nude / trong / không sơn</b> · Không ring lớn · Skin tone ấm</div></div>
+    <div class="sc"><span class="lbl">BOTTLE POSITION</span><div class="sc-val">Nghiêng <b>5–10°</b> tự nhiên · Không che hết label</div></div>
+    <div class="sc"><span class="lbl">CROP</span><div class="sc-val">Wrist → elbow · <b>Không thấy face</b> trong shot này</div></div>
+    <div class="sc"><span class="lbl">MOOD</span><div class="sc-val">Đang thật sự cầm chai trong ritual — không pose để chụp</div></div>
+  </div>
+  <div class="mnt">
+    <div class="mnt-hd"><div class="mnt-col must">✓ PHẢI</div><div class="mnt-col nevr">✗ KHÔNG</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Tay đang làm gì đó thật — cầm chai ritual, không pose awkward</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Nail art sặc sỡ — cạnh tranh với sản phẩm</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Ánh sáng warm consistent trên cả tay lẫn chai</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Ring to, vòng tay large trong frame</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Label chai readable — một phần hoặc toàn bộ</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Tay overexposed trắng — mất skin texture</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Background blur: marble, wood, linen texture</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Flash trực tiếp — chai bóng loáng, mất depth</div></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:6px"><span class="lbl">DÙNG CHO</span><div class="utags"><span class="utag" style="color:#FAC775;border-color:#3A2208">Instagram Feed</span><span class="utag" style="color:#FAC775;border-color:#3A2208">Instagram Story</span><span class="utag" style="color:#FAC775;border-color:#3A2208">Website Product</span><span class="utag" style="color:rgba(255,255,255,.3);border-color:#2A2724">Press Kit</span></div></div>
+  <div class="rb"><span class="rb-lbl">RULE</span><div class="rb-t">Tay phải trông như đang thật sự làm gì đó. <b>Ritual shot, không phải product shot.</b> Nếu cần nhắc người cầm "đang trong ritual" → kết quả sẽ tốt hơn mọi direction cụ thể.</div></div>
+</div>
+
+<!-- P3: ENVIRONMENTAL MOOD -->
+<div class="panel" id="p3" style="--c:#85B7EB">
+  <div class="prev-box">
+    <svg viewBox="0 0 560 240" xmlns="http://www.w3.org/2000/svg">
+      <rect width="560" height="240" fill="#0E0D0C"/>
+      <radialGradient id="c3a" cx="18%" cy="0%" r="50%"><stop offset="0%" stop-color="#FAC775" stop-opacity=".28"/><stop offset="100%" stop-color="#0E0D0C" stop-opacity="0"/></radialGradient>
+      <radialGradient id="c3b" cx="76%" cy="0%" r="45%"><stop offset="0%" stop-color="#FAC775" stop-opacity=".22"/><stop offset="100%" stop-color="#0E0D0C" stop-opacity="0"/></radialGradient>
+      <rect width="560" height="240" fill="url(#c3a)"/><rect width="560" height="240" fill="url(#c3b)"/>
+      <rect x="0" y="190" width="560" height="50" fill="#1A1916"/>
+      <rect x="0" y="188" width="560" height="3" fill="#242220"/>
+      <rect x="80" y="88" width="10" height="102" rx="1" fill="#085041" opacity=".22"/>
+      <rect x="96" y="76" width="12" height="114" rx="1" fill="#0F6E56" opacity=".18"/>
+      <ellipse cx="200" cy="62" rx="22" ry="26" fill="#1A1612" opacity=".75"/>
+      <rect x="182" y="86" width="36" height="104" rx="3" fill="#141210" opacity=".8"/>
+      <ellipse cx="200" cy="192" rx="55" ry="14" fill="#FAC775" opacity=".05"/>
+      <ellipse cx="100" cy="192" rx="36" ry="10" fill="#FAC775" opacity=".04"/>
+      <rect x="0" y="0" width="560" height="80" fill="rgba(8,7,6,.45)"/>
+      <text x="280" y="232" font-family="monospace" font-size="6.5" fill="rgba(255,255,255,.18)" text-anchor="middle">16–24mm · f/2.8–4 · LIGHT IS SUBJECT · CANDID STAFF SILHOUETTE OK</text>
+    </svg>
+    <div class="prev-ov"><div class="prev-name">Environmental Mood</div><div class="prev-code">SHOT-03 · ATMOSPHERE · WIDE ANGLE</div></div>
+  </div>
+  <div>
+    <span class="ey">SHOT 03 · ENVIRONMENTAL MOOD</span>
+    <div class="h2">Ánh sáng là subject.<br><em>Không phải sản phẩm.</em></div>
+    <div class="body" style="margin-top:6px">Ảnh không gian tổng thể — capture "cảm giác ở đây". Sản phẩm mờ ở background. Dùng cho homepage, press kit, market entry. Đây là ảnh communicate giá trị thương hiệu hiệu quả nhất.</div>
+  </div>
+  <div class="g2">
+    <div class="sc"><span class="lbl">FOCAL LENGTH</span><div class="sc-val"><b>16–24mm</b> · Wide để capture atmosphere</div></div>
+    <div class="sc"><span class="lbl">APERTURE</span><div class="sc-val"><b>f/2.8 – f/4</b> · Đủ sharp nhưng có depth cảm giác</div></div>
+    <div class="sc"><span class="lbl">SUBJECT</span><div class="sc-val"><b>Ánh sáng và không gian</b> — không phải chai cụ thể</div></div>
+    <div class="sc"><span class="lbl">SHOT FROM</span><div class="sc-val">Entry nhìn vào · Hoặc counter nhìn ra entry</div></div>
+    <div class="sc"><span class="lbl">PEOPLE</span><div class="sc-val">Staff silhouette OK · Không nhìn camera · Motion blur nhẹ OK</div></div>
+    <div class="sc"><span class="lbl">EDIT</span><div class="sc-val">Warm shadows · Highlights không burned · Film grain nhẹ</div></div>
+  </div>
+  <div class="mnt">
+    <div class="mnt-hd"><div class="mnt-col must">✓ PHẢI</div><div class="mnt-col nevr">✗ KHÔNG</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Light pools visible — spotlight là hero của shot này</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Chai rõ nét foreground — không phải mục đích</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Negative space — không gian phải "thở"</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Khách nhìn camera — phá vỡ candid atmosphere</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Brand palette materials visible: marble, teal, wood</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Frame crowded — quá nhiều focal points</div></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:6px"><span class="lbl">DÙNG CHO</span><div class="utags"><span class="utag" style="color:#85B7EB;border-color:#1A3060">Website Homepage</span><span class="utag" style="color:#85B7EB;border-color:#1A3060">Instagram Feed Hero</span><span class="utag" style="color:#85B7EB;border-color:#1A3060">Press Media Kit</span><span class="utag" style="color:rgba(255,255,255,.3);border-color:#2A2724">Market Entry Brief</span></div></div>
+  <div class="rb"><span class="rb-lbl">RULE</span><div class="rb-t">Nếu xem ảnh này và thấy chai rõ hơn ánh sáng → chưa đúng. <b>Ánh sáng là sản phẩm trong shot này.</b></div></div>
+</div>
+
+<!-- P4: MATERIAL DETAIL -->
+<div class="panel" id="p4" style="--c:#C0DD97">
+  <div class="prev-box">
+    <svg viewBox="0 0 560 240" xmlns="http://www.w3.org/2000/svg">
+      <rect width="560" height="240" fill="#D4C9B5"/>
+      <path d="M0 60 Q140 44 280 72 Q420 100 560 60" fill="none" stroke="rgba(160,140,110,.4)" stroke-width="1.2"/>
+      <path d="M0 120 Q180 96 360 128 Q460 144 560 118" fill="none" stroke="rgba(160,140,110,.3)" stroke-width="1"/>
+      <path d="M80 0 Q100 120 60 240" fill="none" stroke="rgba(160,140,110,.3)" stroke-width=".8"/>
+      <path d="M220 0 Q260 120 200 240" fill="none" stroke="rgba(160,140,110,.22)" stroke-width=".6"/>
+      <rect x="170" y="20" width="220" height="200" rx="3" fill="#0F6E56"/>
+      <rect x="170" y="20" width="220" height="6" fill="#085041"/>
+      <ellipse cx="280" cy="46" rx="65" ry="32" fill="none" stroke="#085041" stroke-width="5"/>
+      <ellipse cx="280" cy="46" rx="26" ry="14" fill="#085041"/>
+      <ellipse cx="280" cy="46" rx="10" ry="6" fill="#0F6E56" opacity=".5"/>
+      <rect x="0" y="0" width="110" height="240" fill="rgba(212,201,181,.75)"/>
+      <rect x="450" y="0" width="110" height="240" fill="rgba(212,201,181,.75)"/>
+      <text x="280" y="232" font-family="monospace" font-size="6.5" fill="rgba(26,25,22,.28)" text-anchor="middle">MACRO 90–105mm · f/2.8 · SIDE LIGHTING · TEXTURE IS SUBJECT</text>
+    </svg>
+    <div class="prev-ov" style="background:linear-gradient(transparent,rgba(26,25,22,.85))"><div class="prev-name">Material Detail</div><div class="prev-code">SHOT-04 · TEXTURE · MACRO</div></div>
+  </div>
+  <div>
+    <span class="ey">SHOT 04 · MATERIAL DETAIL</span>
+    <div class="h2">Texture nhìn bằng mắt,<br><em>cảm nhận bằng tay.</em></div>
+    <div class="body" style="margin-top:6px">Extreme close-up của materials — ribbon, marble, gỗ tếch, thủy tinh. Không có product subject rõ ràng — texture là toàn bộ point. Shot "cảm giác sang" nhất trong 9 loại.</div>
+  </div>
+  <div class="g2">
+    <div class="sc"><span class="lbl">FOCAL LENGTH</span><div class="sc-val"><b>Macro 90–105mm</b> hoặc extension tubes</div></div>
+    <div class="sc"><span class="lbl">APERTURE</span><div class="sc-val"><b>f/2.8 – f/5.6</b> · Chỉ một phần sharp</div></div>
+    <div class="sc"><span class="lbl">SUBJECTS APPROVED</span><div class="sc-val">Ribbon weave, marble vein, teak grain, glass facet, label letterpress</div></div>
+    <div class="sc"><span class="lbl">BACKGROUND</span><div class="sc-val">Same material family — marble on marble, wood on wood</div></div>
+    <div class="sc"><span class="lbl">LIGHTING</span><div class="sc-val"><b>Side lighting</b> để reveal texture · Không front light thẳng</div></div>
+    <div class="sc"><span class="lbl">EDIT</span><div class="sc-val">Contrast cao · Dark shadows · Không noise reduction quá mức</div></div>
+  </div>
+  <div class="mnt">
+    <div class="mnt-hd"><div class="mnt-col must">✓ MATERIALS ĐƯỢC PHÉP</div><div class="mnt-col nevr">✗ KHÔNG DÙNG</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Satin ribbon Teal #0F6E56 — weave texture</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Plastic, acrylic bất kỳ loại nào</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Marble counter — vein pattern close-up</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Màu ngoài brand palette trong frame</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Teak riser — grain và oil finish</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Background cluttered — chỉ một texture per frame</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Glass bottle — refraction và transparency</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Overexposed highlights — mất surface detail</div></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:6px"><span class="lbl">DÙNG CHO</span><div class="utags"><span class="utag" style="color:#C0DD97;border-color:#284010">Instagram Story</span><span class="utag" style="color:#C0DD97;border-color:#284010">Brand Standards</span><span class="utag" style="color:#C0DD97;border-color:#284010">Website Materials</span></div></div>
+  <div class="rb"><span class="rb-lbl">RULE</span><div class="rb-t">Shot này phải khiến người xem <b>muốn chạm vào màn hình</b>. Nếu không đạt cảm giác đó — lighting hoặc angle chưa đúng.</div></div>
+</div>
+
+<!-- P5: STAFF RITUAL -->
+<div class="panel" id="p5" style="--c:#AFA9EC">
+  <div class="prev-box">
+    <svg viewBox="0 0 560 240" xmlns="http://www.w3.org/2000/svg">
+      <rect width="560" height="240" fill="#1A1916"/>
+      <radialGradient id="c5" cx="50%" cy="15%" r="65%"><stop offset="0%" stop-color="#FAC775" stop-opacity=".32"/><stop offset="100%" stop-color="#1A1916" stop-opacity="0"/></radialGradient>
+      <rect width="560" height="240" fill="url(#c5)"/>
+      <rect x="0" y="186" width="560" height="54" fill="#2A2724"/>
+      <rect x="0" y="184" width="560" height="3" fill="#D4C9B5" opacity=".3"/>
+      <rect x="190" y="116" width="180" height="72" rx="2" fill="#1E1C1A"/>
+      <rect x="190" y="116" width="180" height="22" rx="2" fill="#2A2724"/>
+      <rect x="274" y="116" width="12" height="72" fill="#0F6E56" opacity=".85"/>
+      <rect x="190" y="152" width="180" height="10" fill="#0F6E56" opacity=".85"/>
+      <ellipse cx="280" cy="134" rx="38" ry="20" fill="none" stroke="#085041" stroke-width="4"/>
+      <ellipse cx="280" cy="134" rx="14" ry="8" fill="#085041"/>
+      <rect x="130" y="80" width="60" height="108" fill="#111" opacity=".75"/>
+      <rect x="370" y="80" width="60" height="108" fill="#111" opacity=".75"/>
+      <ellipse cx="200" cy="172" rx="30" ry="12" fill="#C4A882" opacity=".45"/>
+      <ellipse cx="360" cy="172" rx="30" ry="12" fill="#C4A882" opacity=".45"/>
+      <text x="280" y="232" font-family="monospace" font-size="6.5" fill="rgba(255,255,255,.18)" text-anchor="middle">3/4 ANGLE · f/1.8–2 · CANDID · PACKAGING IN PROGRESS · NO FACE NEEDED</text>
+    </svg>
+    <div class="prev-ov"><div class="prev-name">Staff Ritual</div><div class="prev-code">SHOT-05 · IN ACTION · CANDID</div></div>
+  </div>
+  <div>
+    <span class="ey">SHOT 05 · STAFF RITUAL</span>
+    <div class="h2">Ritual đang diễn ra —<br><em>không phải đang diễn.</em></div>
+    <div class="body" style="margin-top:6px">Staff đang thực hiện ceremony: packaging, tư vấn, welcome tray. Candid hoàn toàn. Staff không nhìn camera. Đây là ảnh authentic nhất — và người xem cảm nhận được sự khác biệt giữa candid và staged.</div>
+  </div>
+  <div class="g2">
+    <div class="sc"><span class="lbl">APERTURE</span><div class="sc-val"><b>f/1.8 – f/2</b> · Very shallow — tập trung vào tay và ritual</div></div>
+    <div class="sc"><span class="lbl">ANGLE</span><div class="sc-val"><b>3/4 từ bên</b> · Không đối mặt trực tiếp với staff</div></div>
+    <div class="sc"><span class="lbl">SUBJECTS</span><div class="sc-val">Packaging moment, tester offering, ribbon tying, card writing</div></div>
+    <div class="sc"><span class="lbl">FACE</span><div class="sc-val">Face không cần thiết — tay và action là subject. Nếu có face: profile, không nhìn camera</div></div>
+    <div class="sc"><span class="lbl">UNIFORM</span><div class="sc-val">MORAQ uniform đúng chuẩn · Không tạp dề bẩn · Tay sạch</div></div>
+    <div class="sc"><span class="lbl">TIMING</span><div class="sc-val">Chụp trong actual customer session nếu được phép · Hoặc staged ritual không có khách</div></div>
+  </div>
+  <div class="mnt">
+    <div class="mnt-hd"><div class="mnt-col must">✓ PHẢI</div><div class="mnt-col nevr">✗ KHÔNG</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Tay đang làm action thật — không giả vờ</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Staff nhìn camera và smile posed</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Counter elements đúng chuẩn trong background</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Đồ dùng cá nhân visible — điện thoại, ví</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Ribbon Teal chuẩn màu trong frame</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Ribbon nhàu, knot không đối xứng — không chụp</div></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:6px"><span class="lbl">DÙNG CHO</span><div class="utags"><span class="utag" style="color:#AFA9EC;border-color:#2A2060">Instagram Feed</span><span class="utag" style="color:#AFA9EC;border-color:#2A2060">Brand Story</span><span class="utag" style="color:#AFA9EC;border-color:#2A2060">Immersion Kit</span><span class="utag" style="color:rgba(255,255,255,.3);border-color:#2A2724">Hiring Materials</span></div></div>
+  <div class="rb"><span class="rb-lbl">RULE</span><div class="rb-t"><b>Người xem không nên cảm thấy đây là "chụp cho social media".</b> Nếu staff biết đang bị chụp → kết quả không tốt. Chụp từ xa bằng telephoto, sau đó crop.</div></div>
+</div>
+
+<!-- P6: UNBOXING SEQUENCE -->
+<div class="panel" id="p6" style="--c:#F09595">
+  <div class="prev-box">
+    <svg viewBox="0 0 560 180" xmlns="http://www.w3.org/2000/svg">
+      <rect width="560" height="180" fill="#E8DFD0"/>
+      <rect x="10" y="20" width="96" height="140" rx="2" fill="#1A1916" stroke="#2A2724" stroke-width=".5"/>
+      <rect x="120" y="20" width="96" height="140" rx="2" fill="#242220"/>
+      <rect x="120" y="20" width="96" height="30" rx="2" fill="#2E2C28"/>
+      <rect x="172" y="20" width="4" height="140" fill="#0F6E56" opacity=".8"/>
+      <rect x="230" y="20" width="96" height="140" rx="2" fill="#1A1916" stroke="#2A2724" stroke-width=".5"/>
+      <rect x="250" y="60" width="56" height="80" rx="1" fill="#FAF9F6" opacity=".9"/>
+      <rect x="256" y="68" width="44" height="2" rx=".5" fill="#1A1916" opacity=".4"/>
+      <rect x="258" y="74" width="38" height="1.5" fill="#1A1916" opacity=".25"/>
+      <rect x="258" y="80" width="34" height="1.5" fill="#0F6E56" opacity=".35"/>
+      <rect x="340" y="20" width="96" height="140" rx="2" fill="#1A1916" stroke="#1A4028" stroke-width="1"/>
+      <rect x="352" y="38" width="30" height="50" rx="2" fill="#0F6E56" opacity=".75"/>
+      <ellipse cx="408" cy="100" rx="22" ry="28" fill="#C4A882" opacity=".5"/>
+      <rect x="450" y="20" width="100" height="140" rx="2" fill="#FAF9F6" stroke="#E8DFD0" stroke-width=".5"/>
+      <rect x="462" y="32" width="76" height="96" rx="1" fill="#1A1916" opacity=".04"/>
+      <rect x="468" y="40" width="64" height="2" rx=".5" fill="#1A1916" opacity=".35"/>
+      <rect x="468" y="46" width="55" height="1.5" fill="#1A1916" opacity=".2"/>
+      <rect x="468" y="52" width="48" height="1.5" fill="#0F6E56" opacity=".3"/>
+      <rect x="468" y="58" width="58" height="1.5" fill="#1A1916" opacity=".15"/>
+      <text x="280" y="172" font-family="monospace" font-size="6.5" fill="rgba(26,25,22,.28)" text-anchor="middle">5 FRAMES · SAME LIGHT · TOP VIEW 90° · SEQUENTIAL NARRATIVE</text>
+    </svg>
+    <div class="prev-ov" style="background:linear-gradient(transparent,rgba(26,25,22,.8))"><div class="prev-name">Unboxing Sequence</div><div class="prev-code">SHOT-06 · NARRATIVE · 5-FRAME SERIES</div></div>
+  </div>
+  <div>
+    <span class="ey">SHOT 06 · UNBOXING SEQUENCE</span>
+    <div class="h2">5 frames.<br><em>Một câu chuyện hoàn chỉnh.</em></div>
+    <div class="body" style="margin-top:6px">Series 5 ảnh kể toàn bộ packaging ritual từ hộp đóng đến thank-you card. Cần chụp cùng một buổi, cùng ánh sáng, cùng angle — để sequence nhất quán khi post liên tiếp.</div>
+  </div>
+  <div class="card">
+    <span class="lbl">5 FRAMES — THỨ TỰ BẮT BUỘC</span>
+    <div class="rule-list">
+      <div class="rl-item"><div class="rl-num" style="color:#F09595">F1</div><div class="rl-text"><b>Hộp đóng kín</b> — ribbon Teal, French knot hoàn chỉnh. Top view 90°. Marble background.</div></div>
+      <div class="rl-item"><div class="rl-num" style="color:#F09595">F2</div><div class="rl-text"><b>Mở hộp</b> — lid lifted, tissue fold visible. Tay trong frame (crop wrist). Moment of reveal.</div></div>
+      <div class="rl-item"><div class="rl-num" style="color:#F09595">F3</div><div class="rl-text"><b>Chai trong hộp</b> — bottle cradled in tissue. Label readable. Side angle 45°.</div></div>
+      <div class="rl-item"><div class="rl-num" style="color:#F09595">F4</div><div class="rl-text"><b>Chai được cầm lên</b> — hands-on-bottle style. Hộp visible ở background blur.</div></div>
+      <div class="rl-item"><div class="rl-num" style="color:#F09595">F5</div><div class="rl-text"><b>Thank-you card</b> — handwritten, lying on linen. Teal ribbon accent. Overhead 90°.</div></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="sc"><span class="lbl">ANGLE</span><div class="sc-val">F1, F2, F5: <b>Top view 90°</b> · F3, F4: 45° side</div></div>
+    <div class="sc"><span class="lbl">BACKGROUND</span><div class="sc-val"><b>Marble</b> hoặc <b>Linen</b> — consistent across 5 frames</div></div>
+    <div class="sc"><span class="lbl">LIGHTING</span><div class="sc-val">Cùng một setup ánh sáng cho tất cả 5 frames — không thay đổi</div></div>
+    <div class="sc"><span class="lbl">HANDWRITING</span><div class="sc-val">Card viết bằng bút calligraphy brand-issue · Legible nhưng không perfect — handmade feel</div></div>
+  </div>
+  <div class="mnt">
+    <div class="mnt-hd"><div class="mnt-col must">✓ PHẢI CONSISTENT</div><div class="mnt-col nevr">✗ KHÔNG</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>5 frames cùng white balance — không color shift</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Chụp 5 frames khác ngày / khác setup</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Ribbon Teal chuẩn trong F1 — kiểm tra màu</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Chai bị che hết trong F3 — phải thấy label</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Tay sạch, nail chuẩn cho F2 và F4</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Card viết bằng bút ballpoint thường</div></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:6px"><span class="lbl">DÙNG CHO</span><div class="utags"><span class="utag" style="color:#F09595;border-color:#3A1A1A">Instagram Carousel</span><span class="utag" style="color:#F09595;border-color:#3A1A1A">Story Sequence</span><span class="utag" style="color:#F09595;border-color:#3A1A1A">Website</span></div></div>
+  <div class="rb"><span class="rb-lbl">RULE</span><div class="rb-t">Sequence này là <b>content của nhiều tuần social media</b> — không phải dùng hết một lần. Post lẻ từng frame với caption riêng, hoặc carousel đầy đủ.</div></div>
+</div>
+
+<!-- P7: CITY PORTRAIT -->
+<div class="panel" id="p7" style="--c:#FAC775">
+  <div class="prev-box">
+    <svg viewBox="0 0 560 240" xmlns="http://www.w3.org/2000/svg">
+      <rect width="560" height="240" fill="#1A1916"/>
+      <radialGradient id="c7" cx="50%" cy="100%" r="70%"><stop offset="0%" stop-color="#0F6E56" stop-opacity=".18"/><stop offset="100%" stop-color="#1A1916" stop-opacity="0"/></radialGradient>
+      <rect width="560" height="240" fill="url(#c7)"/>
+      <rect x="0" y="100" width="560" height="140" fill="#0A0908"/>
+      <rect x="4" y="24" width="18" height="78" fill="#1A1916"/><rect x="26" y="12" width="14" height="90" fill="#1A1916"/><rect x="44" y="30" width="22" height="72" fill="#141210"/>
+      <rect x="70" y="6" width="20" height="96" fill="#1A1916"/><rect x="94" y="18" width="16" height="84" fill="#141210"/><rect x="114" y="8" width="28" height="94" fill="#1A1916"/>
+      <rect x="146" y="20" width="14" height="82" fill="#141210"/><rect x="164" y="4" width="24" height="98" fill="#1A1916"/><rect x="192" y="14" width="18" height="88" fill="#141210"/>
+      <rect x="214" y="2" width="32" height="100" fill="#1A1916"/><rect x="250" y="16" width="20" height="86" fill="#141210"/><rect x="274" y="6" width="16" height="96" fill="#1A1916"/>
+      <rect x="294" y="18" width="26" height="84" fill="#141210"/><rect x="324" y="10" width="20" height="92" fill="#1A1916"/><rect x="348" y="4" width="24" height="98" fill="#141210"/>
+      <rect x="376" y="14" width="18" height="88" fill="#1A1916"/><rect x="398" y="22" width="22" height="80" fill="#141210"/>
+      <rect x="0" y="88" width="560" height="18" fill="rgba(10,9,8,.7)"/>
+      <rect x="220" y="106" width="120" height="7" rx="1" fill="#0F6E56" opacity=".6"/>
+      <text x="280" y="116" font-family="monospace" font-size="6.5" fill="rgba(15,110,86,.6)" text-anchor="middle">MORAQ · [THÀNH PHỐ]</text>
+      <text x="280" y="232" font-family="monospace" font-size="6.5" fill="rgba(255,255,255,.18)" text-anchor="middle">DUSK / DAWN · STORE FRONT OR CITYSCAPE · BRAND SIGNAGE IN FRAME</text>
+    </svg>
+    <div class="prev-ov"><div class="prev-name">City Portrait</div><div class="prev-code">SHOT-07 · LOCAL IDENTITY · ESTABLISHING</div></div>
+  </div>
+  <div>
+    <span class="ey">SHOT 07 · CITY PORTRAIT</span>
+    <div class="h2">MORAQ trong<br><em>ngữ cảnh của thành phố.</em></div>
+    <div class="body" style="margin-top:6px">Ảnh establishing shot — store front hoặc cityscape với brand element trong frame. Mỗi City Chapter cần bộ ảnh này riêng. Dùng cho market entry, press release, social announcement khi mở thành phố mới.</div>
+  </div>
+  <div class="g2">
+    <div class="sc"><span class="lbl">TIMING</span><div class="sc-val"><b>Dusk hoặc dawn</b> — warm sky + store lighting = natural 2700K match</div></div>
+    <div class="sc"><span class="lbl">BRAND ELEMENT</span><div class="sc-val">MORAQ signage hoặc window display <b>visible trong frame</b> — không phải hero nhưng phải nhận ra được</div></div>
+    <div class="sc"><span class="lbl">CITYSCAPE</span><div class="sc-val">Đặc trưng địa phương visible — architecture, street life, local texture</div></div>
+    <div class="sc"><span class="lbl">FOCAL LENGTH</span><div class="sc-val"><b>35–50mm</b> · Natural perspective — không distortion wide</div></div>
+    <div class="sc"><span class="lbl">LOCAL ELEMENT</span><div class="sc-val">Một chi tiết độc đáo của thành phố — không generic "city shot"</div></div>
+    <div class="sc"><span class="lbl">COLOR</span><div class="sc-val">Teal của store lighting phải visible — phân biệt MORAQ với surrounding</div></div>
+  </div>
+  <div class="mnt">
+    <div class="mnt-hd"><div class="mnt-col must">✓ PHẢI</div><div class="mnt-col nevr">✗ KHÔNG</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Local architectural character — không generic city stock photo</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Midday harsh sunlight — không match store 2700K</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Brand signage recognizable — dù nhỏ</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Competitor stores visible và prominent</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Negative space trong cityscape — sky, empty street</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Heavy edit HDR — không match brand tone</div></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:6px"><span class="lbl">DÙNG CHO</span><div class="utags"><span class="utag" style="color:#FAC775;border-color:#3A2208">City Chapter Announcement</span><span class="utag" style="color:#FAC775;border-color:#3A2208">Press Release</span><span class="utag" style="color:#FAC775;border-color:#3A2208">Market Entry Brief</span></div></div>
+  <div class="rb"><span class="rb-lbl">RULE</span><div class="rb-t">Ảnh này phải trả lời câu hỏi: <b>"MORAQ đã đến thành phố này — và thành phố này xứng đáng."</b></div></div>
+</div>
+
+<!-- P8: PRODUCT STILL -->
+<div class="panel" id="p8" style="--c:#9FE1CB">
+  <div class="prev-box">
+    <svg viewBox="0 0 560 240" xmlns="http://www.w3.org/2000/svg">
+      <rect width="560" height="240" fill="#FAF9F6"/>
+      <rect x="240" y="20" width="80" height="180" rx="7" fill="#0F6E56"/>
+      <rect x="248" y="28" width="64" height="20" rx="2" fill="#085041"/>
+      <rect x="253" y="54" width="54" height="8" rx="1" fill="#9FE1CB" opacity=".28"/>
+      <rect x="250" y="68" width="60" height="84" rx="2" fill="#FAF9F6" opacity=".94"/>
+      <rect x="258" y="76" width="44" height="2" rx=".5" fill="#1A1916" opacity=".5"/>
+      <rect x="261" y="82" width="38" height="1.5" rx=".5" fill="#1A1916" opacity=".3"/>
+      <rect x="261" y="88" width="42" height="1.5" rx=".5" fill="#1A1916" opacity=".22"/>
+      <rect x="265" y="96" width="30" height="1.5" rx=".5" fill="#0F6E56" opacity=".4"/>
+      <rect x="261" y="102" width="34" height="1.5" rx=".5" fill="#1A1916" opacity=".18"/>
+      <rect x="261" y="108" width="28" height="1.5" rx=".5" fill="#1A1916" opacity=".15"/>
+      <rect x="250" y="156" width="60" height="4" rx="1" fill="#E8DFD0"/>
+      <rect x="252" y="164" width="56" height="4" rx="1" fill="#E8DFD0" opacity=".6"/>
+      <ellipse cx="280" cy="210" rx="40" ry="8" fill="rgba(26,25,22,.08)"/>
+      <rect x="100" y="140" width="80" height="80" rx="2" fill="#E8DFD0" opacity=".5"/>
+      <rect x="380" y="60" width="80" height="80" rx="2" fill="#E8DFD0" opacity=".3"/>
+      <text x="280" y="232" font-family="monospace" font-size="6.5" fill="rgba(26,25,22,.25)" text-anchor="middle">STUDIO SETUP · CREAM BACKGROUND · NATURAL DAYLIGHT DIFFUSED · 90° OR 45°</text>
+    </svg>
+    <div class="prev-ov" style="background:linear-gradient(transparent,rgba(26,25,22,.8))"><div class="prev-name">Product Still</div><div class="prev-code">SHOT-08 · EDITORIAL · STUDIO</div></div>
+  </div>
+  <div>
+    <span class="ey">SHOT 08 · PRODUCT STILL</span>
+    <div class="h2">Chai một mình —<br><em>nhưng không trên nền trắng.</em></div>
+    <div class="body" style="margin-top:6px">Shot clean nhất, editorial nhất. Không phải catalog — vẫn có context (linen, marble, một vật phẩm nhỏ). Dùng cho website product page, press kit, print materials. Label phải readable hoàn toàn.</div>
+  </div>
+  <div class="g2">
+    <div class="sc"><span class="lbl">BACKGROUND</span><div class="sc-val"><b>Cream #FAF9F6</b> hoặc <b>Linen #E8DFD0</b> · Không trắng tinh (tạo catalog feel)</div></div>
+    <div class="sc"><span class="lbl">ANGLE OPTIONS</span><div class="sc-val"><b>90° overhead</b> (for carousel) · <b>45° side</b> (for website) · <b>Front facing</b> (for label focus)</div></div>
+    <div class="sc"><span class="lbl">LIGHTING</span><div class="sc-val">Natural daylight diffused qua softbox lớn · <b>Không harsh shadow</b></div></div>
+    <div class="sc"><span class="lbl">PROPS ALLOWED</span><div class="sc-val">Linen cloth fold · Small marble piece · Scent strip · Dried botanical — chỉ một</div></div>
+    <div class="sc"><span class="lbl">LABEL</span><div class="sc-val">Front label <b>100% readable</b> · Không che bởi props</div></div>
+    <div class="sc"><span class="lbl">SHADOW</span><div class="sc-val">Soft natural shadow visible — chai có trọng lượng, không floating</div></div>
+  </div>
+  <div class="mnt">
+    <div class="mnt-hd"><div class="mnt-col must">✓ PHẢI</div><div class="mnt-col nevr">✗ KHÔNG</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Chai sạch — không vân tay, không bụi trước khi chụp</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Pure white background — catalog look, không luxury</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Cap thẳng — không lệch</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Quá nhiều props — chai bị compete với surroundings</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Label centered và readable</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Heavy shadow trên label — mất readability</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Teal cap màu chuẩn #0F6E56 — check trước</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Edit oversaturate teal — mất natural tone</div></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:6px"><span class="lbl">DÙNG CHO</span><div class="utags"><span class="utag" style="color:#9FE1CB;border-color:#1A4028">Website Product Page</span><span class="utag" style="color:#9FE1CB;border-color:#1A4028">Press Kit</span><span class="utag" style="color:#9FE1CB;border-color:#1A4028">Print Catalog</span><span class="utag" style="color:rgba(255,255,255,.3);border-color:#2A2724">Email Campaign</span></div></div>
+  <div class="rb"><span class="rb-lbl">RULE</span><div class="rb-t">Nếu cầm ảnh này lên và thấy giống catalogue của một brand nào đó → re-shoot. <b>Không tinh, không là MORAQ.</b></div></div>
+</div>
+
+<!-- P9: DISCOVERY MOMENT -->
+<div class="panel" id="p9" style="--c:#FAC775">
+  <div class="prev-box">
+    <svg viewBox="0 0 560 240" xmlns="http://www.w3.org/2000/svg">
+      <rect width="560" height="240" fill="#1A1916"/>
+      <radialGradient id="c9" cx="58%" cy="42%" r="50%"><stop offset="0%" stop-color="#FAC775" stop-opacity=".3"/><stop offset="100%" stop-color="#1A1916" stop-opacity="0"/></radialGradient>
+      <rect width="560" height="240" fill="url(#c9)"/>
+      <rect x="0" y="195" width="560" height="45" fill="#2A2724"/>
+      <rect x="300" y="45" width="54" height="140" rx="5" fill="#0F6E56" opacity=".65"/>
+      <rect x="306" y="51" width="42" height="14" rx="1" fill="#085041" opacity=".65"/>
+      <rect x="308" y="69" width="38" height="52" rx="1" fill="#FAF9F6" opacity=".7"/>
+      <rect x="60" y="82" width="100" height="8" rx="2" fill="#E8DFD0" opacity=".45"/>
+      <ellipse cx="108" cy="82" rx="44" ry="7" fill="#9FE1CB" opacity=".08"/>
+      <ellipse cx="110" cy="100" rx="48" ry="32" fill="#C4A882" opacity=".28"/>
+      <ellipse cx="118" cy="82" rx="36" ry="48" fill="#C4A882" opacity=".18"/>
+      <ellipse cx="105" cy="120" rx="35" ry="18" fill="#C4A882" opacity=".2"/>
+      <path d="M156 82 Q240 74 285 86" fill="none" stroke="#E8DFD0" stroke-width="1.2" opacity=".35"/>
+      <path d="M156 82 Q200 88 250 84" fill="none" stroke="#E8DFD0" stroke-width=".8" opacity=".2"/>
+      <text x="280" y="232" font-family="monospace" font-size="6.5" fill="rgba(255,255,255,.18)" text-anchor="middle">CANDID · f/1.4–1.8 · GUEST NOSE TO STRIP OR WRIST · PROFILE ANGLE</text>
+    </svg>
+    <div class="prev-ov"><div class="prev-name">Discovery Moment</div><div class="prev-code">SHOT-09 · EMOTIONAL · MOST DIFFICULT</div></div>
+  </div>
+  <div>
+    <span class="ey">SHOT 09 · DISCOVERY MOMENT</span>
+    <div class="h2">Khoảnh khắc một người<br><em>tìm thấy hương của họ.</em></div>
+    <div class="body" style="margin-top:6px">Shot khó nhất và powerful nhất. Khách đang ngửi — eyes closed hoặc looking away. Không phải staff, không phải product — đây là human moment thuần túy. Không thể staged.</div>
+  </div>
+  <div class="g2">
+    <div class="sc"><span class="lbl">APERTURE</span><div class="sc-val"><b>f/1.4 – f/1.8</b> · Cực shallow — background hoàn toàn blur</div></div>
+    <div class="sc"><span class="lbl">SUBJECT</span><div class="sc-val">Khách ngửi scent strip hoặc cổ tay · Profile hoặc 3/4 angle</div></div>
+    <div class="sc"><span class="lbl">EXPRESSION</span><div class="sc-val">Eyes closed · Neutral · Concentrating · <b>Không smile</b></div></div>
+    <div class="sc"><span class="lbl">SHOOTING</span><div class="sc-val">Từ xa bằng <b>85–135mm telephoto</b> · Không intrude</div></div>
+    <div class="sc"><span class="lbl">CONSENT</span><div class="sc-val"><b>Luôn xin phép trước</b> hoặc dùng staff/model trong session riêng</div></div>
+    <div class="sc"><span class="lbl">LIGHT</span><div class="sc-val">Store light tự nhiên · Không thêm gì · Moment phải thật</div></div>
+  </div>
+  <div class="mnt">
+    <div class="mnt-hd"><div class="mnt-col must">✓ PHẢI</div><div class="mnt-col nevr">✗ KHÔNG</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Khoảnh khắc genuinely concentrating — không act</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Người nhìn camera — phá hỏng toàn bộ ý nghĩa</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Background blur đủ để chỉ thấy silhouette store</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Staged smiling pose — đây là most obvious fake signal</div></div>
+    <div class="mnt-row"><div class="mnt-cell mc-m"><div class="dot-m"></div>Có thể nhận ra đây là store MORAQ từ background</div><div class="mnt-cell mc-n"><div class="dot-n"></div>Chụp mà không có consent của người trong ảnh</div></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:6px"><span class="lbl">DÙNG CHO</span><div class="utags"><span class="utag" style="color:#FAC775;border-color:#3A2208">Instagram Feed</span><span class="utag" style="color:#FAC775;border-color:#3A2208">Brand Storytelling</span><span class="utag" style="color:#FAC775;border-color:#3A2208">Website About</span><span class="utag" style="color:rgba(255,255,255,.3);border-color:#2A2724">Press Feature</span></div></div>
+  <div class="rb"><span class="rb-lbl">RULE — HARDEST SHOT</span><div class="rb-t">Shot này không thể ép. Nếu người trong ảnh biết đang bị chụp → kết quả là 0. <b>Tốt hơn là chờ đợi khoảnh khắc thật, dù mất nhiều buổi chụp.</b> Một ảnh này tốt bằng 50 ảnh kia.</div></div>
+</div>
+
+</div></div><!-- /dw /detail -->
+</div><!-- /body-wrap -->
+</div><!-- /shell -->
+<script>
+// Navigation
+const nav=document.getElementById('nav');
+nav.querySelectorAll('.sitem').forEach(item=>{
+  item.addEventListener('click',()=>{
+    nav.querySelectorAll('.sitem').forEach(i=>i.classList.remove('on'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+    item.classList.add('on');
+    document.getElementById(item.dataset.p).classList.add('on');
+    document.querySelector('.detail').scrollTop=0;
+    item.scrollIntoView({behavior:'smooth',block:'nearest'});
+  });
+});
+
+// Overview card clicks
+document.querySelectorAll('.ov-card').forEach(card=>{
+  card.addEventListener('click',()=>{
+    const target=card.dataset.jump;
+    nav.querySelectorAll('.sitem').forEach(i=>i.classList.remove('on'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+    const btn=[...nav.querySelectorAll('.sitem')].find(i=>i.dataset.p===target);
+    if(btn){btn.classList.add('on');btn.scrollIntoView({behavior:'smooth',block:'nearest'});}
+    document.getElementById(target).classList.add('on');
+    document.querySelector('.detail').scrollTop=0;
+  });
+});
+</script>
+</body>
+</html>
