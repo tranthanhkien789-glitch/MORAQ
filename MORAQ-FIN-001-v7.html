@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MORAQ · FI/CO Universal Ledger</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --ink:#17150F;--ink2:#1F1D16;--ink3:#29261D;--ink4:#363228;--ink5:#443F34;
+  --teal:#0F6E56;--teal2:#0A4F3D;--teal-l:#5DCAA5;--teal-x:#A8EDD4;
+  --amber:#854F0B;--amber2:#6A3E08;--amber-l:#C07820;--amber-x:#F0A040;
+  --cream:#FAF9F6;--linen:#E8DFD0;--linen2:#C4B8A4;--linen3:#8A7E6E;--linen4:#5A5045;
+  --red:#6A1414;--red-l:#B04040;--red-x:#E06060;
+  --blue:#162E46;--blue-l:#4080A8;--blue-x:#70B0D0;
+  --violet:#2E2458;--violet-l:#7060B8;
+  --green-l:#4CAF76;
+  --SB:210px;--TB:46px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:var(--ink);color:var(--cream);font-family:'DM Mono',monospace;font-size:12px}
+#shell{display:grid;grid-template-rows:var(--TB) 1fr;height:100vh}
+#topbar{background:var(--ink2);border-bottom:1px solid var(--ink3);display:flex;align-items:center;padding:0 14px;gap:10px;z-index:100;position:relative}
+.tb-brand{font-size:15px;letter-spacing:.04em;white-space:nowrap}
+.tb-brand span{color:var(--teal-l)}
+.tb-vr{width:1px;height:18px;background:var(--ink4);flex-shrink:0}
+.tb-mod{font-size:9px;letter-spacing:.1em;color:var(--linen3);text-transform:uppercase}
+.tb-bc{font-size:10px;color:var(--linen2)}
+#tb-period{margin-left:auto;background:var(--ink3);border:1px solid var(--ink4);color:var(--cream);padding:3px 7px;font-family:'DM Mono',monospace;font-size:10px;outline:none}
+.tb-btn{padding:4px 11px;border:1px solid var(--ink4);background:transparent;color:var(--linen);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.04em;cursor:pointer;transition:all .15s;white-space:nowrap}
+.tb-btn:hover{border-color:var(--teal-l);color:var(--teal-l)}
+.tb-btn.p{background:var(--teal);border-color:var(--teal);color:var(--cream)}
+.tb-btn.p:hover{background:var(--teal2)}
+#body{display:flex;overflow:hidden;height:100%}
+#sidebar{width:var(--SB);flex-shrink:0;background:var(--ink2);border-right:1px solid var(--ink3);display:flex;flex-direction:column;overflow-y:auto;position:relative;z-index:10}
+.sb-mod{padding:9px 11px 2px;font-size:7px;letter-spacing:.14em;color:var(--linen4);text-transform:uppercase;display:flex;align-items:center;gap:5px}
+.sb-mod::after{content:'';flex:1;height:1px;background:var(--ink3)}
+.sb-item{display:flex;align-items:center;gap:7px;padding:6px 11px;cursor:pointer;color:var(--linen3);font-size:10px;border-left:2px solid transparent;transition:all .12s}
+.sb-item:hover{background:rgba(255,255,255,.03);color:var(--cream)}
+.sb-item.on{background:rgba(15,110,86,.1);color:var(--teal-l);border-left-color:var(--teal-l)}
+.sb-ico{font-size:11px;opacity:.55;width:13px;text-align:center;flex-shrink:0}
+.sb-txt{flex:1;line-height:1.2}
+.sb-sub{font-size:7px;color:var(--linen4);display:block}
+.sb-tag{background:var(--amber);color:var(--cream);font-size:7px;padding:1px 4px}
+.sb-footer{margin-top:auto;border-top:1px solid var(--ink3);padding:8px 11px}
+.sb-fr{display:flex;justify-content:space-between;font-size:9px;color:var(--linen4);margin-bottom:2px}
+.sb-fr b{color:var(--linen3)}
+#workspace{flex:1;display:flex;overflow:hidden;position:relative;z-index:1;min-width:0}
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+#kpibar{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--ink3);border-bottom:1px solid var(--ink3);flex-shrink:0;overflow:hidden}
+.kpi{background:var(--ink2);padding:8px 10px;position:relative;overflow:hidden;min-height:54px}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.kpi.clt::before{background:var(--teal-l)}.kpi.cam::before{background:var(--amber-l)}
+.kpi.cbl::before{background:var(--blue-l)}.kpi.crd::before{background:var(--red-l)}
+.kpi.cgn::before{background:var(--green-l)}
+.kpi-l{font-size:7px;letter-spacing:.06em;color:var(--linen3);text-transform:uppercase;margin-bottom:2px;white-space:nowrap;overflow:hidden}
+.kpi-v{font-size:16px;font-weight:500;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi-s{font-size:8px;color:var(--linen3);margin-top:2px;white-space:nowrap;overflow:hidden}
+.kpi-s.pos{color:var(--teal-l)}.kpi-s.neg{color:var(--red-x)}.kpi-s.warn{color:var(--amber-x)}
+#content{flex:1;overflow-y:auto;padding:16px 20px}
+.s-hdr{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:12px}
+.s-hdr-l h2{font-size:20px;font-weight:300;font-family:'DM Mono',monospace}
+.s-hdr-l h2 .txc{font-size:10px;color:var(--linen3);border:1px solid var(--ink4);padding:1px 5px;margin-left:6px;font-size:9px;letter-spacing:.06em}
+.s-hdr-l .smeta{font-size:9px;color:var(--linen3);margin-top:2px}
+.s-hdr-r{display:flex;gap:5px;align-items:center}
+.fb{display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:9px 12px;background:var(--ink2);border:1px solid var(--ink3);margin-bottom:10px}
+.fb input,.fb select{background:var(--ink3);border:1px solid var(--ink4);color:var(--cream);padding:4px 7px;font-family:'DM Mono',monospace;font-size:10px;outline:none;height:26px}
+.fb input:focus,.fb select:focus{border-color:var(--teal-l)}
+.fb input[type=text]{min-width:160px}
+.fb .fbr{margin-left:auto;display:flex;gap:5px}
+.tbl-wrap{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:11px}
+.tbl th{padding:5px 10px;font-size:7px;letter-spacing:.1em;color:var(--linen3);text-transform:uppercase;border-bottom:1px solid var(--ink3);font-weight:400;text-align:left;background:var(--ink2);white-space:nowrap}
+.tbl th.r,.tbl td.r{text-align:right}
+.tbl td{padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.025)}
+.tbl td.mono{font-family:'DM Mono',monospace}
+.tbl td.code{font-family:'DM Mono',monospace;color:var(--linen3);font-size:10px}
+.tbl td.lnk{color:var(--teal-l);cursor:pointer;font-family:'DM Mono',monospace;font-size:10px}
+.tbl td.lnk:hover{text-decoration:underline}
+.tbl tbody tr{cursor:pointer;transition:background .08s}
+.tbl tbody tr:hover td{background:rgba(93,202,165,.05)}
+.tbl tbody tr.sel td{background:rgba(93,202,165,.08)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl .sh td{background:var(--ink3);color:var(--linen2);font-size:10px;padding:4px 10px;cursor:default}
+.tbl .tr td{background:var(--ink3);border-top:1px solid var(--ink4);font-weight:500}
+.tbl .tr td.r{color:var(--teal-l)}
+/* hover CRUD */
+.tbl td .ab{display:none;gap:3px}
+.tbl tr:hover td .ab{display:flex}
+.ab-btn{padding:2px 6px;border:1px solid var(--ink4);background:transparent;color:var(--linen2);font-family:'DM Mono',monospace;font-size:9px;cursor:pointer;transition:all .12s;white-space:nowrap}
+.ab-btn:hover{border-color:var(--linen);color:var(--cream)}
+.ab-btn.ed{border-color:rgba(93,202,165,.25);color:var(--teal-l)}
+.ab-btn.dl{border-color:rgba(176,64,64,.25);color:var(--red-l)}
+.ab-btn.dl:hover{background:rgba(176,64,64,.1)}
+.ab-btn.ps{border-color:rgba(93,202,165,.3);color:var(--teal-l)}
+/* add row */
+.add-row{width:100%;padding:7px;background:transparent;border:none;border-top:1px dashed var(--ink4);color:var(--linen3);font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;transition:all .14s}
+.add-row:hover{background:rgba(15,110,86,.06);color:var(--teal-l)}
+/* tbl footer */
+.tfooter{display:flex;align-items:center;gap:10px;padding:7px 11px;background:var(--ink2);border:1px solid var(--ink3);border-top:none;font-size:9px;color:var(--linen3)}
+.tfooter .tfr{margin-left:auto;display:flex;gap:5px}
+/* cards */
+.card{background:var(--ink2);border:1px solid var(--ink3);margin-bottom:10px}
+.card-h{display:flex;align-items:center;justify-content:space-between;padding:8px 13px;border-bottom:1px solid var(--ink3)}
+.card-h h3{font-size:13px;font-weight:400}
+.card-h .chr{display:flex;gap:5px;align-items:center}
+.card-b{padding:11px 13px}
+.card-b.np{padding:0}
+/* summary cards (layer 2) */
+.scards{display:grid;gap:9px;margin-bottom:14px}
+.scards.c2{grid-template-columns:1fr 1fr}
+.scards.c3{grid-template-columns:1fr 1fr 1fr}
+.scards.c4{grid-template-columns:repeat(4,1fr)}
+.scard{background:var(--ink2);border:1px solid var(--ink3);border-radius:4px;padding:12px;cursor:pointer;transition:all .16s}
+.scard:hover{border-color:var(--ink4);background:var(--ink3)}
+.scard.warn{border-color:rgba(176,64,64,.3)}
+.scard .st{font-size:7px;letter-spacing:.1em;color:var(--linen3);text-transform:uppercase;margin-bottom:4px}
+.scard .sv{font-size:20px;font-weight:500;line-height:1;margin-bottom:2px;white-space:nowrap;overflow:hidden}
+.scard .ss{font-size:9px;color:var(--linen3)}
+.scard .sb{display:flex;gap:2px;height:3px;margin-top:7px}
+.scard .sh{font-size:9px;color:var(--teal-l);margin-top:6px}
+/* anchor bar */
+.anch{display:flex;gap:0;background:var(--ink2);border:1px solid var(--ink3);border-radius:3px;overflow-x:auto;margin-bottom:13px;flex-shrink:0}
+.an{padding:5px 12px;font-size:10px;cursor:pointer;color:var(--linen3);border-right:1px solid var(--ink3);white-space:nowrap;transition:all .13s}
+.an:last-child{border-right:none}
+.an:hover{color:var(--cream);background:rgba(255,255,255,.03)}
+.an.on{color:var(--teal-l);background:rgba(15,110,86,.08);position:relative}
+.an.on::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:var(--teal-l)}
+/* expand panel (layer 3) */
+.epanel{background:var(--ink2);border:1px solid var(--ink3);border-radius:4px;margin-bottom:9px;overflow:hidden}
+.ephdr{display:flex;align-items:center;justify-content:space-between;padding:8px 13px;border-bottom:1px solid var(--ink3);cursor:pointer;font-size:11px;font-weight:500}
+.ephdr:hover{background:rgba(255,255,255,.02)}
+.eptgl{font-size:14px;color:var(--linen3);transition:transform .2s;flex-shrink:0}
+.eptgl.op{transform:rotate(90deg)}
+.ebody{display:none}
+.ebody.op{display:block}
+/* grids */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.g73{display:grid;grid-template-columns:2fr 1fr;gap:10px}
+.g37{display:grid;grid-template-columns:1fr 2fr;gap:10px}
+/* badges */
+.badge{display:inline-block;padding:2px 6px;font-size:8px;letter-spacing:.04em}
+.badge.posted{background:rgba(15,110,86,.2);color:var(--teal-l)}
+.badge.draft{background:rgba(132,79,11,.2);color:var(--amber-x)}
+.badge.void{background:rgba(106,20,20,.2);color:var(--red-x)}
+.badge.open{background:rgba(15,110,86,.15);color:var(--teal-l)}
+.badge.closed{background:rgba(90,80,70,.25);color:var(--linen3)}
+.badge.pending{background:rgba(192,120,32,.15);color:var(--amber-x)}
+.badge.done{background:rgba(76,175,118,.15);color:var(--green-l)}
+.badge.active{background:rgba(15,110,86,.12);color:var(--teal-l)}
+.badge.asset{background:rgba(15,110,86,.1);color:var(--teal-l)}
+.badge.liab{background:rgba(132,79,11,.1);color:var(--amber-x)}
+.badge.equity{background:rgba(46,36,88,.25);color:var(--violet-l)}
+.badge.rev{background:rgba(93,202,165,.1);color:var(--teal-x)}
+.badge.exp{background:rgba(106,20,20,.15);color:var(--red-x)}
+/* dtag */
+.dtag{display:inline-block;font-size:8px;padding:1px 5px;border:1px solid}
+.dtag.brand{border-color:rgba(112,96,184,.35);color:var(--violet-l)}
+.dtag.ops{border-color:rgba(93,202,165,.25);color:var(--teal-l)}
+.dtag.store{border-color:rgba(192,120,32,.3);color:var(--amber-x)}
+.dtag.corp{border-color:rgba(64,128,168,.3);color:var(--blue-l)}
+.dtag.all{border-color:rgba(196,184,164,.15);color:var(--linen2)}
+/* report rows */
+.rr{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.025);font-size:11px}
+.rr .rl{color:var(--linen2)}.rr .rv{font-family:'DM Mono',monospace}
+.rr.i1 .rl{padding-left:10px;font-size:10px;color:var(--linen3)}
+.rr.i2 .rl{padding-left:20px;font-size:10px;color:var(--linen3)}
+.rv.pos{color:var(--teal-l)}.rv.neg{color:var(--red-x)}.rv.warn{color:var(--amber-x)}
+.rr.sub{background:var(--ink3);padding:5px 8px;margin:2px -8px;font-weight:500}
+.rr.sub .rl{color:var(--cream)}
+.rr.hl{background:rgba(15,110,86,.1);border:1px solid rgba(15,110,86,.18);padding:5px 8px;margin:4px 0}
+.rr.hl .rl{color:var(--teal-l);font-weight:500}
+.rr.hl .rv{font-size:15px;color:var(--teal-l)}
+/* doc flow */
+.df{display:flex;align-items:stretch;overflow-x:auto;gap:0;padding:2px 0}
+.dfn{background:var(--ink3);border:1px solid var(--ink4);padding:7px 11px;flex-shrink:0;cursor:pointer;transition:all .13s;min-width:90px;text-align:center}
+.dfn:hover{border-color:var(--teal-l);background:rgba(15,110,86,.08)}
+.dfn.act{border-color:var(--teal-l);background:rgba(15,110,86,.12)}
+.dfn.src{border-color:rgba(112,96,184,.4);background:rgba(46,36,88,.2)}
+.df-type{font-size:7px;letter-spacing:.1em;color:var(--linen3);text-transform:uppercase;margin-bottom:3px}
+.df-val{font-size:10px;color:var(--cream);font-family:'DM Mono',monospace}
+.df-sub{font-size:8px;color:var(--linen3);margin-top:1px}
+.df-arr{display:flex;align-items:center;padding:0 4px;color:var(--linen4);font-size:10px;flex-shrink:0}
+/* t-accounts */
+.tgrid{display:flex;gap:7px;flex-wrap:wrap}
+.tcard{background:var(--ink3);border:1px solid var(--ink4);flex:1;min-width:160px}
+.thdr{padding:5px 8px;border-bottom:1px solid var(--ink4);display:flex;justify-content:space-between;align-items:center}
+.tcode{font-size:8px;color:var(--linen3);font-family:'DM Mono',monospace}
+.tname{font-size:9px;color:var(--linen);max-width:85px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tbal{font-size:13px;color:var(--teal-l)}
+.tsides{display:grid;grid-template-columns:1fr 1fr}
+.tside{padding:5px 6px}
+.tside.tdr{border-right:1px solid var(--ink4)}
+.tlbl{font-size:7px;letter-spacing:.1em;color:var(--linen4);text-transform:uppercase;margin-bottom:3px}
+.tline{display:flex;justify-content:space-between;padding:2px 4px;font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;transition:all .11s;margin-bottom:2px}
+.tline:hover{background:rgba(255,255,255,.05)}
+.tline.hl{background:rgba(93,202,165,.12);color:var(--teal-x)}
+.tld{font-size:8px;color:var(--linen3);max-width:50px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tsub{padding:3px 6px;border-top:1px solid var(--ink4);display:flex;justify-content:space-between;font-size:10px;font-family:'DM Mono',monospace;font-weight:500}
+.drc{color:var(--blue-x)}.crc{color:var(--teal-l)}
+/* leading indicators */
+.ligrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.licard{background:var(--ink2);border:1px solid var(--ink3);border-radius:4px;padding:11px}
+.litop{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.linm{font-size:8px;letter-spacing:.07em;color:var(--linen3);text-transform:uppercase}
+.livl{font-size:19px;font-weight:500;line-height:1}
+.litg{font-size:9px;color:var(--linen3);margin-top:2px}
+.libr{height:3px;background:var(--ink3);border-radius:2px;margin-top:6px}
+.libr div{height:100%;border-radius:2px;transition:width .4s}
+/* traffic lights */
+.tl{display:inline-block;width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.tl.g{background:var(--teal-l)}.tl.a{background:var(--amber-x)}.tl.r{background:var(--red-x)}
+/* triggers */
+.trrow{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:10px}
+.trcnd{flex:1;color:var(--linen2)}.tract{flex:1;color:var(--cream)}.trpri{width:25px;text-align:right;font-size:9px}
+/* capital allocation */
+.car{display:flex;align-items:center;gap:9px;margin-bottom:5px}
+.cal{width:135px;font-size:10px;color:var(--linen2)}
+.cat{flex:1;height:7px;background:var(--ink3);border-radius:3px;overflow:hidden}
+.cat div{height:100%;border-radius:3px}
+.cap{width:34px;font-size:10px;text-align:right;color:var(--cream)}
+.cav{width:52px;font-size:10px;font-family:'DM Mono',monospace;text-align:right}
+/* rev bars */
+.revbars{display:flex;gap:3px;align-items:flex-end;height:90px;margin-bottom:5px}
+.rbw{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
+.rbt{width:100%;background:var(--ink3);height:80px;display:flex;align-items:flex-end;border-radius:2px 2px 0 0}
+.rbf{width:100%;border-radius:2px 2px 0 0;transition:height .4s cubic-bezier(.4,0,.2,1)}
+.rbl{font-size:7px;color:var(--linen3)}.rbv{font-size:7px;font-family:'DM Mono',monospace;color:var(--linen2)}
+/* scenario bar */
+.scbar{display:flex;gap:0;background:var(--ink3);border:1px solid var(--ink4);border-radius:5px;overflow:hidden;margin-bottom:13px}
+.scbtn{flex:1;padding:7px 11px;text-align:center;cursor:pointer;font-size:10px;color:var(--linen3);border-right:1px solid var(--ink4);transition:all .17s}
+.scbtn:last-child{border-right:none}
+.scbtn:hover{color:var(--cream)}
+.scbtn.base.on{background:rgba(15,110,86,.15);color:var(--teal-l)}
+.scbtn.mid.on{background:rgba(132,79,11,.15);color:var(--amber-x)}
+.scbtn.ceil.on{background:rgba(58,47,106,.2);color:var(--violet-l)}
+.sclbl{font-size:8px;opacity:.7;display:block;margin-bottom:2px}
+.scv{font-size:14px;font-weight:500}
+/* waterfall */
+.cfrow{display:flex;align-items:center;gap:7px;margin-bottom:4px}
+.cfl{width:140px;font-size:10px;color:var(--linen2);flex-shrink:0}
+.cft{flex:1;height:14px;background:var(--ink3);position:relative;overflow:hidden}
+.cfb{height:100%;transition:width .4s}
+.cfb.in{background:linear-gradient(90deg,var(--teal2),var(--teal-l))}
+.cfb.out{background:linear-gradient(90deg,var(--amber),var(--amber-l))}
+.cfb.brn{background:linear-gradient(90deg,var(--red),var(--red-l))}
+.cfv{width:75px;font-family:'DM Mono',monospace;font-size:10px;text-align:right;flex-shrink:0}
+.cfv.pos{color:var(--teal-l)}.cfv.neg{color:var(--red-x)}
+/* set field */
+.setgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sfield{display:flex;flex-direction:column;gap:4px}
+.sfield label{font-size:8px;letter-spacing:.09em;color:var(--linen3);text-transform:uppercase}
+.sfield input,.sfield select{background:var(--ink3);border:1px solid var(--ink4);color:var(--cream);padding:6px 8px;font-family:'DM Mono',monospace;font-size:11px;outline:none}
+.sfield input:focus,.sfield select:focus{border-color:var(--teal-l)}
+/* modal */
+#ov{position:fixed;inset:0;background:rgba(8,6,4,.88);z-index:500;display:none;align-items:center;justify-content:center}
+#ov.show{display:flex}
+#modal{background:var(--ink2);border:1px solid var(--ink3);width:760px;max-width:96vw;max-height:90vh;overflow-y:auto}
+.mhdr{display:flex;align-items:center;justify-content:space-between;padding:11px 17px;border-bottom:1px solid var(--ink3)}
+.mhdr h3{font-size:17px;font-weight:300}
+.mclose{background:none;border:none;color:var(--linen3);font-size:21px;cursor:pointer}
+.mbody{padding:16px}
+.mfoot{padding:9px 17px;border-top:1px solid var(--ink3);display:flex;gap:7px;justify-content:flex-end}
+.fg{display:grid;gap:9px;margin-bottom:9px}
+.fg.c2{grid-template-columns:1fr 1fr}.fg.c3{grid-template-columns:1fr 1fr 1fr}
+.field{display:flex;flex-direction:column;gap:3px}
+.field label{font-size:8px;letter-spacing:.09em;color:var(--linen3);text-transform:uppercase}
+.field input,.field select{background:var(--ink3);border:1px solid var(--ink4);color:var(--cream);padding:5px 8px;font-family:'DM Mono',monospace;font-size:11px;outline:none}
+.field input:focus,.field select:focus{border-color:var(--teal-l)}
+.je-lh{display:grid;grid-template-columns:165px 1fr 115px 115px 24px;gap:3px;padding-bottom:4px;border-bottom:1px solid var(--ink3);margin-bottom:4px}
+.je-lh span{font-size:8px;letter-spacing:.07em;color:var(--linen3);text-transform:uppercase}
+.jeline{display:grid;grid-template-columns:165px 1fr 115px 115px 24px;gap:3px;margin-bottom:3px}
+.jeline input,.jeline select{background:var(--ink3);border:1px solid var(--ink4);color:var(--cream);padding:4px 6px;font-family:'DM Mono',monospace;font-size:11px;outline:none;width:100%}
+.jeline input:focus,.jeline select:focus{border-color:var(--teal-l)}
+.jefoot{display:grid;grid-template-columns:165px 1fr 115px 115px 24px;gap:3px;padding-top:4px;border-top:1px solid var(--ink3)}
+.jefl{font-size:9px;color:var(--linen3);text-align:right}
+.jefv{font-family:'DM Mono',monospace;font-size:11px;text-align:right}
+.jefv.ok{color:var(--teal-l)}.jefv.bad{color:var(--red-x)}
+.rm{background:transparent;border:1px solid rgba(176,64,64,.3);color:var(--red-l);cursor:pointer;font-size:13px;width:24px;height:25px;display:flex;align-items:center;justify-content:center}
+.rm:hover{background:rgba(176,64,64,.15)}
+/* object page */
+#op{width:0;flex-shrink:0;overflow:hidden;background:var(--ink2);border-left:1px solid var(--ink3);transition:width .24s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+#op.open{width:490px}
+#opinner{width:490px;height:100%;overflow-y:auto;display:flex;flex-direction:column}
+.optb{display:flex;align-items:center;justify-content:space-between;padding:8px 13px;border-bottom:1px solid var(--ink3);position:sticky;top:0;background:var(--ink2);z-index:10}
+.optb-l h3{font-size:14px;font-weight:300}
+.optb-l .opsub{font-size:8px;color:var(--linen3);letter-spacing:.07em}
+.optb-r{display:flex;gap:5px}
+.opclose{background:none;border:none;color:var(--linen3);font-size:19px;cursor:pointer;line-height:1}
+.opclose:hover{color:var(--cream)}
+.opsec{padding:13px;border-bottom:1px solid var(--ink3)}
+.opsec:last-child{border-bottom:none}
+.opstitle{font-size:7px;letter-spacing:.13em;color:var(--linen3);text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;gap:7px}
+.opstitle::after{content:'';flex:1;height:1px;background:var(--ink3)}
+/* misc */
+.btn{padding:4px 11px;border:1px solid var(--ink4);background:transparent;color:var(--linen);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.04em;cursor:pointer;transition:all .15s}
+.btn:hover{border-color:var(--linen);color:var(--cream)}
+.btn.p{background:var(--teal);border-color:var(--teal);color:var(--cream)}
+.btn.p:hover{background:var(--teal2)}
+.btn.sm{padding:3px 8px;font-size:9px}
+.btn.warn{border-color:var(--amber-l);color:var(--amber-x)}
+.btn.danger{border-color:var(--red-l);color:var(--red-x)}
+.divider{height:1px;background:var(--ink3);margin:9px 0}
+.empty{text-align:center;padding:26px;color:var(--linen4);font-size:10px}
+.info-grid{display:grid;gap:8px;margin-bottom:12px}
+.info-grid.c3{grid-template-columns:1fr 1fr 1fr}
+.info-grid.c4{grid-template-columns:repeat(4,1fr)}
+.iitem{background:var(--ink3);padding:9px 11px}
+.iitem .il{font-size:7px;letter-spacing:.09em;color:var(--linen3);text-transform:uppercase;margin-bottom:3px}
+.iitem .iv{font-size:13px;color:var(--cream)}
+.iitem .is{font-size:9px;color:var(--linen3);margin-top:2px}
+#toast-stack{position:fixed;bottom:15px;right:15px;z-index:9999;display:flex;flex-direction:column;gap:5px;pointer-events:none}
+.toast{background:var(--teal2);border:1px solid var(--teal-l);color:var(--cream);padding:7px 13px;font-size:10px;animation:tin .2s ease;pointer-events:none}
+.toast.err{background:var(--red);border-color:var(--red-l)}
+.toast.warn{background:var(--amber2);border-color:var(--amber-l)}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--ink5)}
+input[type=number]{-moz-appearance:textfield}input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+.period-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin-top:7px}
+.pcell{padding:4px 5px;border:1px solid var(--ink4);font-size:8px;text-align:center;cursor:pointer;transition:all .13s}
+.pcell.open{background:rgba(15,110,86,.15);border-color:rgba(93,202,165,.3);color:var(--teal-l)}
+.pcell.closed{background:transparent;color:var(--linen4)}
+
+</style>
+</head>
+<body>
+<div id="shell">
+  <div id="topbar">
+    <div class="tb-brand">MORAQ <span>· FI/CO</span></div>
+    <div class="tb-vr"></div>
+    <div class="tb-mod">UNIVERSAL LEDGER</div>
+    <div class="tb-vr"></div>
+    <div class="tb-bc" id="breadcrumb"><span>Cockpit</span></div>
+    <select id="tb-period" style="margin-left:auto">
+      <option value="2026-04">T4/2026</option>
+      <option value="2026-03">T3/2026</option>
+      <option value="">Toàn bộ</option>
+    </select>
+    <button class="tb-btn p" onclick="APP.openModal()">+ FB50 Ghi sổ</button>
+    <button class="tb-btn" onclick="APP.exportCurrentSection()">↓ Export</button>
+    <button class="tb-btn" onclick="APP.nav('config')">⚙ Config</button>
+  </div>
+  <div id="body">
+    <div id="sidebar">
+
+<div class="sb-mod">Tổng quan</div>
+<div class="sb-item" data-sec="intel" onclick="APP.nav('intel')"><span class="sb-ico">◈</span><div class="sb-txt">CEO Intelligence<span class="sb-sub">Scenarios · Alerts</span></div></div>
+<div class="sb-item on" data-sec="cockpit" onclick="APP.nav('cockpit')"><span class="sb-ico">⬡</span><div class="sb-txt">Cockpit<span class="sb-sub">FI Dashboard</span></div></div>
+
+<div class="sb-mod">Kế toán tổng hợp · FI-GL</div>
+<div class="sb-item" data-sec="journal" onclick="APP.nav('journal')"><span class="sb-ico">≡</span><div class="sb-txt">Universal Journal<span class="sb-sub">FB50 · FAGLL03</span></div><span id="draft-tag" class="sb-tag" style="display:none">0</span></div>
+<div class="sb-item" data-sec="acc-balance" onclick="APP.nav('acc-balance')"><span class="sb-ico">—</span><div class="sb-txt">Số dư TK<span class="sb-sub">FS10N · Balance</span></div></div>
+<div class="sb-item" data-sec="line-items" onclick="APP.nav('line-items')"><span class="sb-ico">·</span><div class="sb-txt">Chi tiết phát sinh<span class="sb-sub">FBL3N · Line Items</span></div></div>
+<div class="sb-item" data-sec="trial" onclick="APP.nav('trial')"><span class="sb-ico">≈</span><div class="sb-txt">Cân đối thử<span class="sb-sub">F.08 · Trial Balance</span></div></div>
+<div class="sb-item" data-sec="ap" onclick="APP.nav('ap')"><span class="sb-ico">↑</span><div class="sb-txt">FI-AP · Phải trả<span class="sb-sub">F-43 · Vendor Invoices</span></div><span id="ap-tag" class="sb-tag" style="display:none;background:var(--red)">0</span></div>
+<div class="sb-item" data-sec="ar" onclick="APP.nav('ar')"><span class="sb-ico">↓</span><div class="sb-txt">FI-AR · Phải thu<span class="sb-sub">F-22 · Customer AR</span></div></div>
+
+<div class="sb-mod">Báo cáo · Reporting</div>
+<div class="sb-item" data-sec="pl" onclick="APP.nav('pl')"><span class="sb-ico">■</span><div class="sb-txt">Kết quả KD<span class="sb-sub">F.01 · P&L</span></div></div>
+<div class="sb-item" data-sec="bs" onclick="APP.nav('bs')"><span class="sb-ico">□</span><div class="sb-txt">Cân đối kế toán<span class="sb-sub">Balance Sheet</span></div></div>
+<div class="sb-item" data-sec="cashflow" onclick="APP.nav('cashflow')"><span class="sb-ico">~</span><div class="sb-txt">Dòng tiền<span class="sb-sub">Cash Flow</span></div></div>
+
+<div class="sb-mod">Tiền mặt &amp; Vốn</div>
+<div class="sb-item" data-sec="bank" onclick="APP.nav('bank')"><span class="sb-ico">⊡</span><div class="sb-txt">Bank / Treasury<span class="sb-sub">FI-BL · Đối chiếu NH</span></div></div>
+<div class="sb-item" data-sec="equity" onclick="APP.nav('equity')"><span class="sb-ico">◑</span><div class="sb-txt">Equity / Cap Table<span class="sb-sub">SHA · Cổ đông</span></div></div>
+<div class="sb-item" data-sec="budget" onclick="APP.nav('budget')"><span class="sb-ico">▦</span><div class="sb-txt">Budget vs Actuals<span class="sb-sub">Wave Plan tracking</span></div></div>
+
+<div class="sb-mod">Quản trị · CO</div>
+<div class="sb-item" data-sec="costcenter" onclick="APP.nav('costcenter')"><span class="sb-ico">⊕</span><div class="sb-txt">Cost Center<span class="sb-sub">KSB1 · Phân bổ CP</span></div></div>
+<div class="sb-item" data-sec="profitcenter" onclick="APP.nav('profitcenter')"><span class="sb-ico">◎</span><div class="sb-txt">Profit Center<span class="sb-sub">KE5T · DT theo kênh</span></div></div>
+
+<div class="sb-mod">Đóng sổ · Period End</div>
+<div class="sb-item" data-sec="closing" onclick="APP.nav('closing')"><span class="sb-ico">C</span><div class="sb-txt">Closing Cockpit<span class="sb-sub">FCC · Month-end</span></div></div>
+<div class="sb-item" data-sec="accruals" onclick="APP.nav('accruals')"><span class="sb-ico">↺</span><div class="sb-txt">Kết chuyển<span class="sb-sub">FBS1 · Recurring</span></div></div>
+
+<div class="sb-mod">Dữ liệu nền · Master Data</div>
+<div class="sb-item" data-sec="coa" onclick="APP.nav('coa')"><span class="sb-ico">≣</span><div class="sb-txt">Chart of Accounts<span class="sb-sub">FS00 · TK kế toán</span></div></div>
+<div class="sb-item" data-sec="vendor" onclick="APP.nav('vendor')"><span class="sb-ico">V</span><div class="sb-txt">Vendor Master<span class="sb-sub">FK03 · NCC</span></div></div>
+
+<div class="sb-mod">Cấu hình · IMG</div>
+<div class="sb-item" data-sec="config" onclick="APP.nav('config')"><span class="sb-ico">⚙</span><div class="sb-txt">Hệ thống<span class="sb-sub">Công ty · Kỳ · Thuế</span></div></div>
+
+<div class="sb-footer">
+  <div class="sb-fr"><span>Kỳ hiện hành</span><b id="sb-period">T4/2026</b></div>
+  <div class="sb-fr"><span>Trạng thái kỳ</span><b id="sb-period-status">Mở</b></div>
+  <div class="sb-fr"><span>Sync</span><b>localStorage</b></div>
+</div>
+
+    </div>
+    <div id="workspace">
+      <div id="main">
+        <div id="kpibar"></div>
+        <div id="content" style="flex:1;overflow-y:auto;padding:16px 20px"></div>
+      </div>
+      <div id="op">
+        <div id="opinner">
+          <div class="optb">
+            <div class="optb-l">
+              <h3 id="op-title">—</h3>
+              <div class="opsub" id="op-sub"></div>
+            </div>
+            <div class="optb-r">
+              <button class="btn sm p" id="op-post-btn" style="display:none" onclick="APP.quickPost({dataset:{je:document.getElementById('op-title').textContent}})" >Post</button>
+              <button class="opclose" onclick="APP.closeOP()">×</button>
+            </div>
+          </div>
+          <div id="op-body"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- MODAL -->
+<div id="ov">
+  <div id="modal">
+    <div class="mhdr">
+      <h3 id="modal-title">FB50 · Ghi sổ</h3>
+      <button class="mclose" onclick="APP.closeModal()">×</button>
+    </div>
+    <div class="mbody"></div>
+    <div class="mfoot"></div>
+  </div>
+</div>
+<div id="toast-stack"></div>
+<script>
+var COA=[
+{code:"111",name:"Tiền mặt tại quầy",type:"asset",dc:"dr",dept:"store",grp:"A-Cash"},
+{code:"112",name:"Tiền gửi ngân hàng",type:"asset",dc:"dr",dept:"corp",grp:"A-Cash"},
+{code:"131",name:"Phải thu khách hàng",type:"asset",dc:"dr",dept:"store",grp:"A-AR"},
+{code:"133",name:"Thuế GTGT khấu trừ",type:"asset",dc:"dr",dept:"corp",grp:"A-Tax"},
+{code:"141",name:"Tạm ứng nhà cung cấp",type:"asset",dc:"dr",dept:"ops",grp:"A-Prepaid"},
+{code:"153",name:"Công cụ dụng cụ",type:"asset",dc:"dr",dept:"ops",grp:"A-Inv"},
+{code:"154",name:"Chi phí SX dở dang",type:"asset",dc:"dr",dept:"ops",grp:"A-WIP"},
+{code:"155",name:"Thành phẩm",type:"asset",dc:"dr",dept:"ops",grp:"A-Inv"},
+{code:"156",name:"Nguyên vật liệu",type:"asset",dc:"dr",dept:"ops",grp:"A-Inv"},
+{code:"211",name:"Tài sản cố định HH",type:"asset",dc:"dr",dept:"corp",grp:"A-FA"},
+{code:"214",name:"Hao mòn TSCĐ",type:"asset",dc:"cr",dept:"corp",grp:"A-FA"},
+{code:"242",name:"Chi phí trả trước",type:"asset",dc:"dr",dept:"corp",grp:"A-Prepaid"},
+{code:"331",name:"Phải trả nhà cung cấp",type:"liab",dc:"cr",dept:"ops",grp:"L-AP"},
+{code:"333",name:"Thuế phải nộp NN",type:"liab",dc:"cr",dept:"corp",grp:"L-Tax"},
+{code:"334",name:"Phải trả người lao động",type:"liab",dc:"cr",dept:"corp",grp:"L-HR"},
+{code:"338",name:"BHXH / BHYT phải nộp",type:"liab",dc:"cr",dept:"corp",grp:"L-HR"},
+{code:"411",name:"Vốn đầu tư chủ sở hữu",type:"equity",dc:"cr",dept:"corp",grp:"E-Capital"},
+{code:"421",name:"LNST chưa phân phối",type:"equity",dc:"cr",dept:"corp",grp:"E-Retained"},
+{code:"5111",name:"DT cửa hàng (Store)",type:"rev",dc:"cr",dept:"store",grp:"R-Rev"},
+{code:"5112",name:"DT sàn TMĐT",type:"rev",dc:"cr",dept:"brand",grp:"R-Rev"},
+{code:"5113",name:"DT B2B / Gifting",type:"rev",dc:"cr",dept:"brand",grp:"R-Rev"},
+{code:"521",name:"Giảm trừ doanh thu",type:"rev",dc:"dr",dept:"all",grp:"R-Deduct"},
+{code:"611",name:"Giá vốn hàng bán",type:"exp",dc:"dr",dept:"ops",grp:"E-COGS"},
+{code:"6111",name:"COGS 50ml",type:"exp",dc:"dr",dept:"ops",grp:"E-COGS"},
+{code:"6112",name:"COGS 10ml",type:"exp",dc:"dr",dept:"ops",grp:"E-COGS"},
+{code:"641",name:"Chi phí bán hàng",type:"exp",dc:"dr",dept:"store",grp:"E-Sell"},
+{code:"6411",name:"Lương nhân viên bán hàng",type:"exp",dc:"dr",dept:"store",grp:"E-Sell"},
+{code:"6412",name:"Marketing & content",type:"exp",dc:"dr",dept:"brand",grp:"E-Sell"},
+{code:"6413",name:"Bao bì & quà tặng",type:"exp",dc:"dr",dept:"ops",grp:"E-Sell"},
+{code:"6414",name:"Phí sàn TMĐT",type:"exp",dc:"dr",dept:"brand",grp:"E-Sell"},
+{code:"642",name:"Chi phí QLDN",type:"exp",dc:"dr",dept:"corp",grp:"E-Admin"},
+{code:"6421",name:"Lương quản lý / Founder",type:"exp",dc:"dr",dept:"corp",grp:"E-Admin"},
+{code:"6422",name:"Mặt bằng & tiện ích",type:"exp",dc:"dr",dept:"store",grp:"E-Admin"},
+{code:"6423",name:"Phần mềm & công cụ",type:"exp",dc:"dr",dept:"corp",grp:"E-Admin"},
+{code:"6424",name:"Kế toán & pháp lý",type:"exp",dc:"dr",dept:"corp",grp:"E-Admin"},
+{code:"711",name:"Thu nhập khác",type:"rev",dc:"cr",dept:"corp",grp:"R-Other"},
+{code:"811",name:"Chi phí khác",type:"exp",dc:"dr",dept:"corp",grp:"E-Other"}
+];
+var SEED=[
+{id:"JE-2026-0001",date:"2026-04-04",desc:"Nhận vốn đầu tư — Phương 10% + Huy 5%",ref:"SHA-001",status:"posted",dept:"corp",src:"manual",lines:[{acc:"112",desc:"Nhận 3 tỷ vào ngân hàng",dr:3000000000,cr:0},{acc:"411",desc:"Vốn đầu tư cổ đông",dr:0,cr:3000000000}]},
+{id:"JE-2026-0002",date:"2026-04-06",desc:"Tạm ứng supplier hương liệu SUP-001",ref:"PO-2026-001",status:"posted",dept:"ops",src:"manual",lines:[{acc:"141",desc:"Tạm ứng SUP-001",dr:75000000,cr:0},{acc:"112",desc:"Bank transfer",dr:0,cr:75000000}]},
+{id:"JE-2026-0003",date:"2026-04-07",desc:"Phí đăng ký nhãn hiệu MORAQ",ref:"REG-TM-001",status:"posted",dept:"corp",src:"manual",lines:[{acc:"242",desc:"Chi phí pháp lý trả trước",dr:5000000,cr:0},{acc:"112",desc:"Bank transfer",dr:0,cr:5000000}]},
+{id:"JE-2026-0004",date:"2026-04-08",desc:"Mua công cụ pha chế & dụng cụ lab",ref:"PO-2026-002",status:"posted",dept:"ops",src:"manual",lines:[{acc:"153",desc:"Beaker, pipette, cân, label printer",dr:12000000,cr:0},{acc:"112",desc:"Bank transfer",dr:0,cr:12000000}]},
+{id:"JE-2026-0005",date:"2026-04-10",desc:"Phí thiết kế bao bì packaging",ref:"PO-2026-003",status:"posted",dept:"brand",src:"manual",lines:[{acc:"6412",desc:"Design fee 10ml tray + 50ml box",dr:18000000,cr:0},{acc:"112",desc:"Freelance payment",dr:0,cr:18000000}]},
+{id:"JE-2026-0006",date:"2026-04-12",desc:"Tiền mặt quỹ cửa hàng ban đầu",ref:"CS-INIT-001",status:"posted",dept:"store",src:"manual",lines:[{acc:"111",desc:"Quỹ tiền mặt tại quầy",dr:10000000,cr:0},{acc:"112",desc:"Rút tiền mặt ngân hàng",dr:0,cr:10000000}]},
+{id:"JE-2026-0007",date:"2026-04-15",desc:"Setup Seller Account TikTok Shop & Shopee",ref:"ECOM-001",status:"posted",dept:"brand",src:"manual",lines:[{acc:"6423",desc:"Platform setup subscription",dr:3500000,cr:0},{acc:"112",desc:"Bank transfer",dr:0,cr:3500000}]},
+{id:"JE-2026-0008",date:"2026-04-16",desc:"Mua samples hương liệu test công thức 6 SKU",ref:"PO-2026-004",status:"posted",dept:"ops",src:"APP-003",lines:[{acc:"154",desc:"Formula testing 6 SKUs Discovery",dr:8500000,cr:0},{acc:"112",desc:"Supplier payment",dr:0,cr:8500000}]},
+{id:"JE-2026-0009",date:"2026-04-18",desc:"Dự phòng lương T4 Founder + BHXH",ref:"HR-2026-04",status:"draft",dept:"corp",src:"manual",lines:[{acc:"6421",desc:"Lương Founder T4/2026",dr:15000000,cr:0},{acc:"338",desc:"BHXH chủ sử dụng 17.5%",dr:2625000,cr:0},{acc:"334",desc:"Phải trả lương",dr:0,cr:15000000},{acc:"338",desc:"BHXH phải nộp",dr:0,cr:2625000}]}
+];
+
+var VENDORS_SEED=[
+{id:"V-001",name:"Firmenich Vietnam",type:"supplier",cat:"hương liệu",terms:"NET30",currency:"USD",status:"active",moq:"75kg",lead:"8 tuần",notes:"IFRA certified"},
+{id:"V-002",name:"Cơ sở gia công XYZ",type:"supplier",cat:"gia công",terms:"Theo HĐ",currency:"VND",status:"prospecting",moq:"—",lead:"—",notes:"Đang tìm kiếm"},
+{id:"V-003",name:"Nhà in Letterpress HCM",type:"vendor",cat:"bao bì & in ấn",terms:"COD",currency:"VND",status:"active",moq:"500 bộ",lead:"3 tuần",notes:"Press proof pending"},
+{id:"V-004",name:"Freelance Designer",type:"freelancer",cat:"thiết kế",terms:"Invoice",currency:"VND",status:"active",moq:"—",lead:"2 tuần",notes:"PO-2026-003 done"}
+];
+var AP_SEED=[
+{id:"AP-2026-001",date:"2026-04-06",vendorId:"V-001",vendorName:"Firmenich Vietnam",desc:"Tạm ứng hương liệu 30% MOQ",ref:"PO-2026-001",expAcc:"141",amount:75000000,taxRate:0,taxAmt:0,dueDate:"2026-05-06",status:"paid",paidDate:"2026-04-06",jeId:"JE-2026-0002"},
+{id:"AP-2026-002",date:"2026-04-10",vendorId:"V-004",vendorName:"Freelance Designer",desc:"Phí thiết kế bao bì 10ml + 50ml",ref:"PO-2026-003",expAcc:"6412",amount:18000000,taxRate:0.10,taxAmt:1818182,dueDate:"2026-04-25",status:"paid",paidDate:"2026-04-10",jeId:"JE-2026-0005"},
+{id:"AP-2026-003",date:"2026-04-08",vendorId:"V-003",vendorName:"Nhà in Letterpress HCM",desc:"Công cụ pha chế & dụng cụ lab",ref:"PO-2026-002",expAcc:"153",amount:12000000,taxRate:0.10,taxAmt:1090909,dueDate:"2026-05-08",status:"paid",paidDate:"2026-04-08",jeId:"JE-2026-0004"},
+{id:"AP-2026-004",date:"2026-04-18",vendorId:"V-002",vendorName:"Cơ sở gia công XYZ",desc:"Samples hương liệu 6 SKU Discovery",ref:"PO-2026-004",expAcc:"154",amount:8500000,taxRate:0.10,taxAmt:772727,dueDate:"2026-05-18",status:"pending",paidDate:null,jeId:"JE-2026-0008"},
+{id:"AP-2026-005",date:"2026-04-15",vendorId:"V-003",vendorName:"Nhà in Letterpress HCM",desc:"Setup TikTok Shop & Shopee",ref:"ECOM-001",expAcc:"6423",amount:3500000,taxRate:0,taxAmt:0,dueDate:"2026-04-30",status:"pending",paidDate:null,jeId:"JE-2026-0007"}
+];
+var BANK_SEED={accounts:[
+  {id:"VCB-001",bank:"Vietcombank",accNum:"0071004238856",accName:"MORAQ FRAGRANCE CO.",branch:"TP.HCM",currency:"VND",glAcc:"112",status:"active"}
+],statements:[
+  {id:"BS-0401",date:"2026-04-04",desc:"GD den - NGUYEN THI PHUONG - Von gop",amount:2000000000,type:"credit",status:"matched",jeId:"JE-2026-0001"},
+  {id:"BS-0402",date:"2026-04-04",desc:"GD den - TU ANH HUY - Von gop",amount:1000000000,type:"credit",status:"matched",jeId:"JE-2026-0001"},
+  {id:"BS-0403",date:"2026-04-06",desc:"GD di - Firmenich Vietnam - Tam ung",amount:75000000,type:"debit",status:"matched",jeId:"JE-2026-0002"},
+  {id:"BS-0404",date:"2026-04-07",desc:"GD di - Cuc SHTT - Phi TM",amount:5000000,type:"debit",status:"matched",jeId:"JE-2026-0003"},
+  {id:"BS-0405",date:"2026-04-08",desc:"GD di - Nha in Letterpress - Dung cu",amount:12000000,type:"debit",status:"matched",jeId:"JE-2026-0004"},
+  {id:"BS-0406",date:"2026-04-10",desc:"GD di - Tran Thi B - Design fee",amount:18000000,type:"debit",status:"matched",jeId:"JE-2026-0005"},
+  {id:"BS-0407",date:"2026-04-12",desc:"Rut tien mat quy cua hang",amount:10000000,type:"debit",status:"matched",jeId:"JE-2026-0006"},
+  {id:"BS-0408",date:"2026-04-15",desc:"GD di - TikTok Vietnam - Platform fee",amount:3500000,type:"debit",status:"matched",jeId:"JE-2026-0007"},
+  {id:"BS-0409",date:"2026-04-16",desc:"GD di - Supplier samples",amount:8500000,type:"debit",status:"matched",jeId:"JE-2026-0008"},
+  {id:"BS-0410",date:"2026-04-18",desc:"GD den - Lai tiet kiem",amount:285000,type:"credit",status:"unmatched",jeId:null}
+]};
+var EQUITY_SEED={
+  shares:{total:10000,pricePerShare:2000000,postMoney:20000000000,preMoney:17000000000},
+  rounds:[{id:"RD-001",name:"Seed Round",date:"2026-04-04",amount:3000000000,shares:1500,pricePerShare:2000000,valuation:20000000000}],
+  shareholders:[
+    {id:"SH-001",name:"Trần Thanh Kiên",role:"Founder & CEO",shares:8500,pct:85.0,invested:0,shaTerms:"Full control · GP rights"},
+    {id:"SH-002",name:"Trần Thanh Phương",role:"Angel Investor",shares:1000,pct:10.0,invested:2000000000,shaTerms:"Monthly update · No voting"},
+    {id:"SH-003",name:"Từ Anh Huy",role:"Angel Investor",shares:500,pct:5.0,invested:1000000000,shaTerms:"Monthly update · No voting"}
+  ],distributions:[]
+};
+var BUDGET_SEED=[
+  {id:"BUD-W0-01",wave:"Wave 0",phase:"Regulatory",category:"Trademark & Legal",account:"242",dept:"corp",budgeted:20000000,notes:"NĐ 43/2017 · IFRA · Nhóm 03"},
+  {id:"BUD-W0-02",wave:"Wave 0",phase:"Regulatory",category:"Compliance & ĐKKD",account:"6424",dept:"corp",budgeted:5000000,notes:"Mã ngành 4773 · BHXH setup"},
+  {id:"BUD-W1-01",wave:"Wave 1",phase:"Supplier",category:"Hương liệu MOQ 30%",account:"141",dept:"ops",budgeted:75000000,notes:"30% × 250M MOQ · Firmenich"},
+  {id:"BUD-W1-02",wave:"Wave 1",phase:"Supplier",category:"Samples & Testing",account:"154",dept:"ops",budgeted:15000000,notes:"Formula testing 6 SKUs"},
+  {id:"BUD-W2-01",wave:"Wave 2",phase:"Packaging",category:"Thiết kế & Press proof",account:"6412",dept:"brand",budgeted:30000000,notes:"10ml tray · 50ml âm dương"},
+  {id:"BUD-W2-02",wave:"Wave 2",phase:"Packaging",category:"Công cụ dụng cụ lab",account:"153",dept:"ops",budgeted:15000000,notes:"Beaker · pipette · cân · printer"},
+  {id:"BUD-W2-03",wave:"Wave 2",phase:"Packaging",category:"E-commerce setup",account:"6423",dept:"brand",budgeted:5000000,notes:"TikTok Shop · Shopee · MISA"},
+  {id:"BUD-W3-01",wave:"Wave 3",phase:"Set Build",category:"Nội thất & thi công",account:"211",dept:"store",budgeted:200000000,notes:"MIL-02A granite · MIL-02B inox"},
+  {id:"BUD-W3-02",wave:"Wave 3",phase:"Set Build",category:"Đặt cọc mặt bằng",account:"242",dept:"store",budgeted:50000000,notes:"3 tháng tiền cọc"},
+  {id:"BUD-W4-01",wave:"Wave 4",phase:"Launch",category:"KOC & Marketing launch",account:"6412",dept:"brand",budgeted:50000000,notes:"KOC seeding · launch event"},
+  {id:"BUD-W4-02",wave:"Wave 4",phase:"Launch",category:"Inventory launch batch",account:"156",dept:"ops",budgeted:80000000,notes:"Hương liệu 70% + vỏ chai batch 1"}
+];
+var CLOSE_TASKS_SEED=[
+  {id:"CLT-01",name:"Hạch toán đầy đủ phát sinh T4",dept:"corp",due:"30/04",done:true,note:"Tất cả JE đã posted"},
+  {id:"CLT-02",name:"Kiểm tra Cân đối thử (F.08)",dept:"corp",due:"30/04",done:false,note:""},
+  {id:"CLT-03",name:"Đối chiếu TK 112 với sao kê NH",dept:"corp",due:"30/04",done:false,note:""},
+  {id:"CLT-04",name:"Kê khai VAT tháng 4/2026",dept:"corp",due:"20/05",done:false,note:"Hạn nộp 20/05"},
+  {id:"CLT-05",name:"Nộp BHXH tháng 4/2026",dept:"corp",due:"30/04",done:false,note:"TK 338"},
+  {id:"CLT-06",name:"Ghi sổ bút toán lương T4",dept:"corp",due:"30/04",done:false,note:"JE-2026-0009 đang ở Nháp"},
+  {id:"CLT-07",name:"Lập báo cáo tài chính T4",dept:"corp",due:"05/05",done:false,note:"Gửi investor 05/05"},
+  {id:"CLT-08",name:"Gửi Investor Update T4",dept:"corp",due:"05/05",done:false,note:"Phương + Huy"},
+  {id:"CLT-09",name:"Mở kỳ kế toán T5/2026",dept:"corp",due:"01/05",done:false,note:"Config → Kỳ mở sổ"}
+];
+
+var STORE = "moraq-fi-v7";
+var DB = {entries:[],vendors:[],apInvoices:[],arInvoices:[],bank:{accounts:[],statements:[]},
+  equity:{shares:{},rounds:[],shareholders:[],distributions:[]},budget:[],closeTasks:[],
+  config:{companyCode:"MORAQ",companyName:"MORAQ Fragrance Co.",mst:"Đang đăng ký",
+    currency:"VND",fiscalYearStart:"01/01",fiscalYearEnd:"31/12",
+    openPeriods:["2026-04"],
+    vatRates:[{name:"Tiêu chuẩn",rate:0.10,code:"S1"},{name:"Ưu đãi",rate:0.08,code:"S2"},{name:"Không chịu thuế",rate:0,code:"E0"}],
+    bhxhEmp:0.175,bhxhEe:0.105,minWage:4960000,
+    docPrefix:"JE",docYear:2026,docPad:4,
+    gmFloor:80,gmTarget:82,beTarget:4.3,ticketTarget:1.5,
+    reinvest:{brand:30,rd:15,buf:30,f:25}
+  }
+};
+function dbSave(){try{localStorage.setItem(STORE,JSON.stringify(DB));}catch(e){}}
+function dbLoad(){
+  try{var r=localStorage.getItem(STORE);
+    if(r&&r.length>10){var p=JSON.parse(r);if(p&&p.entries)DB=p;}
+  }catch(e){localStorage.removeItem(STORE);}
+  if(!DB.entries||!DB.entries.length)DB.entries=JSON.parse(JSON.stringify(SEED));
+  if(!DB.vendors||!DB.vendors.length)DB.vendors=JSON.parse(JSON.stringify(VENDORS_SEED));
+  if(!DB.apInvoices||!DB.apInvoices.length)DB.apInvoices=JSON.parse(JSON.stringify(AP_SEED));
+  if(!DB.arInvoices)DB.arInvoices=[];
+  if(!DB.bank||!DB.bank.accounts.length)DB.bank=JSON.parse(JSON.stringify(BANK_SEED));
+  if(!DB.equity||!DB.equity.shareholders.length)DB.equity=JSON.parse(JSON.stringify(EQUITY_SEED));
+  if(!DB.budget||!DB.budget.length)DB.budget=JSON.parse(JSON.stringify(BUDGET_SEED));
+  if(!DB.closeTasks||!DB.closeTasks.length)DB.closeTasks=JSON.parse(JSON.stringify(CLOSE_TASKS_SEED));
+  if(!DB.config)DB.config={companyCode:"MORAQ",openPeriods:["2026-04"],gmFloor:80,reinvest:{brand:30,rd:15,buf:30,f:25}};
+}
+// ── Helpers ──
+function getAcc(c){for(var i=0;i<COA.length;i++){if(COA[i].code===c)return COA[i];}return null;}
+function accName(c){var a=getAcc(c);return a?a.name:c;}
+function N(n){return Math.round(Math.abs(n)).toLocaleString("vi-VN");}
+function D(n){return n===0?"—":N(n);}
+function M(n){var a=Math.abs(n);if(a===0)return"—";if(a>=1e9)return(n/1e9).toFixed(2).replace(/\.?0+$/,"")+" tỷ";if(a>=1e6)return Math.round(n/1e6)+"M";return N(n);}
+function deptLabel(d){return{brand:"Brand",ops:"Ops",store:"Store",corp:"Corp",all:"All"}[d]||d;}
+function typeLabel(t){return{asset:"Tài sản",liab:"Nợ phải trả",equity:"Vốn chủ",rev:"Doanh thu",exp:"Chi phí"}[t]||t;}
+// ── Accounting ──
+function bal(code,period){
+  var dr=0,cr=0;
+  for(var i=0;i<DB.entries.length;i++){
+    var e=DB.entries[i];
+    if(e.status!=="posted")continue;
+    if(period&&!e.date.startsWith(period))continue;
+    for(var j=0;j<e.lines.length;j++){
+      var l=e.lines[j];
+      if(l.acc===code){dr+=(l.dr||0);cr+=(l.cr||0);}
+    }
+  }
+  var a=getAcc(code);
+  return a?(a.dc==="dr"?dr-cr:cr-dr):dr-cr;
+}
+function sumBal(codes,period){
+  return codes.reduce(function(s,c){return s+Math.max(0,bal(c,period));},0);
+}
+function getAllLines(period){
+  var res=[];
+  DB.entries.forEach(function(e){
+    if(e.status!=="posted")return;
+    if(period&&!e.date.startsWith(period))return;
+    e.lines.forEach(function(l){
+      res.push({date:e.date,jeId:e.id,jeDesc:e.desc,jeDept:e.dept,acc:l.acc,desc:l.desc,dr:l.dr||0,cr:l.cr||0,ref:e.ref||"",src:e.src});
+    });
+  });
+  return res;
+}
+
+
+// ── Toast ──
+function toast(msg,type){
+  var stack=document.getElementById("toast-stack");
+  if(!stack){stack=document.createElement("div");stack.id="toast-stack";stack.className="toast-stack";document.body.appendChild(stack);}
+  var el=document.createElement("div");el.className="toast"+(type?" "+type:"");el.textContent=msg;
+  stack.appendChild(el);setTimeout(function(){el.remove();},2600);
+}
+// ── Dtag ──
+function dtag(dept){return '<span class="dtag '+dept+'">'+deptLabel(dept)+'<\/span>';}
+// ── Badge ──
+var BADGE_MAP={posted:"Ghi sổ",draft:"Nháp",void:"Đã hủy",open:"Mở",closed:"Đóng",pending:"Chờ",done:"Xong",active:"HĐ",paid:"Đã trả",collected:"Đã thu"};
+function badge(s){return '<span class="badge '+s+'">'+(BADGE_MAP[s]||s)+'<\/span>';}
+// ── Export ──
+function exportCSV(data,headers,filename){
+  var rows=[headers.join(",")];
+  data.forEach(function(row){rows.push(headers.map(function(h){var v=row[h]===undefined?"":row[h];return '"'+String(v).replace(/"/g,'\"\""')+'"';}).join(","));});
+  var blob=new Blob([rows.join("\n")],{type:"text/csv"});
+  var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=filename;a.click();
+  toast("Export: "+filename);
+}
+function exportJSON(){
+  var blob=new Blob([JSON.stringify(DB,null,2)],{type:"application/json"});
+  var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="MORAQ_backup_"+new Date().toISOString().slice(0,10)+".json";a.click();
+  toast("Backup exported");
+}
+function importJSON(){
+  var inp=document.createElement("input");inp.type="file";inp.accept=".json";
+  inp.onchange=function(ev){
+    var f=ev.target.files[0];if(!f)return;
+    var r=new FileReader();
+    r.onload=function(e){
+      try{var d=JSON.parse(e.target.result);
+        if(d.entries)DB.entries=d.entries;if(d.apInvoices)DB.apInvoices=d.apInvoices;
+        if(d.arInvoices)DB.arInvoices=d.arInvoices;if(d.budget)DB.budget=d.budget;
+        if(d.vendors)DB.vendors=d.vendors;if(d.equity)DB.equity=d.equity;
+        if(d.bank)DB.bank=d.bank;if(d.closeTasks)DB.closeTasks=d.closeTasks;
+        if(d.config)DB.config=Object.assign(DB.config||{},d.config);
+        dbSave();APP.renderKPI();APP.renderSection(APP.S.section);
+        toast("Import OK: "+DB.entries.length+" JE");
+      }catch(err){toast("Import error: "+err.message,"err");}
+    };r.readAsText(f);
+  };inp.click();
+}
+function clearData(){if(!confirm("Xóa cache? Reload về data mặc định."))return;localStorage.removeItem(STORE);window.location.reload();}
+// ── Scroll anchor ──
+function scrollTo(id){
+  var el=document.getElementById("a-"+id)||document.getElementById(id);
+  if(el)el.scrollIntoView({behavior:"smooth",block:"start"});
+}
+// ── Expand panel ──
+function togglePanel(id){
+  var body=document.getElementById("eb-"+id);
+  var tgl=document.getElementById("et-"+id);
+  if(!body)return;
+  var open=body.classList.toggle("op");
+  if(tgl)tgl.classList.toggle("op",open);
+}
+
+
+var SC={
+  base:{k:"base",n:"Base",lb:"Thận trọng",c:"var(--teal-l)",
+    rev:[300,600,1200,1500,1800,1800,2000,2000,2200,2200,2200,2200],
+    mo:["T1","T2","T3","T4","T5","T6","T7","T8","T9","T10","T11","T12"],
+    gm:0.82,hc:8,st:1,raise:false,
+    trig:["TX/ngày 4–5 liên tục","Repeat rate > 35%","GM > 80% ổn định"],
+    risk:["Launch chậm > T8","Repeat rate < 25%","Supplier delay > 6 tuần"],
+    mile:["T1: 300M · Confirm economics","T3: Break-even","T6: 1 năm · Xem mở rộng"],
+    alloc:{brand:30,rd:15,buf:30,f:25}},
+  mid:{k:"mid",n:"Mid",lb:"Tăng trưởng",c:"var(--amber-x)",
+    rev:[500,1000,1800,2200,2500,2500,2800,2800,3000,3000,3200,3500],
+    mo:["T1","T2","T3","T4","T5","T6","T7","T8","T9","T10","T11","T12"],
+    gm:0.83,hc:14,st:2,raise:true,raiseWhen:"T8/2026",raiseAmt:"2–3B",
+    trig:["TX/ngày > 6 liên tục","TikTok organic > 500k","B2B > 8/tháng"],
+    risk:["Stock-out trước batch 2","Cash runway < 9 tháng","Nhân sự chưa đủ"],
+    mile:["T2: 1B · Confirm TikTok","T5: Store 2 site","T8: Raise 2-3B"],
+    alloc:{brand:30,rd:15,buf:30,f:25}},
+  ceil:{k:"ceil",n:"Ceiling",lb:"Bứt phá",c:"var(--violet-l)",
+    rev:[1000,2000,3000,3500,4000,4500,5000,5000,5500,6000,6000,6500],
+    mo:["T1","T2","T3","T4","T5","T6","T7","T8","T9","T10","T11","T12"],
+    gm:0.84,hc:25,st:3,raise:true,raiseWhen:"T5/2026",raiseAmt:"5–8B Series A",
+    trig:["Waitlist > 300","Báo chí tự nhiên > 5","DTC > 40% revenue"],
+    risk:["Founder bottleneck","Hết stock toàn bộ","Culture dilution"],
+    mile:["T1: Sell-out · Waitlist","T3: Series A","T6: 3 stores"],
+    alloc:{brand:30,rd:15,buf:30,f:25}}
+};
+var LI=[
+  {id:"repeat",n:"Repeat Rate 90 ngày",u:"%",tg:40,al:{r:25,a:32,g:40},note:"% KH quay lại 90 ngày"},
+  {id:"ticket",n:"Avg Ticket",u:"M VND",tg:1.5,al:{r:1.0,a:1.2,g:1.5},note:"Giá trung bình / giao dịch"},
+  {id:"gm",n:"Gross Margin thực",u:"%",tg:82,al:{r:78,a:80,g:82},note:"Alert nếu < 80%"},
+  {id:"runway",n:"Cash Runway",u:" tháng",tg:12,al:{r:6,a:9,g:12},note:"Tháng còn lại tại burn rate"},
+  {id:"referral",n:"Referral Rate",u:"%",tg:20,al:{r:8,a:12,g:20},note:"% đơn từ giới thiệu"},
+  {id:"ltv",n:"LTV/CAC Ratio",u:"x",tg:5,al:{r:2,a:3,g:5},note:"Customer lifetime value / CAC"}
+];
+var TRIGS=[
+  {c:"GM < 80% trong 1 tháng",a:"Audit COGS · Kiểm tra supplier cost",p:"P0",t:"r"},
+  {c:"Cash runway < 6 tháng",a:"Bắt đầu raise ngay",p:"P0",t:"r"},
+  {c:"Repeat rate < 25% trong 2 tháng",a:"Review product & CRM journey",p:"P0",t:"r"},
+  {c:"TX/ngày > 8 liên tục 2 tuần",a:"Kích hoạt kịch bản Mid",p:"P1",t:"a"},
+  {c:"Waitlist > 200 người",a:"Đánh giá capacity · Batch 2 sớm",p:"P1",t:"a"},
+  {c:"B2B inquiry > 5/tháng",a:"Open B2B channel chính thức",p:"P1",t:"a"},
+  {c:"Revenue T3 > 1.5B",a:"Accelerate store 2 site selection",p:"P2",t:"g"},
+  {c:"Series A inquiry từ VC",a:"Prep data room · Min 60B post-money",p:"P2",t:"g"}
+];
+
+
+var APP = {
+// ─── STATE ───
+S:{section:"cockpit",period:"2026-04",opId:null,scenario:"base",exp:{},
+   jeQ:"",jeStatus:"",jeMonth:"",liAcct:"",liQ:"",liMonth:"",
+   coaQ:"",coaType:""},
+_lc:0,_editId:null,
+
+// ─── NAV ───
+nav:function(sec){
+  this.S.section=sec;this.S.opId=null;this.closeOP();
+  document.querySelectorAll(".sb-item").forEach(function(el){
+    el.classList.toggle("on",el.dataset.sec===sec);
+  });
+  var LABELS={cockpit:"Cockpit",intel:"CEO Intelligence",
+    journal:"Universal Journal",
+    "acc-balance":"Số dư TK · FS10N","line-items":"Chi tiết phát sinh · FBL3N",
+    trial:"Cân đối thử · F.08",ap:"FI-AP · Phải trả",ar:"FI-AR · Phải thu",
+    pl:"Kết quả KD · F.01",bs:"Cân đối kế toán",cashflow:"Dòng tiền",
+    bank:"Bank / Treasury",equity:"Equity / Cap Table",budget:"Budget vs Actuals",
+    costcenter:"Cost Center · KSB1",profitcenter:"Profit Center · KE5T",
+    closing:"Closing Cockpit",accruals:"Kết chuyển · FBS1",
+    coa:"Chart of Accounts · FS00",vendor:"Vendor Master · FK03",config:"Cấu hình · IMG"};
+  var bc=document.getElementById("breadcrumb");
+  if(bc)bc.innerHTML="<span>"+(LABELS[sec]||sec)+"<\/span>";
+  this.renderSection(sec);
+},
+setPeriod:function(p){
+  this.S.period=p;
+  var el=document.getElementById("sb-period");if(el)el.textContent=p||"Toàn bộ";
+  this.renderKPI();this.renderSection(this.S.section);
+},
+// ─── KPI BAR ───
+renderKPI:function(){
+  var p=this.S.period;
+  var cash=bal("112",p)+bal("111",p);
+  var inv=bal("411",p);
+  var rev=sumBal(["5111","5112","5113"],p);
+  var cogs=sumBal(["611","6111","6112"],p);
+  var opex=sumBal(["6412","6411","6421","6422","6423","6424","811"],p);
+  var draftN=DB.entries.filter(function(e){return e.status==="draft";}).length;
+  var dt=document.getElementById("draft-tag");
+  if(dt){dt.style.display=draftN>0?"inline-block":"none";dt.textContent=draftN;}
+  var at=document.getElementById("ap-tag");
+  var apOD=DB.apInvoices?DB.apInvoices.filter(function(i){return i.status==="pending"&&i.dueDate<new Date().toISOString().slice(0,10);}).length:0;
+  if(at){at.style.display=apOD>0?"inline-block":"none";at.textContent=apOD;}
+  var kb=document.getElementById("kpibar");if(!kb)return;
+  kb.innerHTML=this.mkKpi("clt","Cash",M(cash),"111+112")+
+    this.mkKpi("cam","Vốn",M(inv),"Post-money 20B")+
+    this.mkKpi(rev>0?"cgn":"cbl","Doanh thu",rev>0?M(rev):"—",rev>0?"GP: "+M(rev-cogs):"Pre-launch")+
+    this.mkKpi(opex>0?"cam":"cbl","Burn",opex>0?M(opex):"—",opex>0?"OPEX":"—")+
+    this.mkKpi(draftN>0?"crd":"clt","Nháp",String(draftN),draftN>0?"Cần post":"OK");
+},
+mkKpi:function(cls,l,v,s){
+  return '<div class="kpi '+cls+'"><div class="kpi-l">'+l+'<\/div><div class="kpi-v">'+v+'<\/div><div class="kpi-s">'+s+'<\/div><\/div>';
+},
+// ─── SECTION ROUTER ───
+renderSection:function(sec){
+  var c=document.getElementById("content");if(!c)return;
+  var h="";
+  var fn={"cockpit":"bCockpit","intel":"bIntel","journal":"bJournal",
+    "acc-balance":"bAccBalance","line-items":"bLineItems","trial":"bTrial",
+    "ap":"bAP","ar":"bAR","pl":"bPL","bs":"bBS","cashflow":"bCashflow",
+    "bank":"bBank","equity":"bEquity","budget":"bBudget",
+    "costcenter":"bCostCenter","profitcenter":"bProfitCenter",
+    "closing":"bClosing","accruals":"bAccruals","coa":"bCOA",
+    "vendor":"bVendor","config":"bConfig"};
+  if(fn[sec]&&this[fn[sec]])h=this[fn[sec]]();
+  c.innerHTML=h;
+},
+// ─── SHARED BUILDERS ───
+sHdr:function(title,txcode,sub,actions){
+  return '<div class="s-hdr"><div class="s-hdr-l"><h2>'+title+' <span class="txc">'+txcode+'<\/span><\/h2><div class="smeta">'+sub+'<\/div><\/div><div class="s-hdr-r">'+actions+'<\/div><\/div>';
+},
+fb:function(inputs,actions){
+  return '<div class="fb">'+inputs+'<div class="fbr">'+actions+'<\/div><\/div>';
+},
+tfooter:function(n,extra){
+  return '<div class="tfooter"><span>'+n+' records<\/span>'+(extra||"")+'<div class="tfr"><button class="btn sm" onclick="APP.exportCurrentSection()">Export CSV<\/button><\/div><\/div>';
+},
+// ─── ANCHOR BAR (index-based, no string args) ───
+ancBar:function(items){
+  var html='<div class="anch">';
+  items.forEach(function(it,i){
+    html+='<div class="an'+(i===0?" on":"")+'" data-anc-idx="'+i+'" onclick="APP.onAnc(this,'+i+')">'+it[0]+'<\/div>';
+  });
+  return html+'<\/div>';
+},
+onAnc:function(el,i){
+  var b=el.closest(".anch");
+  if(b)b.querySelectorAll(".an").forEach(function(a){a.classList.remove("on");});
+  el.classList.add("on");
+  var id=el.closest("[data-anc-ns]");
+  // scroll within the section
+  var ns=id?id.dataset.ancNs:"";
+  var target=document.getElementById("a-"+ns+"-"+i);
+  if(target)target.scrollIntoView({behavior:"smooth",block:"start"});
+},
+
+
+// ─── COCKPIT ───
+bCockpit:function(){
+  var p=this.S.period;
+  var cash=bal("112",p)+bal("111",p);
+  var inv=bal("411",p);
+  var opex=sumBal(["6412","6411","6421","6422","6423","6424","811"],p);
+  var doneN=DB.closeTasks.filter(function(t){return t.done;}).length;
+  var sc=SC[this.S.scenario||"base"];
+  var runwayM=opex>0?(cash/opex).toFixed(1):"—";
+  var recent=DB.entries.slice().sort(function(a,b){return b.date.localeCompare(a.date);}).slice(0,5);
+  var recentHTML=recent.map(function(e){
+    var tot=e.lines.reduce(function(s,l){return s+(l.dr||0);},0);
+    return '<tr data-je="'+e.id+'" onclick="APP.openJE(this)"><td class="lnk">'+e.id+'<\/td><td style="color:var(--linen3);font-size:10px">'+e.date+'<\/td><td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+e.desc+'<\/td><td class="r mono">'+M(tot)+'<\/td><td>'+badge(e.status)+'<\/td><\/tr>';
+  }).join("");
+  var closePct=DB.closeTasks.length>0?Math.round(doneN/DB.closeTasks.length*100):0;
+  var scCard='<div class="card"><div class="card-h"><h3>Kịch bản: '+sc.n+' — '+sc.lb+'<\/h3><div class="chr"><button class="btn sm" onclick="APP.nav(\'intel\')">CEO Intelligence<\/button><\/div><\/div><div class="card-b"><div class="rr"><span class="rl">Revenue peak target<\/span><span class="rv" style="color:'+sc.c+'">'+sc.rev[sc.rev.length-1]+'M/tháng<\/span><\/div><div class="rr"><span class="rl">Nhân sự peak<\/span><span class="rv">'+sc.hc+' người · '+sc.st+' store<\/span><\/div><div class="rr hl"><span class="rl">Capital need<\/span><span class="rv">'+(sc.raise?sc.raiseAmt:"3B đủ · No raise")+'<\/span><\/div><\/div><\/div>';
+  return this.sHdr("FI Cockpit","Dashboard","MORAQ · "+p+" · Kịch bản: "+sc.n,
+    '<button class="btn sm p" onclick="APP.openModal()">+ FB50 Ghi sổ<\/button>')
+  +'<div class="scards c4" style="margin-bottom:14px">'
+  +'<div class="scard clt" onclick="APP.nav(\'bank\')"><div class="st">Cash & Bank<\/div><div class="sv" style="color:var(--teal-l)">'+M(cash)+'<\/div><div class="ss">111+112<\/div><div class="sh">Runway: '+runwayM+' tháng<\/div><\/div>'
+  +'<div class="scard cam" onclick="APP.nav(\'equity\')"><div class="st">Vốn đầu tư<\/div><div class="sv">'+M(inv)+'<\/div><div class="ss">Post-money 20B<\/div><div class="sh">15% equity sold<\/div><\/div>'
+  +'<div class="scard" onclick="APP.nav(\'pl\')"><div class="st">Doanh thu<\/div><div class="sv">'+M(sumBal(["5111","5112","5113"],p))+'<\/div><div class="ss">Pre-launch<\/div><div class="sh">→ P&L<\/div><\/div>'
+  +'<div class="scard'+(doneN<DB.closeTasks.length?" warn":"")+'" onclick="APP.nav(\'closing\')"><div class="st">Closing T4<\/div><div class="sv">'+doneN+"/"+DB.closeTasks.length+'<\/div><div class="ss">'+closePct+'% done<\/div><div class="sb"><div style="flex:'+closePct+';background:var(--teal-l)"><\/div><div style="flex:'+(100-closePct)+';background:var(--ink3)"><\/div><\/div><\/div>'
+  +'<\/div>'
+  +'<div class="g2">'
+  +'<div class="card"><div class="card-h"><h3>Universal Journal — Gần nhất<\/h3><div class="chr"><button class="btn sm" onclick="APP.nav(\'journal\')">Xem tất cả<\/button><\/div><\/div><div class="card-b np tbl-wrap"><table class="tbl"><thead><tr><th>JE<\/th><th>Ngày<\/th><th>Mô tả<\/th><th class="r">Số tiền<\/th><th>TT<\/th><\/tr><\/thead><tbody>'+recentHTML+'<\/tbody><\/table><\/div><\/div>'
+  +scCard
+  +'<\/div>';
+},
+// ─── UNIVERSAL JOURNAL ───
+bJournal:function(){
+  var q=this.S.jeQ.toLowerCase(),st=this.S.jeStatus,mo=this.S.jeMonth;
+  var rows=DB.entries.slice().sort(function(a,b){return b.date.localeCompare(a.date);});
+  if(q)rows=rows.filter(function(e){return e.id.toLowerCase().includes(q)||e.desc.toLowerCase().includes(q)||(e.ref||"").toLowerCase().includes(q);});
+  if(st)rows=rows.filter(function(e){return e.status===st;});
+  if(mo)rows=rows.filter(function(e){return e.date.startsWith(mo);});
+  var tbody=rows.map(function(e){
+    var tot=e.lines.reduce(function(s,l){return s+(l.dr||0);},0);
+    var drA=[...new Set(e.lines.filter(function(l){return l.dr>0;}).map(function(l){return l.acc;}))].slice(0,2).join(", ");
+    var crA=[...new Set(e.lines.filter(function(l){return l.cr>0;}).map(function(l){return l.acc;}))].slice(0,2).join(", ");
+    return '<tr data-je="'+e.id+'" onclick="APP.openJE(this)" class="'+(APP.S.opId===e.id?"sel":"")+'"><td class="lnk" style="font-size:10px">'+e.id+'<\/td><td style="font-size:10px;color:var(--linen3)">'+e.date+'<\/td><td style="max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+e.desc+'<\/td><td>'+dtag(e.dept)+'<\/td><td class="code">'+drA+'<\/td><td class="code">'+crA+'<\/td><td class="r mono">'+M(tot)+'<\/td><td>'+badge(e.status)+'<\/td><td><div class="ab">'+(e.status==="draft"?'<button class="ab-btn ps" data-je="'+e.id+'" onclick="event.stopPropagation();APP.quickPost(this)">Post<\/button>':'')+' <button class="ab-btn ed" data-je="'+e.id+'" onclick="event.stopPropagation();APP.openModal(this.dataset.je)">Edit<\/button><button class="ab-btn" data-je="'+e.id+'" onclick="event.stopPropagation();APP.dupJE(this.dataset.je)">Dup<\/button><button class="ab-btn dl" data-je="'+e.id+'" onclick="event.stopPropagation();APP.delJE(this.dataset.je)">Del<\/button><\/div><\/td><\/tr>';
+  }).join("")||'<tr><td colspan="9" class="empty">No entries<\/td><\/tr>';
+  return this.sHdr("Universal Journal","FB50 · FAGLL03",rows.length+" records",
+    '<button class="btn sm" onclick="exportCSV(DB.entries.map(function(e){var t=e.lines.reduce(function(s,l){return s+(l.dr||0);},0);return{id:e.id,date:e.date,desc:e.desc,total:t,status:e.status};},[\'id\',\'date\',\'desc\',\'total\',\'status\'],\'Journal.csv\')">CSV<\/button>'
+    +'<button class="btn sm" onclick="APP.nav(\'acc-balance\')">FS10N<\/button>'
+    +'<button class="btn sm p" onclick="APP.openModal()">+ FB50<\/button>')
+  +this.fb('<input type="text" placeholder="Tìm JE / mô tả..." oninput="APP.S.jeQ=this.value;APP.renderSection(\'journal\')" value="'+this.S.jeQ+'">'
+    +'<select onchange="APP.S.jeStatus=this.value;APP.renderSection(\'journal\')"><option value="">All TT<\/option><option value="posted"'+(this.S.jeStatus==="posted"?" selected":"")+'>Ghi sổ<\/option><option value="draft"'+(this.S.jeStatus==="draft"?" selected":"")+'>Nháp<\/option><\/select>'
+    +'<select onchange="APP.S.jeMonth=this.value;APP.renderSection(\'journal\')"><option value="">All tháng<\/option><option value="2026-04"'+(this.S.jeMonth==="2026-04"?" selected":"")+'>T4/2026<\/option><\/select>',
+    '<button class="btn sm" onclick="APP.S.jeQ=\'\';APP.S.jeStatus=\'\';APP.S.jeMonth=\'\';APP.renderSection(\'journal\')">Reset<\/button>')
+  +'<div class="card"><div class="card-b np tbl-wrap"><table class="tbl"><thead><tr><th>JE<\/th><th>Ngày<\/th><th>Mô tả<\/th><th>Dept<\/th><th>Dr TK<\/th><th>Cr TK<\/th><th class="r">Số tiền<\/th><th>TT<\/th><th><\/th><\/tr><\/thead><tbody>'+tbody+'<\/tbody><\/table>'
+  +'<button class="add-row" onclick="APP.openModal()">+ Thêm bút toán mới (FB50)<\/button><\/div><\/div>'
+  +this.tfooter(rows.length,'<span style="color:var(--linen3)">Hover → Edit/Delete<\/span>');
+},
+// ─── ACC BALANCE FS10N ───
+bAccBalance:function(){
+  var q=this.S.liAcct.toLowerCase();
+  var accs=COA.filter(function(a){return !q||a.code.includes(q)||a.name.toLowerCase().includes(q);});
+  var rows=accs.filter(function(a){var b=bal(a.code);return Math.abs(b)>0||getAllLines().some(function(l){return l.acc===a.code;});});
+  var thead='<tr><th>Mã TK<\/th><th>Tên<\/th><th>Loại<\/th>';
+  var periods=["2026-04","2026-03"];
+  periods.forEach(function(p){thead+='<th class="r" colspan="2">'+p+'<br><span style="font-size:7px;opacity:.6">Dr/Cr<\/span><\/th>';});
+  thead+='<th class="r">Lũy kế<\/th><th><\/th><\/tr>';
+  var tbody=rows.map(function(a){
+    var cols="";
+    periods.forEach(function(p){
+      var dr=0,cr=0;
+      DB.entries.filter(function(e){return e.status==="posted"&&e.date.startsWith(p);}).forEach(function(e){e.lines.forEach(function(l){if(l.acc===a.code){dr+=(l.dr||0);cr+=(l.cr||0);}});});
+      cols+='<td class="r mono" style="font-size:10px">'+(dr>0?D(dr):"—")+'<\/td><td class="r mono" style="font-size:10px">'+(cr>0?D(cr):"—")+'<\/td>';
+    });
+    var net=Math.abs(bal(a.code));
+    return '<tr data-acc="'+a.code+'" onclick="APP.drillAcc(this)" title="→ FBL3N"><td class="lnk" style="font-size:10px">'+a.code+'<\/td><td>'+a.name+'<\/td><td>'+badge(a.type)+'<\/td>'+cols+'<td class="r mono" style="color:var(--teal-l)">'+D(net)+'<\/td><td><button class="btn sm" data-acc="'+a.code+'" onclick="event.stopPropagation();APP.drillAcc(this)">FBL3N<\/button><\/td><\/tr>';
+  }).join("")||'<tr><td colspan="8" class="empty">No data<\/td><\/tr>';
+  return this.sHdr("Số dư tài khoản","FS10N · G/L Account Balance","Click TK → FBL3N",
+    '<button class="btn sm p" onclick="APP.nav(\'line-items\')">→ FBL3N<\/button>')
+  +this.fb('<input type="text" placeholder="Tìm TK..." oninput="APP.S.liAcct=this.value;APP.renderSection(\'acc-balance\')" value="'+this.S.liAcct+'">',
+    '<button class="btn sm" onclick="APP.S.liAcct=\'\';APP.renderSection(\'acc-balance\')">Reset<\/button>')
+  +'<div class="card"><div class="card-b np tbl-wrap"><table class="tbl"><thead>'+thead+'<\/thead><tbody>'+tbody+'<\/tbody><\/table><\/div><\/div>'
+  +this.tfooter(rows.length);
+},
+drillAcc:function(el){
+  var acc=el.dataset&&el.dataset.acc?el.dataset.acc:(el.closest("tr")?el.closest("tr").dataset.acc:"");
+  if(acc){this.S.liAcct=acc;this.nav("line-items");}
+},
+// ─── LINE ITEMS FBL3N ───
+bLineItems:function(){
+  var acc=this.S.liAcct;
+  var q=this.S.liQ.toLowerCase();
+  var mo=this.S.liMonth;
+  var accOpts='<option value="">All TK<\/option>'+COA.map(function(a){return'<option value="'+a.code+'"'+(a.code===acc?" selected":"")+'>'+a.code+" · "+a.name+'<\/option>';}).join("");
+  var lines=getAllLines(mo||null);
+  if(acc)lines=lines.filter(function(l){return l.acc===acc;});
+  if(q)lines=lines.filter(function(l){return l.acc.includes(q)||l.desc.toLowerCase().includes(q)||l.jeId.toLowerCase().includes(q);});
+  lines.sort(function(a,b){return b.date.localeCompare(a.date);});
+  var run=0;
+  var tbody=lines.map(function(l){
+    run+=l.dr-l.cr;
+    return '<tr data-je="'+l.jeId+'" onclick="APP.openJE(this)" class="'+(APP.S.opId===l.jeId?"sel":"")+'"><td style="font-size:10px">'+l.date+'<\/td><td class="lnk" style="font-size:10px">'+l.jeId+'<\/td><td class="lnk" data-acc="'+l.acc+'" onclick="event.stopPropagation();APP.drillAcc(this)" style="font-size:10px">'+l.acc+'<\/td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+l.desc+'<\/td><td>'+dtag(l.jeDept)+'<\/td><td class="r mono">'+(l.dr>0?D(l.dr):"—")+'<\/td><td class="r mono">'+(l.cr>0?D(l.cr):"—")+'<\/td><td class="r mono" style="color:'+(run>=0?"var(--teal-l)":"var(--red-x)")+'">'+D(Math.abs(run))+'<\/td><td><button class="btn sm" data-je="'+l.jeId+'" onclick="event.stopPropagation();APP.openJE(this)">JE<\/button><\/td><\/tr>';
+  }).join("")||'<tr><td colspan="9" class="empty">No lines<\/td><\/tr>';
+  return this.sHdr("Chi tiết phát sinh","FBL3N · G/L Line Items","Click TK → filter · Click JE → Object Page",
+    '<button class="btn sm" onclick="APP.S.liAcct=\'\';APP.renderSection(\'line-items\')">All TK<\/button>'
+    +'<button class="btn sm p" onclick="APP.nav(\'acc-balance\')">← FS10N<\/button>')
+  +this.fb('<input type="text" placeholder="Tìm..." oninput="APP.S.liQ=this.value;APP.renderSection(\'line-items\')" value="'+this.S.liQ+'">'
+    +'<select onchange="APP.S.liAcct=this.value;APP.renderSection(\'line-items\')">'+accOpts+'<\/select>'
+    +'<select onchange="APP.S.liMonth=this.value;APP.renderSection(\'line-items\')"><option value="">All tháng<\/option><option value="2026-04"'+(this.S.liMonth==="2026-04"?" selected":"")+'>T4/2026<\/option><\/select>',
+    '<button class="btn sm" onclick="APP.S.liAcct=\'\';APP.S.liQ=\'\';APP.S.liMonth=\'\';APP.renderSection(\'line-items\')">Reset<\/button>')
+  +'<div class="card"><div class="card-b np tbl-wrap"><table class="tbl"><thead><tr><th>Ngày<\/th><th>JE<\/th><th>TK<\/th><th>Mô tả<\/th><th>Dept<\/th><th class="r">Nợ<\/th><th class="r">Có<\/th><th class="r">Số dư<\/th><th><\/th><\/tr><\/thead><tbody>'+tbody+'<\/tbody><\/table><\/div><\/div>'
+  +this.tfooter(lines.length);
+},
+// ─── TRIAL BALANCE ───
+bTrial:function(){
+  var order=["asset","liab","equity","rev","exp"];
+  var colors={asset:"var(--teal-l)",liab:"var(--amber-l)",equity:"var(--violet-l)",rev:"var(--teal-x)",exp:"var(--red-l)"};
+  var groups={};var gDr=0,gCr=0;
+  COA.forEach(function(a){
+    var dr=0,cr=0;
+    DB.entries.filter(function(e){return e.status==="posted";}).forEach(function(e){e.lines.forEach(function(l){if(l.acc===a.code){dr+=(l.dr||0);cr+=(l.cr||0);}});});
+    if(dr===0&&cr===0)return;
+    if(!groups[a.type])groups[a.type]=[];
+    groups[a.type].push({a:a,dr:dr,cr:cr});gDr+=dr;gCr+=cr;
+  });
+  var html='<div style="background:var(--ink2);border:1px solid var(--ink3)">';
+  order.forEach(function(type){
+    var rows=groups[type];if(!rows||!rows.length)return;
+    html+='<div style="display:grid;grid-template-columns:70px 1fr 80px 130px 130px;gap:5px;padding:4px 11px;background:var(--ink3);border-left:3px solid '+(colors[type]||"var(--teal-l)")+';margin-top:1px"><span style="font-size:8px;color:var(--linen2);text-transform:uppercase;letter-spacing:.07em">'+typeLabel(type)+'<\/span><span><\/span><span><\/span><span style="text-align:right;font-size:8px;color:var(--linen3)">Nợ<\/span><span style="text-align:right;font-size:8px;color:var(--linen3)">Có<\/span><\/div>';
+    rows.forEach(function(r){
+      html+='<div style="display:grid;grid-template-columns:70px 1fr 80px 130px 130px;gap:5px;padding:4px 11px;border-bottom:1px solid rgba(255,255,255,.025);cursor:pointer" data-acc="'+r.a.code+'" onclick="APP.drillAcc(this)"><span style="font-family:\'DM Mono\',monospace;font-size:10px;color:var(--linen3)">'+r.a.code+'<\/span><span style="font-size:11px">'+r.a.name+'<\/span><span>'+dtag(r.a.dept)+'<\/span><span style="font-family:\'DM Mono\',monospace;font-size:11px;text-align:right;color:var(--blue-x)">'+(r.dr>0?D(r.dr):"—")+'<\/span><span style="font-family:\'DM Mono\',monospace;font-size:11px;text-align:right;color:var(--teal-l)">'+(r.cr>0?D(r.cr):"—")+'<\/span><\/div>';
+    });
+  });
+  html+='<\/div>';
+  var ok=Math.abs(gDr-gCr)<2;
+  return this.sHdr("Cân đối thử","F.08 · Trial Balance","Click TK → FBL3N",
+    '<button class="btn sm p" onclick="APP.nav(\'pl\')">→ P&L<\/button>')
+  +html
+  +'<div style="display:grid;grid-template-columns:70px 1fr 80px 130px 130px;gap:5px;padding:8px 11px;border:1px solid var(--ink3);background:var(--ink2);margin-top:1px"><span style="grid-column:1/4;font-size:11px;font-weight:500">TỔNG CỘNG<\/span><span style="font-size:14px;text-align:right;color:'+(ok?"var(--teal-l)":"var(--red-x)")+'">'+M(gDr)+'<\/span><span style="font-size:14px;text-align:right;color:'+(ok?"var(--teal-l)":"var(--red-x)")+'">'+M(gCr)+'<\/span><\/div>'
+  +'<div style="padding:5px 11px;font-size:10px;color:'+(ok?"var(--teal-l)":"var(--red-x)")+'">'+( ok?"✓ Cân đối — Dr = Cr":"✗ Mất cân đối: "+M(Math.abs(gDr-gCr)))+'<\/div>';
+},
+
+
+// ─── P&L ───
+bPL:function(){
+  var p=this.S.period;
+  var rev=sumBal(["5111","5112","5113"],p);
+  var cogs=sumBal(["611","6111","6112"],p);
+  var gp=rev-cogs;var gpPct=rev>0?(gp/rev*100).toFixed(1):null;
+  var opex=sumBal(["6412","6411","6421","6422","6423","6424","811"],p);
+  var ebit=gp-opex;
+  var rr=function(l,v,cls,ind){return'<div class="rr'+(ind?" "+ind:"")+'"><span class="rl">'+l+'<\/span><span class="rv'+(cls?" "+cls:"")+'">'+v+'<\/span><\/div>';};
+  return this.sHdr("Kết quả kinh doanh","F.01 · P&L","VAS · TT 200/2014 · "+p,
+    '<button class="btn sm" onclick="APP.nav(\'bs\')">→ BS<\/button>')
+  +'<div class="g73"><div class="card"><div class="card-h"><h3>P&L<\/h3><\/div><div class="card-b">'
+  +rr("DT Cửa hàng (5111)",D(bal("5111",p)),"pos","i1")+rr("DT TMĐT (5112)",D(bal("5112",p)),"pos","i1")+rr("DT B2B (5113)",D(bal("5113",p)),"pos","i1")
+  +'<div class="rr sub"><span class="rl">Doanh thu thuần<\/span><span class="rv">'+D(rev)+'<\/span><\/div>'
+  +'<div class="divider"><\/div>'
+  +rr("COGS 50ml (6111)",bal("6111",p)>0?"("+D(bal("6111",p))+")":"—","neg","i1")+rr("COGS 10ml (6112)",bal("6112",p)>0?"("+D(bal("6112",p))+")":"—","neg","i1")
+  +'<div class="rr hl"><span class="rl">LỢI NHUẬN GỘP<\/span><span class="rv">'+(gpPct?"<span style=\"font-size:9px;color:var(--linen3)\">GM "+gpPct+"%<\/span> ":"")+D(gp)+'<\/span><\/div>'
+  +'<div class="divider"><\/div>'
+  +rr("Marketing & content (6412)",bal("6412",p)>0?"("+D(bal("6412",p))+")":"—","neg","i1")+rr("Lương NV (6411)",bal("6411",p)>0?"("+D(bal("6411",p))+")":"—","neg","i1")+rr("Lương Founder (6421)",bal("6421",p)>0?"("+D(bal("6421",p))+")":"—","neg","i2")+rr("Mặt bằng (6422)",bal("6422",p)>0?"("+D(bal("6422",p))+")":"—","neg","i2")+rr("Phần mềm (6423)",bal("6423",p)>0?"("+D(bal("6423",p))+")":"—","neg","i2")+rr("Pháp lý (6424)",bal("6424",p)>0?"("+D(bal("6424",p))+")":"—","neg","i2")
+  +'<div class="rr hl"><span class="rl">EBIT<\/span><span class="rv '+(ebit>=0?"pos":"neg")+'">'+D(ebit)+'<\/span><\/div>'
+  +'<\/div><\/div>'
+  +'<div><div class="card"><div class="card-h"><h3>Tỷ suất<\/h3><\/div><div class="card-b">'
+  +rr("Gross Margin",(gpPct||"—")+(gpPct?"%":""),gpPct&&Number(gpPct)>80?"pos":"")+rr("Target GM","≥ 80%","pos")+rr("Le Labo benchmark","~78%","")+rr("MORAQ 1.0 peak","~85%","pos")
+  +'<\/div><\/div>'
+  +'<div class="card"><div class="card-h"><h3>Revenue Targets<\/h3><\/div><div class="card-b">'
+  +rr("T+1 post-launch","300M","pos")+rr("T+3","1.2B","pos")+rr("Break-even","~4 TX/ngày","pos")+rr("Peak","1.8–2.2B","pos")
+  +'<\/div><\/div><\/div><\/div>';
+},
+// ─── BALANCE SHEET ───
+bBS:function(){
+  var mk=function(l,code,ind){var v=bal(code);if(!v)return"";return'<div class="rr'+(ind?" "+ind:"")+'"><span class="rl">'+l+'<\/span><span class="rv" style="cursor:pointer" data-acc="'+code+'" onclick="APP.drillAcc(this)">'+D(v)+'<\/span><\/div>';};
+  var tA=[bal("111"),bal("112"),bal("131"),bal("133"),bal("141"),bal("153"),bal("154"),bal("155"),bal("211"),bal("242")].reduce(function(s,v){return s+v;},0);
+  var tL=[bal("331"),bal("333"),bal("334"),bal("338")].reduce(function(s,v){return s+v;},0);
+  var tE=bal("411")+bal("421");
+  var pnl=sumBal(["5111","5112","5113"])-sumBal(["611","6111","6112","6412","6411","6421","6422","6423","6424","811"]);
+  var tSrc=tL+tE+pnl;var ok=Math.abs(tA-tSrc)<10;
+  return this.sHdr("Cân đối kế toán","Balance Sheet","TS = Nguồn vốn · Click số → FBL3N",
+    '<button class="btn sm" onclick="APP.nav(\'pl\')">← P&L<\/button>')
+  +'<div class="g2">'
+  +'<div class="card"><div class="card-h"><h3>TÀI SẢN<\/h3><\/div><div class="card-b"><div style="font-size:9px;color:var(--linen3);margin-bottom:5px">Tài sản ngắn hạn<\/div>'
+  +mk("111 · Tiền mặt","111","i1")+mk("112 · Ngân hàng","112","i1")+mk("131 · Phải thu KH","131","i1")+mk("141 · Tạm ứng NCC","141","i1")+mk("153 · CC dụng cụ","153","i1")+mk("154 · WIP","154","i1")
+  +'<div class="divider"><\/div><div style="font-size:9px;color:var(--linen3);margin-bottom:5px">Tài sản dài hạn<\/div>'
+  +mk("211 · TSCĐ","211","i1")+mk("242 · Trả trước","242","i1")
+  +'<div class="rr hl"><span class="rl">TỔNG TÀI SẢN<\/span><span class="rv">'+M(tA)+'<\/span><\/div><\/div><\/div>'
+  +'<div class="card"><div class="card-h"><h3>NGUỒN VỐN<\/h3><\/div><div class="card-b"><div style="font-size:9px;color:var(--linen3);margin-bottom:5px">Nợ phải trả<\/div>'
+  +mk("331 · Phải trả NCC","331","i1")+mk("333 · Thuế phải nộp","333","i1")+mk("334 · Phải trả NLĐ","334","i1")+mk("338 · BHXH","338","i1")
+  +'<div class="divider"><\/div><div style="font-size:9px;color:var(--linen3);margin-bottom:5px">Vốn chủ sở hữu<\/div>'
+  +mk("411 · Vốn đầu tư","411","i1")+mk("421 · LNST","421","i1")
+  +'<div class="rr i1"><span class="rl">LNST kỳ này<\/span><span class="rv '+(pnl>=0?"pos":"neg")+'">'+D(Math.abs(pnl))+'<\/span><\/div>'
+  +'<div class="rr hl"><span class="rl">TỔNG NGUỒN VỐN<\/span><span class="rv">'+M(tSrc)+'<\/span><\/div>'
+  +'<div style="margin-top:7px;font-size:10px;color:'+(ok?"var(--teal-l)":"var(--red-x)")+'">'+( ok?"✓ TS = Nguồn vốn":"✗ Chênh: "+M(Math.abs(tA-tSrc)))+'<\/div>'
+  +'<\/div><\/div><\/div>';
+},
+// ─── CASHFLOW ───
+bCashflow:function(){
+  var cash=bal("112")+bal("111");var inv=bal("411");
+  var opex=sumBal(["6412","6411","6421","6422","6423","6424","811"]);
+  var deploy=Math.max(0,inv-cash);
+  var flows=[["Vốn góp nhận (411)",inv,"in"],["Chi tạm ứng & NVL",sumBal(["141","153","154"]),"out"],["Chi Brand & Design",sumBal(["6412","6414"]),"brn"],["Chi Corporate",sumBal(["6421","6423","6424"]),"brn"],["Tồn quỹ cuối",cash,"in"]];
+  var mx=Math.max.apply(null,flows.map(function(f){return f[1]||1;}));
+  var flowHTML=flows.map(function(r){var pct=r[1]>0?Math.round(r[1]/mx*100):0;return'<div class="cfrow"><div class="cfl">'+r[0]+'<\/div><div class="cft"><div class="cfb '+r[2]+'" style="width:'+pct+'%"><\/div><\/div><div class="cfv '+(r[2]==="in"?"pos":"neg")+'">'+M(r[1])+'<\/div><\/div>';}).join("");
+  return this.sHdr("Dòng tiền","Cash Flow · Indirect","Vốn góp → triển khai → tồn quỹ",
+    '<button class="btn sm" onclick="APP.nav(\'bank\')">→ Bank<\/button>')
+  +'<div class="info-grid c4"><div class="iitem"><div class="il">Tiền khả dụng<\/div><div class="iv" style="color:var(--teal-l)">'+M(cash)+'<\/div><div class="is">111+112<\/div><\/div><div class="iitem"><div class="il">Vốn góp<\/div><div class="iv">'+M(inv)+'<\/div><div class="is">411<\/div><\/div><div class="iitem"><div class="il">Đã triển khai<\/div><div class="iv" style="color:var(--amber-x)">'+M(deploy)+'<\/div><div class="is">Từ raise<\/div><\/div><div class="iitem"><div class="il">Runway<\/div><div class="iv">'+(opex>0?(cash/opex).toFixed(1)+" tháng":"—")+'<\/div><div class="is">Tại burn hiện tại<\/div><\/div><\/div>'
+  +'<div class="card"><div class="card-h"><h3>Waterfall<\/h3><\/div><div class="card-b">'+flowHTML+'<\/div><\/div>';
+},
+// ─── FI-AP ───
+bAP:function(){
+  var invs=DB.apInvoices.slice().sort(function(a,b){return b.date.localeCompare(a.date);});
+  var today=new Date().toISOString().slice(0,10);
+  var pending=invs.filter(function(i){return i.status==="pending";});
+  var pendAmt=pending.reduce(function(s,i){return s+i.amount+(i.taxAmt||0);},0);
+  var paidAmt=invs.filter(function(i){return i.status==="paid";}).reduce(function(s,i){return s+i.amount;},0);
+  var atag=document.getElementById("ap-tag");
+  var od=pending.filter(function(i){return i.dueDate<today;});
+  if(atag){atag.style.display=od.length?"inline-block":"none";atag.textContent=od.length;}
+  var buckets={c0:0,c30:0,c60:0,c90:0};
+  pending.forEach(function(i){var d=Math.floor((new Date()-new Date(i.dueDate))/86400000);if(d<=0)buckets.c0+=i.amount;else if(d<=30)buckets.c30+=i.amount;else if(d<=60)buckets.c60+=i.amount;else buckets.c90+=i.amount;});
+  var tbody=invs.map(function(inv){
+    var isOD=inv.status==="pending"&&inv.dueDate<today;
+    return '<tr data-ap-id="'+inv.id+'" onclick="APP.openAPDetail(this.dataset.apId)" style="cursor:pointer" class="'+(APP.S.opId===inv.id?"sel":"")+'"><td class="code" style="font-size:10px">'+inv.id+'<\/td><td style="font-size:10px;color:var(--linen3)">'+inv.date+'<\/td><td style="max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+inv.vendorName+'<\/td><td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+inv.desc+'<\/td><td class="code">'+inv.expAcc+'<\/td><td class="r mono">'+D(inv.amount)+'<\/td><td class="r mono" style="font-size:10px;color:var(--linen3)">'+D(inv.taxAmt||0)+'<\/td><td style="font-size:10px;color:'+(isOD?"var(--red-x)":"var(--linen3)")+'">'+inv.dueDate+'<\/td><td>'+badge(isOD?"void":inv.status)+'<\/td><td><div class="ab">'+(inv.status==="pending"?'<button class="ab-btn ps" data-ap-id="'+inv.id+'" onclick="event.stopPropagation();APP.payAP(this.dataset.apId)">Pay<\/button>':"")+' <button class="ab-btn dl" data-ap-id="'+inv.id+'" onclick="event.stopPropagation();APP.delAP(this.dataset.apId)">Del<\/button><\/div><\/td><\/tr>';
+  }).join("")||'<tr><td colspan="10" class="empty">No AP invoices<\/td><\/tr>';
+  return this.sHdr("FI-AP · Accounts Payable","F-43 · Vendor Invoices","Hóa đơn NCC · Auto-post GL · Click row → Detail",
+    '<button class="btn sm" onclick="exportCSV(DB.apInvoices,[\'id\',\'date\',\'vendorName\',\'expAcc\',\'amount\',\'status\'],\'AP.csv\')">CSV<\/button>'
+    +'<button class="btn sm p" onclick="APP.newAP()">+ F-43 Hóa đơn<\/button>')
+  +'<div class="info-grid c4" style="margin-bottom:12px"><div class="iitem"><div class="il">Phải trả (331)<\/div><div class="iv" style="color:var(--amber-x)">'+M(pendAmt)+'<\/div><div class="is">'+pending.length+' hóa đơn mở<\/div><\/div><div class="iitem"><div class="il">Đã thanh toán<\/div><div class="iv" style="color:var(--teal-l)">'+M(paidAmt)+'<\/div><div class="is">'+invs.filter(function(i){return i.status==="paid";}).length+' hóa đơn<\/div><\/div><div class="iitem" style="'+(od.length?"border-top-color:var(--red-l)":"")+'"><div class="il">Quá hạn<\/div><div class="iv" style="color:var(--red-x)">'+od.length+'<\/div><div class="is">cần xử lý<\/div><\/div><div class="iitem"><div class="il">TK 331 GL<\/div><div class="iv">'+M(Math.abs(bal("331")))+'<\/div><div class="is">Số dư phải trả<\/div><\/div><\/div>'
+  +'<div class="g2" style="margin-bottom:12px"><div class="card"><div class="card-h"><h3>AP Aging<\/h3><\/div><div class="card-b"><div class="rr"><span class="rl">Chưa đến hạn<\/span><span class="rv pos">'+M(buckets.c0)+'<\/span><\/div><div class="rr"><span class="rl">1–30 ngày<\/span><span class="rv warn">'+M(buckets.c30)+'<\/span><\/div><div class="rr"><span class="rl">31–60 ngày<\/span><span class="rv neg">'+M(buckets.c60)+'<\/span><\/div><div class="rr"><span class="rl">> 60 ngày<\/span><span class="rv neg">'+M(buckets.c90)+'<\/span><\/div><div class="rr hl"><span class="rl">Tổng<\/span><span class="rv">'+M(pendAmt)+'<\/span><\/div><\/div><\/div><div class="card"><div class="card-h"><h3>AP → GL Flow<\/h3><\/div><div class="card-b" style="font-size:10px;color:var(--linen2);line-height:1.8">Nhập HĐ → Dr [TK CP] / Cr 331<br>Thanh toán → Dr 331 / Cr 112<br><span style="color:var(--teal-l)">Click row → Object Page với T-account đầy đủ<\/span><\/div><\/div><\/div>'
+  +'<div class="card"><div class="card-b np tbl-wrap"><table class="tbl"><thead><tr><th>AP ID<\/th><th>Ngày<\/th><th>NCC<\/th><th>Mô tả<\/th><th>TK<\/th><th class="r">Số tiền<\/th><th class="r">VAT<\/th><th>Đến hạn<\/th><th>TT<\/th><th><\/th><\/tr><\/thead><tbody>'+tbody+'<\/tbody><\/table><button class="add-row" onclick="APP.newAP()">+ Thêm hóa đơn NCC mới<\/button><\/div><\/div>'
+  +this.tfooter(invs.length,'<span>Phải trả: <span style="color:var(--amber-x)">'+M(pendAmt)+'<\/span><\/span>');
+},
+// ─── FI-AR ───
+bAR:function(){
+  var invs=DB.arInvoices.slice().sort(function(a,b){return b.date.localeCompare(a.date);});
+  var outstanding=invs.filter(function(i){return i.status==="open";}).reduce(function(s,i){return s+i.amount;},0);
+  var received=invs.filter(function(i){return i.status==="collected";}).reduce(function(s,i){return s+i.amount;},0);
+  var tbody=invs.length?invs.map(function(inv){
+    return '<tr data-ar-id="'+inv.id+'" onclick="APP.openARDetail(this.dataset.arId)" style="cursor:pointer" class="'+(APP.S.opId===inv.id?"sel":"")+'"><td class="code" style="font-size:10px">'+inv.id+'<\/td><td style="font-size:10px;color:var(--linen3)">'+inv.date+'<\/td><td>'+inv.channel+'<\/td><td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+inv.desc+'<\/td><td class="r mono">'+D(inv.amount)+'<\/td><td style="font-size:10px;color:var(--linen3)">'+inv.dueDate+'<\/td><td>'+badge(inv.status)+'<\/td><td><div class="ab">'+(inv.status==="open"?'<button class="ab-btn ps" data-ar-id="'+inv.id+'" onclick="event.stopPropagation();APP.collectAR(this.dataset.arId)">Thu<\/button>':"")+' <button class="ab-btn dl" data-ar-id="'+inv.id+'" onclick="event.stopPropagation();APP.delAR(this.dataset.arId)">Del<\/button><\/div><\/td><\/tr>';
+  }).join(""):'<tr><td colspan="8" class="empty">Pre-launch · Chưa có AR · Sau launch sẽ tự động tạo tại đây<\/td><\/tr>';
+  return this.sHdr("FI-AR · Accounts Receivable","F-22 · Customer Invoices","Phải thu KH · Store · TMĐT · B2B · Click → Detail",
+    '<button class="btn sm p" onclick="APP.newAR()">+ F-22 AR Invoice<\/button>')
+  +'<div class="info-grid c4" style="margin-bottom:12px"><div class="iitem"><div class="il">TK 131 Phải thu<\/div><div class="iv" style="color:var(--teal-l)">'+M(outstanding||bal("131"))+'<\/div><div class="is">Outstanding<\/div><\/div><div class="iitem"><div class="il">Đã thu được<\/div><div class="iv">'+M(received)+'<\/div><div class="is">Collected<\/div><\/div><div class="iitem"><div class="il">DT Store (5111)<\/div><div class="iv">'+M(bal("5111"))+'<\/div><div class="is">GL balance<\/div><\/div><div class="iitem"><div class="il">DT TMĐT (5112)<\/div><div class="iv">'+M(bal("5112"))+'<\/div><div class="is">GL balance<\/div><\/div><\/div>'
+  +'<div class="card"><div class="card-b np tbl-wrap"><table class="tbl"><thead><tr><th>AR ID<\/th><th>Ngày<\/th><th>Kênh<\/th><th>Mô tả<\/th><th class="r">Số tiền<\/th><th>Đến hạn<\/th><th>TT<\/th><th><\/th><\/tr><\/thead><tbody>'+tbody+'<\/tbody><\/table><button class="add-row" onclick="APP.newAR()">+ Thêm AR Invoice mới<\/button><\/div><\/div>'
+  +this.tfooter(invs.length);
+},
+
+
+// ─── BANK ───
+bBank:function(){
+  var acc=DB.bank.accounts[0]||{};
+  var stmts=DB.bank.statements.slice().sort(function(a,b){return b.date.localeCompare(a.date);});
+  var glBal=bal("112");
+  var bankBal=stmts.reduce(function(s,t){return s+(t.type==="credit"?t.amount:-t.amount);},0);
+  var diff=glBal-bankBal;var unmatched=stmts.filter(function(t){return t.status==="unmatched";});
+  var tbody=stmts.map(function(t){
+    return '<tr data-je="'+(t.jeId||"")+'" onclick="'+(t.jeId?'APP.openJE(this)':'APP.toast(\'Chưa khớp GL\')')+'" style="cursor:pointer"><td style="font-size:10px">'+t.date+'<\/td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+t.desc+'<\/td><td class="r mono '+(t.type==="credit"?"pos":"")+'">'+( t.type==="credit"?"+"+D(t.amount):"")+'<\/td><td class="r mono '+(t.type==="debit"?"neg":"")+'">'+( t.type==="debit"?"("+D(t.amount)+")":"")+'<\/td><td class="lnk" style="font-size:10px">'+(t.jeId?t.jeId:"—")+'<\/td><td>'+badge(t.status==="matched"?"posted":t.status==="unmatched"?"draft":"pending")+'<\/td><td><div class="ab">'+( t.status==="unmatched"?'<button class="ab-btn" onclick="event.stopPropagation();APP.toast(\'Chọn JE để khớp\',\'warn\')">Khớp<\/button>':"✓")+'<\/div><\/td><\/tr>';
+  }).join("");
+  return this.sHdr("Bank / Treasury","FI-BL · Bank Statement","Đối chiếu sao kê NH với TK 112",
+    '<button class="btn sm p" onclick="APP.addBankTx()">+ Nhập GD<\/button>')
+  +'<div class="g3" style="margin-bottom:12px"><div class="iitem"><div class="il">Số dư GL (112)<\/div><div class="iv" style="color:var(--teal-l)">'+M(glBal)+'<\/div><div class="is">Universal Journal<\/div><\/div><div class="iitem"><div class="il">Số dư NH<\/div><div class="iv">'+M(bankBal)+'<\/div><div class="is">'+acc.bank+'<\/div><\/div><div class="iitem" style="'+(Math.abs(diff)<1000?"border-top-color:var(--teal-l)":"border-top-color:var(--red-l)")+'"><div class="il">Chênh lệch<\/div><div class="iv" style="color:'+(Math.abs(diff)<1000?"var(--teal-l)":"var(--red-x)")+'">'+M(Math.abs(diff))+'<\/div><div class="is">'+(Math.abs(diff)<1000?"✓ Cân đối":unmatched.length+" chưa khớp")+'<\/div><\/div><\/div>'
+  +'<div style="font-size:10px;padding:6px 10px;background:var(--ink3);border:1px solid var(--ink4);margin-bottom:10px">'+acc.bank+' · '+acc.accNum+' · '+acc.accName+'<\/div>'
+  +'<div class="card"><div class="card-b np tbl-wrap"><table class="tbl"><thead><tr><th>Ngày<\/th><th>Mô tả<\/th><th class="r">Vào (Cr)<\/th><th class="r">Ra (Dr)<\/th><th>JE GL<\/th><th>TT<\/th><th><\/th><\/tr><\/thead><tbody>'+tbody+'<\/tbody><\/table><\/div><\/div>'
+  +this.tfooter(stmts.length,'<span style="color:'+(unmatched.length?"var(--amber-x)":"var(--teal-l)")+'">'+unmatched.length+' chưa khớp<\/span>');
+},
+addBankTx:function(){toast("Import CSV từ ngân hàng hoặc nhập thủ công","warn");},
+// ─── EQUITY ───
+bEquity:function(){
+  var eq=DB.equity;
+  var pm=eq.shares.postMoney||20000000000;
+  var pps=eq.shares.pricePerShare||2000000;
+  var rinv=DB.config.reinvest||{brand:30,rd:15,buf:30,f:25};
+  var donut='<div style="position:relative;width:110px;height:110px;border-radius:50%;background:conic-gradient(var(--teal-l) 0% 85%,var(--amber-l) 85% 95%,var(--violet-l) 95% 100%);margin:0 auto 10px"><div style="position:absolute;inset:22px;background:var(--ink2);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column"><div style="font-size:14px;font-weight:500">'+(eq.shares.total||10000).toLocaleString()+'<\/div><div style="font-size:8px;color:var(--linen3)">CP<\/div><\/div><\/div>'
+  +'<div style="display:flex;gap:8px;justify-content:center;font-size:9px">'
+  +[["var(--teal-l)","Founder 85%"],["var(--amber-l)","Phương 10%"],["var(--violet-l)","Huy 5%"]].map(function(c){return'<div style="display:flex;align-items:center;gap:3px"><div style="width:7px;height:7px;background:'+c[0]+';border-radius:1px"><\/div>'+c[1]+'<\/div>';}).join("")+'<\/div>';
+  var shRows=eq.shareholders.map(function(sh){
+    return '<tr><td>'+sh.name+'<\/td><td style="font-size:10px;color:var(--linen2)">'+sh.role+'<\/td><td class="r mono">'+sh.shares.toLocaleString()+'<\/td><td class="r mono" style="font-size:15px;color:var(--teal-l)">'+sh.pct.toFixed(1)+'%<\/td><td class="r mono">'+M(sh.invested)+'<\/td><td class="r mono" style="color:var(--teal-l)">'+M(sh.shares*pps)+'<\/td><td style="font-size:9px;color:var(--linen3)">'+sh.shaTerms+'<\/td><\/tr>';
+  }).join("");
+  var dilHTML='<div class="setgrid"><div class="sfield"><label>Raise thêm (VND)<\/label><input type="number" id="dil-raise" placeholder="1000000000" oninput="APP.calcDilution()"><\/div><div class="sfield"><label>Pre-money mới<\/label><input type="number" id="dil-pre" placeholder="20000000000" oninput="APP.calcDilution()"><\/div><div class="sfield"><label>→ Founder còn<\/label><input type="text" id="dil-result" readonly style="opacity:.7;color:var(--teal-l)"><\/div><\/div>';
+  return this.sHdr("Equity / Cap Table","SHA · Cổ đông","Post-money 20B · 10,000 CP · Raise 3B/15%",
+    '<button class="btn sm p" onclick="APP.addDistrib()">+ Phân phối LN<\/button>')
+  +'<div class="info-grid c4" style="margin-bottom:12px"><div class="iitem"><div class="il">Post-money<\/div><div class="iv" style="font-size:18px">'+M(pm)+'<\/div><div class="is">04/2026<\/div><\/div><div class="iitem"><div class="il">Vốn góp nhận<\/div><div class="iv" style="color:var(--teal-l)">'+M(bal("411"))+'<\/div><div class="is">TK 411 GL<\/div><\/div><div class="iitem"><div class="il">Giá/CP<\/div><div class="iv">'+M(pps)+'<\/div><div class="is">'+( eq.shares.total||10000).toLocaleString()+' CP total<\/div><\/div><div class="iitem"><div class="il">Pre-money<\/div><div class="iv">'+M(eq.shares.preMoney||17000000000)+'<\/div><div class="is">Trước raise<\/div><\/div><\/div>'
+  +'<div class="g37">'
+  +'<div class="card"><div class="card-h"><h3>Sở hữu<\/h3><\/div><div class="card-b" style="text-align:center">'+donut+'<\/div><\/div>'
+  +'<div><div class="card"><div class="card-h"><h3>Shareholder Registry<\/h3><\/div><div class="card-b np tbl-wrap"><table class="tbl"><thead><tr><th>Cổ đông<\/th><th>Vai trò<\/th><th class="r">CP<\/th><th class="r">%<\/th><th class="r">Vốn góp<\/th><th class="r">Giá trị HT<\/th><th>SHA Terms<\/th><\/tr><\/thead><tbody>'+shRows+'<\/tbody><\/table><\/div><\/div>'
+  +'<div class="card"><div class="card-h"><h3>Dilution Simulator<\/h3><\/div><div class="card-b">'+dilHTML+'<\/div><\/div>'
+  +'<\/div><\/div>';
+},
+calcDilution:function(){
+  var raise=parseFloat(document.getElementById("dil-raise")&&document.getElementById("dil-raise").value)||0;
+  var pre=parseFloat(document.getElementById("dil-pre")&&document.getElementById("dil-pre").value)||20000000000;
+  var el=document.getElementById("dil-result");if(!el)return;
+  if(!raise){el.value="";return;}
+  var post=pre+raise;var newCP=Math.round(raise/post*(DB.equity.shares.total||10000));
+  var founderNew=(8500/(10000+newCP)*100).toFixed(1);
+  el.value=founderNew+"% ("+newCP+" CP mới phát hành)";
+},
+addDistrib:function(){toast("Cần có profit trước khi phân phối LN","warn");},
+// ─── BUDGET ───
+bBudget:function(){
+  var waves=[...new Set(DB.budget.map(function(b){return b.wave;}))];
+  var totalBudget=DB.budget.reduce(function(s,b){return s+b.budgeted;},0);
+  var totalActual=DB.budget.reduce(function(s,b){return s+Math.max(0,bal(b.account));},0);
+  var variance=totalBudget-totalActual;
+  var pctTotal=totalBudget>0?Math.round(totalActual/totalBudget*100):0;
+  var wavePanels=waves.map(function(wave){
+    var items=DB.budget.filter(function(b){return b.wave===wave;});
+    var wBud=items.reduce(function(s,b){return s+b.budgeted;},0);
+    var wAct=items.reduce(function(s,b){return s+Math.max(0,bal(b.account));},0);
+    var wPct=wBud>0?Math.round(wAct/wBud*100):0;
+    var panelId="wave-"+wave.replace(/\s/g,"-");
+    var rows=items.map(function(b){
+      var actual=Math.max(0,bal(b.account));var vr=b.budgeted-actual;
+      var pct=b.budgeted>0?Math.round(actual/b.budgeted*100):0;
+      return '<tr data-acc="'+b.account+'" onclick="APP.drillAcc(this)"><td style="font-size:10px;color:var(--linen3)">'+b.phase+'<\/td><td>'+b.category+'<\/td><td class="code">'+b.account+'<\/td><td>'+dtag(b.dept)+'<\/td><td class="r mono">'+D(b.budgeted)+'<\/td><td class="r mono '+(actual>0?"pos":"")+'">'+D(actual)+'<\/td><td class="r mono '+(vr>=0?"pos":"neg")+'">'+M(Math.abs(vr))+(vr<0?" ▲":"")+'<\/td><td><div style="height:5px;background:var(--ink3);width:70px"><div style="height:100%;width:'+Math.min(pct,100)+'%;background:'+(pct>100?"var(--red-l)":pct>80?"var(--amber-l)":"var(--teal-l)")+'"><\/div><\/div><div style="font-size:8px;color:var(--linen3)">'+pct+'%<\/div><\/td><td><div class="ab"><button class="ab-btn dl" data-bud-id="'+b.id+'" onclick="event.stopPropagation();APP.delBudget(this.dataset.budId)">Del<\/button><\/div><\/td><\/tr>';
+    }).join("");
+    return '<div class="epanel" id="ep-'+panelId+'"><div class="ephdr" onclick="togglePanel(\''+panelId+'\')">'
+      +'<div style="display:flex;align-items:center;gap:10px;flex:1"><span>'+wave+'<\/span>'
+      +'<div style="width:80px;height:5px;background:var(--ink3);border-radius:2px"><div style="width:'+Math.min(wPct,100)+'%;height:100%;background:'+(wPct>100?"var(--red-l)":"var(--teal-l)")+';border-radius:2px"><\/div><\/div>'
+      +'<span style="font-size:9px;color:var(--linen3)">'+wPct+'% · '+M(wAct)+"/"+M(wBud)+'<\/span><\/div>'
+      +'<span class="eptgl" id="et-'+panelId+'">›<\/span><\/div>'
+      +'<div class="ebody" id="eb-'+panelId+'"><table class="tbl"><thead><tr><th>Phase<\/th><th>Khoản mục<\/th><th>TK<\/th><th>Dept<\/th><th class="r">Budget<\/th><th class="r">Thực chi<\/th><th class="r">Còn lại<\/th><th>Progress<\/th><th><\/th><\/tr><\/thead><tbody>'+rows+'<\/tbody><\/table><\/div><\/div>';
+  }).join("");
+  return this.sHdr("Budget vs Actuals","CO-OM · Wave Plan","Wave 0–4 · Click Wave → expand · Click TK → FBL3N",
+    '<button class="btn sm p" onclick="APP.addBudgetLine()">+ Thêm dòng<\/button>')
+  +'<div class="info-grid c3" style="margin-bottom:12px"><div class="iitem"><div class="il">Tổng Budget<\/div><div class="iv">'+M(totalBudget)+'<\/div><div class="is">Wave 0–4<\/div><\/div><div class="iitem"><div class="il">Thực chi (GL)<\/div><div class="iv" style="color:var(--amber-x)">'+M(totalActual)+'<\/div><div class="is">'+pctTotal+"% used"+'<\/div><\/div><div class="iitem"><div class="il">Còn lại<\/div><div class="iv" style="color:'+(variance>=0?"var(--teal-l)":"var(--red-x)")+'">'+M(Math.abs(variance))+'<\/div><div class="is">'+(variance>=0?"Under budget":"! Vượt budget")+'<\/div><\/div><\/div>'
+  +'<div style="height:7px;background:var(--ink3);border-radius:3px;margin-bottom:14px"><div style="height:100%;width:'+Math.min(pctTotal,100)+'%;background:var(--teal-l);border-radius:3px;transition:width .4s"><\/div><\/div>'
+  +wavePanels;
+},
+
+
+// ─── COST CENTER ───
+bCostCenter:function(){
+  var defs={brand:{label:"Brand & Content",color:"var(--violet-l)",accs:["6412","6413","6414"]},ops:{label:"Operations",color:"var(--teal-l)",accs:["141","153","154","611","6111","6112"]},store:{label:"Store Ops",color:"var(--amber-l)",accs:["6411","6422","641"]},corp:{label:"Corporate",color:"var(--blue-l)",accs:["6421","6423","6424","242","811"]}};
+  var grand=0;var totals={};
+  Object.keys(defs).forEach(function(k){totals[k]=sumBal(defs[k].accs);grand+=totals[k];});
+  var cards=Object.keys(defs).map(function(k){
+    var d=defs[k];var pct=grand>0?(totals[k]/grand*100).toFixed(1):0;
+    return '<div style="background:var(--ink2);border:1px solid var(--ink3);padding:12px;border-top:2px solid '+d.color+'"><div style="font-size:8px;letter-spacing:.1em;color:var(--linen3);text-transform:uppercase;margin-bottom:5px">'+d.label+'<\/div><div style="font-size:19px;font-weight:500;color:'+d.color+'">'+M(totals[k])+'<\/div><div style="font-size:9px;color:var(--linen3);margin-top:2px">'+pct+'% tổng<\/div><\/div>';
+  }).join("");
+  var allItems=[];
+  Object.keys(defs).forEach(function(k){defs[k].accs.forEach(function(code){var v=Math.max(0,bal(code));if(v>0)allItems.push({code:code,name:accName(code),dept:k,val:v});});});
+  allItems.sort(function(a,b){return b.val-a.val;});
+  var tbody=allItems.map(function(item){
+    var pct=grand>0?(item.val/grand*100).toFixed(1):0;
+    return '<tr data-acc="'+item.code+'" onclick="APP.drillAcc(this)"><td class="lnk" style="font-size:10px">'+item.code+'<\/td><td>'+item.name+'<\/td><td>'+dtag(item.dept)+'<\/td><td class="r mono">'+D(item.val)+'<\/td><td class="r mono">'+pct+'%<\/td><td><button class="btn sm" data-acc="'+item.code+'" onclick="event.stopPropagation();APP.drillAcc(this)">FBL3N<\/button><\/td><\/tr>';
+  }).join("");
+  return this.sHdr("Cost Center","KSB1 · CO-CCA","Chi phí phân bổ theo bộ phận · Click → FBL3N",
+    '<button class="btn sm" onclick="APP.nav(\'profitcenter\')">→ Profit Center<\/button>')
+  +'<div class="g4" style="margin-bottom:12px">'+cards+'<\/div>'
+  +'<div class="card"><div class="card-h"><h3>Chi tiết<\/h3><\/div><div class="card-b np tbl-wrap"><table class="tbl"><thead><tr><th>TK<\/th><th>Mô tả<\/th><th>Dept<\/th><th class="r">Số tiền<\/th><th class="r">%<\/th><th><\/th><\/tr><\/thead><tbody>'+tbody+'<\/tbody><\/table><\/div><\/div>'
+  +this.tfooter(allItems.length,'<span>Tổng: '+M(grand)+'<\/span>');
+},
+// ─── PROFIT CENTER ───
+bProfitCenter:function(){
+  var channels=[{name:"Cửa hàng",code:"5111",dept:"store",costs:["6411","6422"]},{name:"Sàn TMĐT",code:"5112",dept:"brand",costs:["6412","6414"]},{name:"B2B",code:"5113",dept:"brand",costs:["6413"]}];
+  var shared=sumBal(["6421","6423","6424"]);
+  var totalRev=channels.reduce(function(s,c){return s+bal(c.code);},0);
+  var tbody=channels.map(function(c){
+    var r=bal(c.code);var direct=sumBal(c.costs)+sumBal(["6111","6112"])*(totalRev>0?r/totalRev:0);
+    var alloc=totalRev>0?shared*r/totalRev:0;var profit=r-direct-alloc;
+    return '<tr><td style="font-weight:500">'+c.name+'<\/td><td class="code">'+c.code+'<\/td><td>'+dtag(c.dept)+'<\/td><td class="r mono pos">'+D(r)+'<\/td><td class="r mono neg">'+(direct>0?D(Math.round(direct)):"—")+'<\/td><td class="r mono" style="color:var(--linen3)">'+(alloc>0?D(Math.round(alloc)):"—")+'<\/td><td class="r mono '+(profit>=0?"pos":"neg")+'">'+(r>0?D(Math.round(profit)):"Pre-launch")+'<\/td><td class="r mono">'+(r>0?(profit/r*100).toFixed(1)+"%":"—")+'<\/td><\/tr>';
+  }).join("");
+  return this.sHdr("Profit Center","KE5T · CO-PCA","P&L theo kênh · Shared cost phân bổ theo DT ratio",
+    '<button class="btn sm" onclick="APP.nav(\'costcenter\')">← Cost Center<\/button>')
+  +'<div class="card"><div class="card-b np tbl-wrap"><table class="tbl"><thead><tr><th>Kênh<\/th><th>TK<\/th><th>Dept<\/th><th class="r">Doanh thu<\/th><th class="r">CP trực tiếp<\/th><th class="r">Shared (pp)<\/th><th class="r">Lãi kênh<\/th><th class="r">Biên<\/th><\/tr><\/thead><tbody>'+tbody+'<\/tbody><\/table><\/div><\/div>'
+  +'<div style="font-size:9px;color:var(--linen3);padding:7px 10px;border:1px solid var(--ink3)">Shared Corp: '+M(shared)+' → phân bổ theo tỷ lệ doanh thu. Pre-launch = 0.<\/div>';
+},
+// ─── CLOSING COCKPIT ───
+bClosing:function(){
+  var doneN=DB.closeTasks.filter(function(t){return t.done;}).length;
+  var totalN=DB.closeTasks.length;
+  var pct=totalN>0?Math.round(doneN/totalN*100):0;
+  var tbody=DB.closeTasks.map(function(t,i){
+    return '<tr onclick="APP.toggleClose('+i+')" style="cursor:pointer"><td><div style="width:14px;height:14px;border:1px solid '+(t.done?"var(--teal-l)":"var(--ink5)")+';background:'+(t.done?"rgba(15,110,86,.2)":"transparent")+';display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--teal-l)">'+(t.done?"✓":"")+'<\/div><\/td><td style="color:'+(t.done?"var(--linen3)":"var(--cream)")+'">'+t.name+'<\/td><td>'+dtag(t.dept)+'<\/td><td style="font-size:9px;color:var(--linen3)">'+t.due+'<\/td><td style="font-size:9px;color:var(--linen3)">'+t.note+'<\/td><td>'+badge(t.done?"done":"pending")+'<\/td><td><div class="ab"><button class="ab-btn dl" data-ci="'+i+'" onclick="event.stopPropagation();APP.delCloseTask(parseInt(this.dataset.ci))">Del<\/button><\/div><\/td><\/tr>';
+  }).join("");
+  return this.sHdr("Closing Cockpit","FCC · Month-end T4/2026",""+doneN+"/"+totalN+" tasks · "+pct+"% done",
+    '<button class="btn sm p" onclick="APP.addCloseTask()">+ Task<\/button>')
+  +'<div style="height:6px;background:var(--ink3);border-radius:3px;margin-bottom:13px"><div style="height:100%;width:'+pct+'%;background:var(--teal-l);border-radius:3px;transition:width .4s"><\/div><\/div>'
+  +'<div class="card"><div class="card-b np tbl-wrap"><table class="tbl"><thead><tr><th><\/th><th>Task<\/th><th>Dept<\/th><th>Hạn<\/th><th>Ghi chú<\/th><th>TT<\/th><th><\/th><\/tr><\/thead><tbody>'+tbody+'<\/tbody><\/table><button class="add-row" onclick="APP.addCloseTask()">+ Thêm closing task<\/button><\/div><\/div>'
+  +this.tfooter(totalN,'<span>Done: '+doneN+"/"+totalN+'<\/span>');
+},
+// ─── ACCRUALS ───
+bAccruals:function(){
+  var rows=DB.closeTasks.slice();// reuse as placeholder
+  return this.sHdr("Kết chuyển","FBS1 · Recurring","Accruals · Phân bổ định kỳ","");
+},
+// ─── COA ───
+bCOA:function(){
+  var q=this.S.coaQ.toLowerCase();var t=this.S.coaType;
+  var rows=COA.filter(function(a){return (!t||a.type===t)&&(!q||a.code.includes(q)||a.name.toLowerCase().includes(q));});
+  var tbody=rows.map(function(a){
+    var v=Math.abs(bal(a.code));
+    return '<tr data-acc="'+a.code+'" onclick="APP.drillAcc(this)"><td class="lnk" style="font-size:10px">'+a.code+'<\/td><td>'+a.name+'<\/td><td>'+badge(a.type)+'<\/td><td>'+dtag(a.dept)+'<\/td><td style="text-align:center"><span class="badge '+(a.dc==="dr"?"posted":"rev")+'">'+(a.dc==="dr"?"Nợ":"Có")+'<\/span><\/td><td style="font-size:9px;color:var(--linen3)">'+a.grp+'<\/td><td class="r mono" style="color:'+(v>0?"var(--cream)":"var(--linen4)")+'">'+( v>0?D(v):"—")+'<\/td><td><button class="btn sm" data-acc="'+a.code+'" onclick="event.stopPropagation();APP.drillAcc(this)">FBL3N<\/button><\/td><\/tr>';
+  }).join("")||'<tr><td colspan="8" class="empty">No accounts<\/td><\/tr>';
+  return this.sHdr("Chart of Accounts","FS00 · TT 200/2014",rows.length+" tài khoản · Click → FBL3N",
+    '<button class="btn sm" onclick="APP.nav(\'trial\')">→ Trial Balance<\/button>')
+  +this.fb('<input type="text" placeholder="Tìm mã / tên..." oninput="APP.S.coaQ=this.value;APP.renderSection(\'coa\')" value="'+this.S.coaQ+'">'
+    +'<select onchange="APP.S.coaType=this.value;APP.renderSection(\'coa\')"><option value="">All loại<\/option><option value="asset">Tài sản<\/option><option value="liab">Nợ<\/option><option value="equity">Vốn chủ<\/option><option value="rev">Doanh thu<\/option><option value="exp">Chi phí<\/option><\/select>',
+    '<button class="btn sm" onclick="APP.S.coaQ=\'\';APP.S.coaType=\'\';APP.renderSection(\'coa\')">Reset<\/button>')
+  +'<div class="card"><div class="card-b np tbl-wrap"><table class="tbl"><thead><tr><th>Mã TK<\/th><th>Tên<\/th><th>Loại<\/th><th>Dept<\/th><th>DC<\/th><th>Group<\/th><th class="r">Số dư<\/th><th><\/th><\/tr><\/thead><tbody>'+tbody+'<\/tbody><\/table><\/div><\/div>'
+  +this.tfooter(rows.length);
+},
+// ─── VENDOR ───
+bVendor:function(){
+  var tbody=DB.vendors.map(function(v){
+    return '<tr><td class="code" style="font-size:10px">'+v.id+'<\/td><td>'+v.name+'<\/td><td style="font-size:10px;color:var(--linen2)">'+v.cat+'<\/td><td>'+badge(v.status)+'<\/td><td style="font-size:10px">'+v.terms+'<\/td><td class="code">'+v.currency+'<\/td><td style="font-size:10px;color:var(--linen2)">'+v.moq+'<\/td><td style="font-size:10px;color:var(--linen2)">'+v.lead+'<\/td><td><div class="ab"><button class="ab-btn dl" data-vid="'+v.id+'" onclick="APP.delVendor(this.dataset.vid)">Del<\/button><\/div><\/td><\/tr>';
+  }).join("");
+  return this.sHdr("Vendor Master","FK03 · NCC & Freelancer","Nhà cung cấp · Vendor · Freelancer",
+    '<button class="btn sm p" onclick="APP.addVendor()">+ Thêm NCC<\/button>')
+  +'<div class="card"><div class="card-b np tbl-wrap"><table class="tbl"><thead><tr><th>Mã<\/th><th>Tên<\/th><th>Danh mục<\/th><th>TT<\/th><th>Terms<\/th><th>Currency<\/th><th>MOQ<\/th><th>Lead<\/th><th><\/th><\/tr><\/thead><tbody>'+tbody+'<\/tbody><\/table><button class="add-row" onclick="APP.addVendor()">+ Thêm nhà cung cấp<\/button><\/div><\/div>'
+  +this.tfooter(DB.vendors.length);
+},
+// ─── CONFIG ───
+bConfig:function(){
+  var c=DB.config;
+  var ri=c.reinvest||{brand:30,rd:15,buf:30,f:25};
+  var months=["01","02","03","04","05","06","07","08","09","10","11","12"];
+  var periodGrid=months.map(function(m){var k="2026-"+m;var op=(c.openPeriods||[]).includes(k);return'<div class="pcell '+(op?"open":"closed")+'" onclick="APP.togglePeriod(\''+k+'\')" title="'+k+'">T'+parseInt(m)+(op?" ✓":"")+'<\/div>';}).join("");
+  var sf=function(l,type,val,onch){return'<div class="sfield"><label>'+l+'<\/label><input type="'+type+'" value="'+val+'" onchange="'+onch+'"><\/div>';};
+  var scEditor='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">'
+    +Object.values(SC).map(function(sc){
+      return '<div style="background:var(--ink3);border:1px solid var(--ink4);border-radius:4px;padding:11px"><div style="font-size:11px;font-weight:500;margin-bottom:8px;color:'+sc.c+'">'+sc.n+' · '+sc.lb+'<\/div>'
+        +'<div class="sfield" style="margin-bottom:6px"><label>Peak DT (M)<\/label><input type="number" value="'+sc.rev[sc.rev.length-1]+'" onchange="SC[\''+sc.k+'\'].rev[SC[\''+sc.k+'\'].rev.length-1]=parseInt(this.value)"><\/div>'
+        +'<div class="sfield"><label>GM %<\/label><input type="number" value="'+Math.round(sc.gm*100)+'" step="0.5" onchange="SC[\''+sc.k+'\'].gm=this.value/100"><\/div>'
+        +'<\/div>';
+    }).join("")
+    +'<\/div>';
+  return this.sHdr("Cấu hình hệ thống","IMG · Implementation Guide","Công ty · Kỳ mở sổ · Thuế · Scenario",
+    '<button class="btn sm p" onclick="APP.saveConfig()">Lưu tất cả<\/button>')
+  +'<div style="display:flex;gap:6px;padding:8px 11px;background:var(--ink3);border:1px solid var(--ink4);border-radius:4px;margin-bottom:12px;flex-wrap:wrap">'
+  +'<span style="font-size:9px;color:var(--linen3);text-transform:uppercase;letter-spacing:.08em">Backup/Restore:<\/span>'
+  +'<button class="btn sm" onclick="exportJSON()">Export JSON<\/button>'
+  +'<button class="btn sm" onclick="importJSON()">Import JSON<\/button>'
+  +'<button class="btn sm danger" onclick="clearData()">Clear cache<\/button>'
+  +'<\/div>'
+  +'<div class="g2">'
+  +'<div class="card"><div class="card-h"><h3>Mã công ty<\/h3><\/div><div class="card-b"><div class="setgrid">'
+  +sf("Mã công ty","text",c.companyCode||"MORAQ","APP.updateConfig(\'companyCode\',this.value)")
+  +sf("Tên công ty","text",c.companyName||"MORAQ Fragrance Co.","APP.updateConfig(\'companyName\',this.value)")
+  +sf("MST","text",c.mst||"Đang đăng ký","APP.updateConfig(\'mst\',this.value)")
+  +sf("Tiền tệ","text",c.currency||"VND","APP.updateConfig(\'currency\',this.value)")
+  +'<\/div><button class="btn sm p" style="margin-top:9px" onclick="APP.saveConfig()">Lưu<\/button><\/div><\/div>'
+  +'<div class="card"><div class="card-h"><h3>GM & Break-even<\/h3><\/div><div class="card-b"><div class="setgrid">'
+  +sf("GM Floor (alert dưới %)","number",c.gmFloor||80,"APP.updateConfig(\'gmFloor\',parseFloat(this.value))")
+  +sf("GM Target %","number",c.gmTarget||82,"APP.updateConfig(\'gmTarget\',parseFloat(this.value))")
+  +sf("Break-even TX/ngày","number",c.beTarget||4.3,"APP.updateConfig(\'beTarget\',parseFloat(this.value))")
+  +sf("Avg ticket (triệu)","number",c.ticketTarget||1.5,"APP.updateConfig(\'ticketTarget\',parseFloat(this.value))")
+  +'<\/div><\/div><\/div>'
+  +'<div class="card"><div class="card-h"><h3>Kỳ mở sổ 2026<\/h3><\/div><div class="card-b"><div style="font-size:10px;color:var(--linen2);margin-bottom:6px">Đang mở: <b style="color:var(--teal-l)">'+(c.openPeriods||[]).join(", ")+'<\/b><\/div><div class="period-grid">'+periodGrid+'<\/div><\/div><\/div>'
+  +'<div class="card"><div class="card-h"><h3>Capital Allocation — Sau Break-even<\/h3><\/div><div class="card-b"><div class="setgrid">'
+  +[["brand","Brand %"],["rd","R&D %"],["buf","Buffer %"],["f","Founder %"]].map(function(r){return'<div class="sfield"><label>'+r[1]+'<\/label><input type="number" value="'+(ri[r[0]]||0)+'" min="0" max="100" onchange="APP.updateReinvest(\''+r[0]+'\',this.value)"><\/div>';}).join("")
+  +'<\/div><div id="reinvest-total" style="font-size:10px;color:var(--linen3);margin-top:6px">Tổng: '+Object.values(ri).reduce(function(s,v){return s+v;},0)+'%<\/div><\/div><\/div>'
+  +'<div class="card"><div class="card-h"><h3>Scenario Editor<\/h3><\/div><div class="card-b">'+scEditor+'<\/div><\/div>';
+},
+
+
+// ─── CEO INTELLIGENCE ───
+bIntel:function(){
+  var k=this.S.scenario||"base";var sc=SC[k];
+  var cash=bal("112")+bal("111");
+  var opex=sumBal(["6412","6411","6421","6422","6423","6424","811"]);
+  var rev=sumBal(["5111","5112","5113"]);
+  var cogs=sumBal(["611","6111","6112"]);
+  var gmActual=rev>0?((rev-cogs)/rev*100).toFixed(1):0;
+  var runway=opex>0?(cash/opex).toFixed(1):"—";
+  var totalRevY1=sc.rev.reduce(function(s,v){return s+v;},0);
+  var maxRev=Math.max.apply(null,sc.rev);
+  var scBar='<div class="scbar">'+Object.values(SC).map(function(s){
+    return '<div class="scbtn '+s.k+(k===s.k?" on":"")+'" onclick="APP.setScenario(\''+s.k+'\')"><span class="sclbl">'+s.n+" · "+s.lb+'<\/span><span class="scv">'+s.rev[s.rev.length-1]+'M peak<\/span><\/div>';
+  }).join("")+'<\/div>';
+  var bars=sc.rev.map(function(r,i){
+    var pct=Math.round(r/maxRev*85);
+    return '<div class="rbw"><div class="rbt"><div class="rbf" style="height:'+pct+'%;background:'+sc.c+';opacity:.8"><\/div><\/div><div class="rbl">'+sc.mo[i]+'<\/div><div class="rbv">'+r+'M<\/div><\/div>';
+  }).join("");
+  var liVals={gm:gmActual||0,runway:parseFloat(runway)||0,repeat:0,ticket:0,referral:0,ltv:0};
+  var liCards=LI.map(function(li){
+    var v=liVals[li.id]||0;
+    var tc=v===0?"a":(v>=li.al.g?"g":v>=li.al.a?"a":"r");
+    var color=tc==="g"?"var(--teal-l)":tc==="a"?"var(--amber-x)":"var(--red-x)";
+    var pct=li.tg>0?Math.min(Math.round(v/li.tg*100),100):0;
+    return '<div class="licard"><div class="litop"><span class="linm">'+li.n+'<\/span><span class="tl '+tc+'"><\/span><\/div><div class="livl" style="color:'+(v===0?"var(--linen3)":color)+'">'+(v===0?"No data yet":v+li.u)+'<\/div><div class="litg">Target: '+li.tg+li.u+'<\/div><div class="libr"><div style="width:'+pct+'%;background:'+color+'"><\/div><\/div><div style="font-size:9px;color:var(--linen3);margin-top:4px">'+li.note+'<\/div><\/div>';
+  }).join("");
+  var ri=DB.config.reinvest||{brand:30,rd:15,buf:30,f:25};
+  var repM=1800;
+  var caHTML=[["Brand & Marketing",ri.brand,"var(--violet-l)"],["R&D · Scent mới",ri.rd,"var(--teal-l)"],["Reinvest tăng trưởng",ri.buf,"var(--blue-l)"],["Founder distribution",ri.f,"var(--amber-l)"]].map(function(r){
+    return '<div class="car"><div class="cal">'+r[0]+'<\/div><div class="cat"><div style="width:'+r[1]+'%;background:'+r[2]+'"><\/div><\/div><div class="cap">'+r[1]+'%<\/div><div class="cav" style="color:'+r[2]+'">'+Math.round(repM*r[1]/100)+'M<\/div><\/div>';
+  }).join("");
+  var trig=TRIGS.map(function(t){
+    var c=t.t==="r"?"var(--red-x)":t.t==="a"?"var(--amber-x)":"var(--teal-l)";
+    return '<div class="trrow"><span class="tl '+t.t+'"><\/span><span class="trcnd">'+t.c+'<\/span><span class="tract">→ '+t.a+'<\/span><span class="trpri" style="color:'+c+'">'+t.p+'<\/span><\/div>';
+  }).join("");
+  return this.sHdr("CEO Intelligence","FP&A · Scenario Engine","MORAQ · 3 kịch bản sống · GM floor "+( DB.config.gmFloor||80)+"% · 30/15/30/25","")
+  +'<div id="a-intel-0"><\/div>'+scBar
+  +'<div id="a-intel-1" style="display:flex;gap:6px;margin-bottom:13px;flex-wrap:wrap">'
+  +[["Dự báo","0"],["Revenue chart","1"],["Leading Indicators","2"],["Decision Triggers","3"],["Capital Allocation","4"]].map(function(it,i){
+    return '<div class="an'+(i===0?" on":"")+'" onclick="this.closest(\'[id^=a-intel]\');APP.toIntelAnc('+i+',this)">'+it[0]+'<\/div>';
+  }).join("")+'<\/div>'
+  +'<div id="a-intel-2" class="scards c4" style="margin-bottom:14px">'
+  +'<div class="scard"><div class="st">DT năm đầu ('+sc.n+')<\/div><div class="sv" style="color:'+sc.c+'">'+M(totalRevY1*1000000)+'<\/div><div class="ss">T1 → T12<\/div><\/div>'
+  +'<div class="scard"><div class="st">Gross Profit ('+Math.round(sc.gm*100)+'%)<\/div><div class="sv" style="color:var(--teal-l)">'+M(Math.round(totalRevY1*sc.gm)*1000000)+'<\/div><div class="ss">GM floor: '+(DB.config.gmFloor||80)+'%<\/div><\/div>'
+  +'<div class="scard"><div class="st">Nhân sự peak<\/div><div class="sv">'+sc.hc+' người<\/div><div class="ss">'+sc.st+' store<\/div><\/div>'
+  +'<div class="scard '+(sc.raise?"warn":"")+'"><div class="st">Capital need<\/div><div class="sv" style="color:'+(sc.raise?"var(--amber-x)":"var(--teal-l)")+'">'+(sc.raise?sc.raiseAmt:"No raise")+'<\/div><div class="ss">'+(sc.raise?sc.raiseWhen:"3B đủ")+'<\/div><\/div>'
+  +'<\/div>'
+  +'<div id="a-intel-3" class="card" style="margin-bottom:12px"><div class="card-h"><h3>Revenue Forecast 12 tháng — '+sc.n+'<\/h3><div class="chr" style="font-size:10px;color:'+sc.c+'">'+sc.lb+'<\/div><\/div><div class="card-b"><div class="revbars">'+bars+'<\/div><div style="display:flex;gap:12px;flex-wrap:wrap">'+sc.mile.map(function(m){return'<span style="font-size:9px;color:var(--linen3)">✦ '+m+'<\/span>';}).join("")+'<\/div><\/div><\/div>'
+  +'<div class="g2" style="margin-bottom:12px">'
+  +'<div class="card"><div class="card-h"><h3>Triggers kích hoạt '+sc.n+'<\/h3><\/div><div class="card-b">'+sc.trig.map(function(t){return'<div style="display:flex;gap:7px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:11px"><span class="tl g"><\/span>'+t+'<\/div>';}).join("")+'<\/div><\/div>'
+  +'<div class="card"><div class="card-h"><h3>Rủi ro cần monitor<\/h3><\/div><div class="card-b">'+sc.risk.map(function(r){return'<div style="display:flex;gap:7px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:11px"><span class="tl r"><\/span>'+r+'<\/div>';}).join("")+'<\/div><\/div>'
+  +'<\/div>'
+  +'<div id="a-intel-4" class="card" style="margin-bottom:12px"><div class="card-h"><h3>Leading Indicators<\/h3><div class="chr"><span style="font-size:9px;color:var(--linen3)">Pre-launch · Data sau khi có giao dịch<\/span><\/div><\/div><div class="card-b"><div class="ligrid">'+liCards+'<\/div><\/div><\/div>'
+  +'<div id="a-intel-5" class="card" style="margin-bottom:12px"><div class="card-h"><h3>Decision Triggers<\/h3><\/div><div class="card-b" style="padding-left:8px;padding-right:8px">'+trig+'<\/div><\/div>'
+  +'<div id="a-intel-6" class="g2"><div class="card"><div class="card-h"><h3>Capital Allocation Policy<\/h3><div class="chr"><span style="font-size:9px;color:var(--linen3)">Post break-even · 1.8B/tháng ref<\/span><\/div><\/div><div class="card-b">'+caHTML+'<\/div><\/div>'
+  +'<div class="card"><div class="card-h"><h3>GM Guard<\/h3><\/div><div class="card-b"><div class="setgrid"><div class="sfield"><label>GM Floor (alert)<\/label><input type="number" value="'+(DB.config.gmFloor||80)+'" onchange="APP.updateConfig(\'gmFloor\',parseFloat(this.value))"><\/div><div class="sfield"><label>GM Target<\/label><input type="number" value="'+(DB.config.gmTarget||82)+'" onchange="APP.updateConfig(\'gmTarget\',parseFloat(this.value))"><\/div><\/div><button class="btn sm p" style="margin-top:8px" onclick="APP.saveConfig()">Lưu<\/button><\/div><\/div><\/div>';
+},
+setScenario:function(k){this.S.scenario=k;this.renderSection("intel");},
+toIntelAnc:function(i,el){
+  var par=el.parentElement;
+  if(par)par.querySelectorAll(".an").forEach(function(a){a.classList.remove("on");});
+  el.classList.add("on");
+  var targets=["a-intel-2","a-intel-3","a-intel-4","a-intel-5","a-intel-6","a-intel-6"];
+  var t=document.getElementById(targets[i]||"a-intel-2");
+  if(t)t.scrollIntoView({behavior:"smooth",block:"start"});
+},
+
+
+// ─── OBJECT PAGE ───
+openJE:function(el){
+  var je=el.closest?el.closest("[data-je]"):el;
+  var id=je?je.dataset.je:null;
+  if(!id)return;
+  var e=DB.entries.find(function(x){return x.id===id;});
+  if(!e)return;
+  this.S.opId=id;
+  var tel=document.getElementById("op-title");var sel=document.getElementById("op-sub");
+  if(tel)tel.textContent=e.id;
+  if(sel)sel.textContent=e.date+" · "+e.desc.substring(0,40);
+  var pb=document.getElementById("op-post-btn");
+  if(pb)pb.style.display=e.status==="draft"?"inline-block":"none";
+  var body=document.getElementById("op-body");if(!body)return;
+  var drA=[...new Set(e.lines.filter(function(l){return l.dr>0;}).map(function(l){return l.acc;}))].join(", ");
+  var crA=[...new Set(e.lines.filter(function(l){return l.cr>0;}).map(function(l){return l.acc;}))].join(", ");
+  var dfHTML='<div class="df">'
+    +'<div class="dfn src"><div class="df-type">Source<\/div><div class="df-val">'+e.src+'<\/div><\/div><div class="df-arr">→<\/div>'
+    +'<div class="dfn act"><div class="df-type">JE<\/div><div class="df-val">'+e.id+'<\/div><div class="df-sub">'+e.date+'<\/div><\/div><div class="df-arr">→<\/div>'
+    +'<div class="dfn"><div class="df-type">Dr TK<\/div><div class="df-val">'+drA+'<\/div><\/div><div class="df-arr">→<\/div>'
+    +'<div class="dfn"><div class="df-type">Cr TK<\/div><div class="df-val">'+crA+'<\/div><\/div><div class="df-arr">→<\/div>'
+    +'<div class="dfn" data-nav="costcenter" onclick="APP.nav(this.dataset.nav)" style="cursor:pointer"><div class="df-type">Cost Center<\/div><div class="df-val">'+deptLabel(e.dept)+'<\/div><\/div>'
+    +'<\/div>';
+  var lineRows=e.lines.map(function(l,i){
+    return '<tr><td class="lnk" data-acc="'+l.acc+'" onclick="APP.drillAcc(this)" style="font-size:10px">'+l.acc+'<\/td><td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+l.desc+'<\/td><td class="r mono">'+(l.dr>0?D(l.dr):"—")+'<\/td><td class="r mono">'+(l.cr>0?D(l.cr):"—")+'<\/td><\/tr>';
+  }).join("");
+  var totDr=e.lines.reduce(function(s,l){return s+(l.dr||0);},0);
+  // T-accounts
+  var accG={};
+  e.lines.forEach(function(l){if(!accG[l.acc])accG[l.acc]={dr:[],cr:[]};if((l.dr||0)>0)accG[l.acc].dr.push(l);if((l.cr||0)>0)accG[l.acc].cr.push(l);});
+  var tHTML='<div class="tgrid">'+Object.keys(accG).map(function(code){
+    var g=accG[code];var a=getAcc(code);
+    var tDr=g.dr.reduce(function(s,x){return s+(x.dr||0);},0);
+    var tCr=g.cr.reduce(function(s,x){return s+(x.cr||0);},0);
+    return '<div class="tcard"><div class="thdr"><div><div class="tcode">'+code+'<\/div><div class="tname">'+(a?a.name:code)+'<\/div><\/div><div class="tbal">'+D(Math.abs(a?(a.dc==="dr"?tDr-tCr:tCr-tDr):tDr-tCr))+'<\/div><\/div><div class="tsides"><div class="tside tdr"><div class="tlbl">Nợ<\/div>'+g.dr.map(function(x){return'<div class="tline hl"><span class="tld">'+x.desc.substring(0,13)+'<\/span><span>'+D(x.dr)+'<\/span><\/div>';}).join("")+'<div class="tsub"><span>Dr<\/span><span class="drc">'+D(tDr)+'<\/span><\/div><\/div><div class="tside"><div class="tlbl">Có<\/div>'+g.cr.map(function(x){return'<div class="tline hl"><span class="tld">'+x.desc.substring(0,13)+'<\/span><span>'+D(x.cr)+'<\/span><\/div>';}).join("")+'<div class="tsub"><span>Cr<\/span><span class="crc">'+D(tCr)+'<\/span><\/div><\/div><\/div><\/div>';
+  }).join("")+'<\/div>';
+  body.innerHTML=
+    '<div class="opsec"><div class="opstitle">Thông tin chứng từ<\/div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">'
+    +[["Ngày",e.date],["Số CT",e.ref||"—"],["Trạng thái",""],["Cost Center",""]].map(function(r,i){
+      return '<div><div style="font-size:8px;color:var(--linen3);text-transform:uppercase;margin-bottom:2px">'+r[0]+'<\/div><div style="font-size:11px">'+(i===2?badge(e.status):i===3?dtag(e.dept):r[1])+'<\/div><\/div>';
+    }).join("")
+    +'<div style="grid-column:1/-1"><div style="font-size:8px;color:var(--linen3);text-transform:uppercase;margin-bottom:2px">Mô tả<\/div><div style="font-size:12px">'+e.desc+'<\/div><\/div>'
+    +'<\/div><\/div>'
+    +'<div class="opsec"><div class="opstitle">Document Flow E2E<\/div>'+dfHTML+'<\/div>'
+    +'<div class="opsec"><div class="opstitle">Dòng bút toán<\/div><table class="tbl"><thead><tr><th>TK<\/th><th>Diễn giải<\/th><th class="r">Nợ<\/th><th class="r">Có<\/th><\/tr><\/thead><tbody>'+lineRows+'<\/tbody><tfoot class="tr"><td colspan="2"><\/td><td class="r mono">'+D(totDr)+'<\/td><td class="r mono">'+D(totDr)+'<\/td><\/tfoot><\/table><\/div>'
+    +'<div class="opsec"><div class="opstitle">T-Accounts<\/div>'+tHTML+'<\/div>';
+  document.getElementById("op").classList.add("open");
+},
+// ─── AP DETAIL OBJECT PAGE ───
+openAPDetail:function(id){
+  var inv=DB.apInvoices.find(function(x){return x.id===id;});
+  if(!inv){toast("AP not found: "+id,"err");return;}
+  this.S.opId=id;
+  var tel=document.getElementById("op-title");var sel=document.getElementById("op-sub");
+  if(tel)tel.textContent=inv.id;
+  if(sel)sel.textContent=inv.vendorName+" · "+inv.desc.substring(0,40);
+  var pb=document.getElementById("op-post-btn");if(pb)pb.style.display="none";
+  var body=document.getElementById("op-body");if(!body)return;
+  var tot=inv.amount+(inv.taxAmt||0);
+  var jeE=inv.jeId?DB.entries.find(function(e){return e.id===inv.jeId;}):null;
+  var pairs=[["AP ID",inv.id],["Ngày",inv.date],["NCC",inv.vendorName],
+    ["TK",inv.expAcc+" · "+accName(inv.expAcc)],["Mô tả",inv.desc],
+    ["Số HĐ",inv.ref||"—"],["Số tiền",D(inv.amount)],["VAT",D(inv.taxAmt||0)],
+    ["Tổng TT",D(tot)],["Đến hạn",inv.dueDate],
+    ["TT",inv.status==="paid"?"Đã trả "+inv.paidDate:"Chờ trả"]];
+  var iH=pairs.map(function(p){return '<div><div style="font-size:8px;color:var(--linen3);text-transform:uppercase;margin-bottom:2px">'+p[0]+'<\/div><div style="font-size:11px">'+p[1]+'<\/div><\/div>';}).join("");
+  var dfH='<div class="df">'
+    +'<div class="dfn src"><div class="df-type">NCC<\/div><div class="df-val">'+inv.vendorName.substring(0,10)+'<\/div><\/div><div class="df-arr">→<\/div>'
+    +'<div class="dfn act"><div class="df-type">AP Invoice<\/div><div class="df-val">'+inv.id+'<\/div><div class="df-sub">'+inv.date+'<\/div><\/div><div class="df-arr">→<\/div>'
+    +(inv.jeId?'<div class="dfn" data-je="'+inv.jeId+'" onclick="APP.openJE(this)" style="cursor:pointer"><div class="df-type">JE GL<\/div><div class="df-val">'+inv.jeId+'<\/div><div class="df-sub">Dr '+inv.expAcc+' Cr 331<\/div><\/div><div class="df-arr">→<\/div>':'')
+    +'<div class="dfn" style="'+(inv.status==="paid"?"border-color:var(--teal-l)":"")+'"><div class="df-type">Payment<\/div><div class="df-val">'+(inv.status==="paid"?"✓ Paid":"Pending")+'<\/div><\/div>'
+    +'<\/div>';
+  var tH='<div class="tgrid">'
+    +'<div class="tcard"><div class="thdr"><div><div class="tcode">'+inv.expAcc+'<\/div><div class="tname">'+accName(inv.expAcc).substring(0,15)+'<\/div><\/div><div class="tbal">'+D(inv.amount)+'<\/div><\/div><div class="tsides"><div class="tside tdr"><div class="tlbl">Nợ<\/div><div class="tline hl"><span class="tld">'+inv.desc.substring(0,13)+'<\/span><span>'+D(inv.amount)+'<\/span><\/div><div class="tsub"><span>Dr<\/span><span class="drc">'+D(inv.amount)+'<\/span><\/div><\/div><div class="tside"><div class="tlbl">Có<\/div><div class="tsub"><span><\/span><span class="crc">—<\/span><\/div><\/div><\/div><\/div>'
+    +'<div class="tcard"><div class="thdr"><div><div class="tcode">331<\/div><div class="tname">Phải trả NCC<\/div><\/div><div class="tbal">'+D(tot)+'<\/div><\/div><div class="tsides"><div class="tside tdr"><div class="tlbl">Nợ<\/div><div class="tsub"><span><\/span><span class="drc">—<\/span><\/div><\/div><div class="tside"><div class="tlbl">Có<\/div><div class="tline hl"><span class="tld">'+inv.vendorName.substring(0,13)+'<\/span><span>'+D(tot)+'<\/span><\/div><div class="tsub"><span>Cr<\/span><span class="crc">'+D(tot)+'<\/span><\/div><\/div><\/div><\/div>'
+    +'<\/div>';
+  body.innerHTML=
+    '<div class="opsec"><div class="opstitle">AP Invoice Detail<\/div><div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">'+iH+'<\/div><\/div>'
+    +'<div class="opsec"><div class="opstitle">Document Flow E2E<\/div>'+dfH+'<\/div>'
+    +'<div class="opsec"><div class="opstitle">T-Accounts<\/div>'+tH+'<\/div>'
+    +(jeE?'<div class="opsec"><div class="opstitle">JE liên kết<\/div><div style="display:flex;gap:8px;align-items:center;padding:8px;background:var(--ink3);cursor:pointer;border-radius:3px" data-je="'+inv.jeId+'" onclick="APP.openJE(this)"><span class="lnk" style="font-size:10px">'+inv.jeId+'<\/span><span style="flex:1;font-size:10px;color:var(--linen2)">Click → T-account & GL detail<\/span><span class="badge posted">Ghi sổ<\/span><\/div><\/div>':"")
+    +(inv.status==="pending"?'<div class="opsec"><button class="btn p" style="width:100%" data-ap-id="'+inv.id+'" onclick="APP.payAP(this.dataset.apId)">Thanh toán '+D(tot)+'<\/button><\/div>':"");
+  document.getElementById("op").classList.add("open");
+},
+// ─── AR DETAIL ───
+openARDetail:function(id){
+  var inv=DB.arInvoices.find(function(x){return x.id===id;});
+  if(!inv){toast("AR not found","err");return;}
+  this.S.opId=id;
+  var tel=document.getElementById("op-title");var sel=document.getElementById("op-sub");
+  if(tel)tel.textContent=inv.id;
+  if(sel)sel.textContent=inv.channel+" · "+inv.desc;
+  var pb=document.getElementById("op-post-btn");if(pb)pb.style.display="none";
+  var body=document.getElementById("op-body");if(!body)return;
+  var pairs=[["AR ID",inv.id],["Ngày",inv.date],["Kênh",inv.channel],
+    ["Mô tả",inv.desc],["Số tiền",D(inv.amount)],
+    ["Đến hạn",inv.dueDate||"—"],["TT",inv.status==="collected"?"Đã thu "+inv.paidDate:"Chờ thu"]];
+  var iH=pairs.map(function(p){return '<div><div style="font-size:8px;color:var(--linen3);text-transform:uppercase;margin-bottom:2px">'+p[0]+'<\/div><div style="font-size:11px">'+p[1]+'<\/div><\/div>';}).join("");
+  var jeE=inv.jeId?DB.entries.find(function(e){return e.id===inv.jeId;}):null;
+  body.innerHTML=
+    '<div class="opsec"><div class="opstitle">AR Invoice Detail<\/div><div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">'+iH+'<\/div><\/div>'
+    +(jeE?'<div class="opsec"><div class="opstitle">JE liên kết<\/div><div style="display:flex;gap:8px;align-items:center;padding:8px;background:var(--ink3);cursor:pointer;border-radius:3px" data-je="'+inv.jeId+'" onclick="APP.openJE(this)"><span class="lnk" style="font-size:10px">'+inv.jeId+'<\/span><span style="flex:1;font-size:10px;color:var(--linen2)">GL detail →<\/span><\/div><\/div>':"")
+    +(inv.status==="open"?'<div class="opsec"><button class="btn p" style="width:100%" data-ar-id="'+inv.id+'" onclick="APP.collectAR(this.dataset.arId)">Thu tiền '+D(inv.amount)+'<\/button><\/div>':"");
+  document.getElementById("op").classList.add("open");
+},
+closeOP:function(){
+  this.S.opId=null;
+  var op=document.getElementById("op");if(op)op.classList.remove("open");
+  var body=document.getElementById("op-body");if(body)body.innerHTML="";
+},
+
+
+// ─── CRUD ACTIONS ───
+quickPost:function(el){
+  var id=el.dataset?el.dataset.je:el;
+  var e=DB.entries.find(function(x){return x.id===id;});if(!e)return;
+  if(!(DB.config.openPeriods||[]).includes(e.date.substring(0,7))){toast("Kỳ đóng","err");return;}
+  e.status="posted";dbSave();this.renderKPI();this.renderSection(this.S.section);
+  toast("✓ Ghi sổ — "+id);
+},
+dupJE:function(id){
+  var src=DB.entries.find(function(x){return x.id===id;});if(!src)return;
+  var n=JSON.parse(JSON.stringify(src));
+  n.id=this.genId();n.date=new Date().toISOString().slice(0,10);n.status="draft";
+  DB.entries.push(n);dbSave();this.renderSection("journal");toast("Dup → "+n.id);
+},
+delJE:function(id){
+  if(!confirm("Xóa JE "+id+"?"))return;
+  DB.entries=DB.entries.filter(function(x){return x.id!==id;});
+  dbSave();this.renderKPI();this.renderSection(this.S.section);toast("Đã xóa "+id,"warn");
+},
+delAP:function(id){
+  if(!confirm("Xóa AP "+id+"?"))return;
+  DB.apInvoices=DB.apInvoices.filter(function(x){return x.id!==id;});
+  dbSave();this.renderSection("ap");toast("Đã xóa","warn");
+},
+delAR:function(id){
+  if(!confirm("Xóa AR "+id+"?"))return;
+  DB.arInvoices=DB.arInvoices.filter(function(x){return x.id!==id;});
+  dbSave();this.renderSection("ar");toast("Đã xóa","warn");
+},
+delBudget:function(id){
+  DB.budget=DB.budget.filter(function(x){return x.id!==id;});
+  dbSave();this.renderSection("budget");toast("Đã xóa","warn");
+},
+addBudgetLine:function(){
+  var wave=prompt("Wave (e.g. Wave 0):","Wave 0");if(!wave)return;
+  var cat=prompt("Category:","");if(!cat)return;
+  var acc=prompt("TK (e.g. 6412):","");if(!acc)return;
+  var amt=parseFloat(prompt("Budget (VND):","0")||"0");
+  DB.budget.push({id:"BUD-"+Date.now(),wave:wave,phase:"",category:cat,account:acc,dept:"corp",budgeted:amt,notes:""});
+  dbSave();this.renderSection("budget");toast("Thêm dòng budget");
+},
+toggleClose:function(i){
+  if(DB.closeTasks[i]){DB.closeTasks[i].done=!DB.closeTasks[i].done;dbSave();this.renderSection("closing");}
+},
+delCloseTask:function(i){
+  DB.closeTasks.splice(i,1);dbSave();this.renderSection("closing");toast("Đã xóa","warn");
+},
+addCloseTask:function(){
+  var name=prompt("Tên task:");if(!name)return;
+  var due=prompt("Hạn (dd/mm):","30/04");
+  DB.closeTasks.push({id:"CLT-"+Date.now(),name:name,dept:"corp",due:due||"",done:false,note:""});
+  dbSave();this.renderSection("closing");toast("Thêm task: "+name);
+},
+delVendor:function(id){
+  if(!confirm("Xóa vendor?"))return;
+  DB.vendors=DB.vendors.filter(function(x){return x.id!==id;});
+  dbSave();this.renderSection("vendor");toast("Đã xóa","warn");
+},
+addVendor:function(){toast("Thêm vendor: liên kết với JE trước","warn");},
+// AP/AR actions
+payAP:function(id){
+  var inv=DB.apInvoices.find(function(x){return x.id===id;});if(!inv)return;
+  var tot=inv.amount+(inv.taxAmt||0);
+  var je={id:this.genId(),date:new Date().toISOString().slice(0,10),desc:"AP Pay: "+inv.desc,ref:inv.ref,dept:"corp",status:"posted",src:"AP-Pay",
+    lines:[{acc:"331",desc:"Pay NCC "+inv.vendorName,dr:tot,cr:0},{acc:"112",desc:"Bank transfer",dr:0,cr:tot}]};
+  DB.entries.push(je);inv.status="paid";inv.paidDate=je.date;
+  dbSave();this.renderKPI();this.renderSection(this.S.section);
+  toast("✓ Paid "+D(tot)+" → "+je.id);
+},
+collectAR:function(id){
+  var inv=DB.arInvoices.find(function(x){return x.id===id;});if(!inv)return;
+  var je={id:this.genId(),date:new Date().toISOString().slice(0,10),desc:"AR Collect: "+inv.desc,ref:inv.ref,dept:"store",status:"posted",src:"AR-Collect",
+    lines:[{acc:"112",desc:"Thu tiền KH",dr:inv.amount,cr:0},{acc:"131",desc:"Clear AR "+inv.id,dr:0,cr:inv.amount}]};
+  DB.entries.push(je);inv.status="collected";inv.paidDate=je.date;
+  dbSave();this.renderKPI();this.renderSection(this.S.section);
+  toast("✓ Collected "+D(inv.amount));
+},
+newAP:function(){
+  var mTitle=document.getElementById("modal-title");
+  var mBody=document.querySelector("#modal .mbody");
+  var mFoot=document.querySelector("#modal .mfoot");
+  if(!mTitle||!mBody||!mFoot)return;
+  var id="AP-"+new Date().getFullYear()+"-"+(DB.apInvoices.length+1).toString().padStart(3,"0");
+  var vOpts=DB.vendors.map(function(v){return'<option value="'+v.id+"|"+v.name+'">'+v.name+'<\/option>';}).join("");
+  var aOpts=COA.filter(function(a){return a.type==="exp"||a.type==="asset";}).map(function(a){return'<option value="'+a.code+'">'+a.code+" · "+a.name+'<\/option>';}).join("");
+  mTitle.textContent="F-43 · AP Invoice — "+id;
+  mBody.innerHTML='<div class="fg c3"><div class="field"><label>Ngày<\/label><input type="date" id="ap-date" value="'+new Date().toISOString().slice(0,10)+'"><\/div><div class="field"><label>ID<\/label><input type="text" value="'+id+'" readonly style="opacity:.5"><\/div><div class="field"><label>Số HĐ NCC<\/label><input type="text" id="ap-ref" placeholder="Số HĐ..."><\/div><\/div>'
+    +'<div class="fg c2"><div class="field"><label>NCC<\/label><select id="ap-vendor">'+vOpts+'<\/select><\/div><div class="field"><label>TK chi phí<\/label><select id="ap-acc">'+aOpts+'<\/select><\/div><\/div>'
+    +'<div class="fg c3"><div class="field"><label>Số tiền<\/label><input type="number" id="ap-amt" placeholder="0" oninput="APP.calcAPTax()"><\/div><div class="field"><label>Thuế suất<\/label><select id="ap-tax" onchange="APP.calcAPTax()"><option value="0">0%<\/option><option value="0.08">8%<\/option><option value="0.10" selected>10%<\/option><\/select><\/div><div class="field"><label>Tiền thuế<\/label><input type="number" id="ap-taxamt" readonly style="opacity:.6"><\/div><\/div>'
+    +'<div class="fg c2"><div class="field"><label>Mô tả<\/label><input type="text" id="ap-desc" placeholder="Nội dung..."><\/div><div class="field"><label>Đến hạn<\/label><input type="date" id="ap-due"><\/div><\/div>'
+    +'<div style="padding:7px 9px;background:var(--ink3);font-size:9px;color:var(--linen3)">✓ Ghi sổ tự động tạo JE: Dr [TK CP] / Cr 331<\/div>';
+  mFoot.innerHTML='<button class="btn" onclick="APP.closeModal()">Hủy<\/button><button class="btn warn" onclick="APP.postAP()">✓ Ghi sổ AP<\/button>';
+  document.getElementById("ov").classList.add("show");
+},
+calcAPTax:function(){
+  var amt=parseFloat(document.getElementById("ap-amt")&&document.getElementById("ap-amt").value)||0;
+  var rate=parseFloat(document.getElementById("ap-tax")&&document.getElementById("ap-tax").value)||0;
+  var el=document.getElementById("ap-taxamt");
+  if(el)el.value=Math.round(amt*rate/(1+rate));
+},
+postAP:function(){
+  var date=document.getElementById("ap-date").value;
+  var ref=document.getElementById("ap-ref").value||"";
+  var vRaw=document.getElementById("ap-vendor").value||"";
+  var acc=document.getElementById("ap-acc").value;
+  var amt=parseFloat(document.getElementById("ap-amt").value)||0;
+  var taxRate=parseFloat(document.getElementById("ap-tax").value)||0;
+  var taxAmt=parseFloat(document.getElementById("ap-taxamt").value)||0;
+  var desc=document.getElementById("ap-desc").value||"";
+  var due=document.getElementById("ap-due").value||"";
+  if(!amt||!acc||!date){toast("Thiếu thông tin","err");return;}
+  if(!(DB.config.openPeriods||[]).includes(date.substring(0,7))){toast("Kỳ đóng","err");return;}
+  var vParts=vRaw.split("|");var vId=vParts[0];var vName=vParts[1]||"Unknown";
+  var apId="AP-"+new Date().getFullYear()+"-"+(DB.apInvoices.length+1).toString().padStart(3,"0");
+  var jeId=this.genId();
+  var lines=[{acc:acc,desc:desc,dr:amt,cr:0},{acc:"331",desc:"Phải trả NCC — "+vName,dr:0,cr:amt}];
+  if(taxAmt>0){lines.push({acc:"133",desc:"VAT đầu vào",dr:taxAmt,cr:0});lines[1].cr+=taxAmt;}
+  DB.entries.push({id:jeId,date:date,desc:"AP: "+desc,ref:ref,dept:"ops",status:"posted",src:"AP",lines:lines});
+  DB.apInvoices.push({id:apId,date:date,vendorId:vId,vendorName:vName,desc:desc,ref:ref,expAcc:acc,amount:amt,taxRate:taxRate,taxAmt:taxAmt,dueDate:due,status:"pending",paidDate:null,jeId:jeId});
+  dbSave();this.closeModal();this.renderKPI();this.renderSection("ap");
+  toast("✓ AP "+apId+" · JE "+jeId);
+},
+newAR:function(){
+  var mTitle=document.getElementById("modal-title");
+  var mBody=document.querySelector("#modal .mbody");
+  var mFoot=document.querySelector("#modal .mfoot");
+  if(!mTitle||!mBody||!mFoot)return;
+  var id="AR-"+new Date().getFullYear()+"-"+(DB.arInvoices.length+1).toString().padStart(3,"0");
+  mTitle.textContent="F-22 · AR Invoice — "+id;
+  mBody.innerHTML='<div class="fg c3"><div class="field"><label>Ngày<\/label><input type="date" id="ar-date" value="'+new Date().toISOString().slice(0,10)+'"><\/div><div class="field"><label>ID<\/label><input type="text" value="'+id+'" readonly style="opacity:.5"><\/div><div class="field"><label>Đến hạn<\/label><input type="date" id="ar-due"><\/div><\/div>'
+    +'<div class="fg c2"><div class="field"><label>Kênh<\/label><select id="ar-chan"><option value="5111">5111 · Store<\/option><option value="5112">5112 · TMĐT<\/option><option value="5113">5113 · B2B<\/option><\/select><\/div><div class="field"><label>Số tiền<\/label><input type="number" id="ar-amt" placeholder="0"><\/div><\/div>'
+    +'<div class="fg c2"><div class="field"><label>Mô tả / Tên KH<\/label><input type="text" id="ar-desc" placeholder="KH..."><\/div><div class="field"><label>Số HĐ<\/label><input type="text" id="ar-ref" placeholder="HĐ-001"><\/div><\/div>'
+    +'<div style="padding:7px 9px;background:var(--ink3);font-size:9px;color:var(--linen3)">✓ Ghi sổ tự động: Dr 131 / Cr 511x<\/div>';
+  mFoot.innerHTML='<button class="btn" onclick="APP.closeModal()">Hủy<\/button><button class="btn warn" onclick="APP.postAR()">✓ Ghi sổ AR<\/button>';
+  document.getElementById("ov").classList.add("show");
+},
+postAR:function(){
+  var date=document.getElementById("ar-date").value;
+  var chan=document.getElementById("ar-chan").value||"5111";
+  var amt=parseFloat(document.getElementById("ar-amt").value)||0;
+  var desc=document.getElementById("ar-desc").value||"";
+  var ref=document.getElementById("ar-ref").value||"";
+  var due=document.getElementById("ar-due").value||"";
+  if(!amt||!date){toast("Thiếu thông tin","err");return;}
+  var chanNames={"5111":"Store","5112":"TMĐT","5113":"B2B"};
+  var arId="AR-"+new Date().getFullYear()+"-"+(DB.arInvoices.length+1).toString().padStart(3,"0");
+  var jeId=this.genId();
+  var depts={"5111":"store","5112":"brand","5113":"brand"};
+  DB.entries.push({id:jeId,date:date,desc:"AR: "+desc,ref:ref,dept:depts[chan]||"store",status:"posted",src:"AR",lines:[{acc:"131",desc:"Phải thu KH — "+desc,dr:amt,cr:0},{acc:chan,desc:"Doanh thu "+chanNames[chan],dr:0,cr:amt}]});
+  DB.arInvoices.push({id:arId,date:date,channel:chanNames[chan],desc:desc,ref:ref,amount:amt,dueDate:due,status:"open",paidDate:null,jeId:jeId});
+  dbSave();this.closeModal();this.renderKPI();this.renderSection("ar");
+  toast("✓ AR "+arId+" · JE "+jeId);
+},
+// config helpers
+updateConfig:function(k,v){if(!DB.config)DB.config={};DB.config[k]=v;},
+updateReinvest:function(k,v){
+  if(!DB.config.reinvest)DB.config.reinvest={brand:30,rd:15,buf:30,f:25};
+  DB.config.reinvest[k]=parseInt(v)||0;
+  var total=Object.values(DB.config.reinvest).reduce(function(s,vv){return s+vv;},0);
+  var el=document.getElementById("reinvest-total");
+  if(el){el.textContent="Tổng: "+total+"% "+(total===100?"✓":"← cần = 100%");el.style.color=total===100?"var(--teal-l)":"var(--red-x)";}
+},
+saveConfig:function(){dbSave();toast("✓ Đã lưu cấu hình");},
+togglePeriod:function(period){
+  var p=DB.config.openPeriods||[];var i=p.indexOf(period);
+  if(i>=0)p.splice(i,1);else p.push(period);
+  DB.config.openPeriods=p;dbSave();this.renderSection("config");
+  var el=document.getElementById("sb-period-status");
+  if(el)el.textContent=p.includes(this.S.period)?"Mở":"Đóng";
+},
+exportCurrentSection:function(){
+  var sec=this.S.section;
+  if(sec==="journal"){
+    var rows=DB.entries.map(function(e){var t=e.lines.reduce(function(s,l){return s+(l.dr||0);},0);return{id:e.id,date:e.date,desc:e.desc,total:t,status:e.status};});
+    exportCSV(rows,["id","date","desc","total","status"],"Journal.csv");
+  }else if(sec==="ap"){exportCSV(DB.apInvoices,["id","date","vendorName","expAcc","amount","taxAmt","status"],"AP.csv");
+  }else if(sec==="ar"){exportCSV(DB.arInvoices,["id","date","channel","amount","status"],"AR.csv");
+  }else if(sec==="budget"){exportCSV(DB.budget,["id","wave","category","account","budgeted","notes"],"Budget.csv");
+  }else{exportJSON();}
+},
+
+
+// ─── FB50 MODAL ───
+genId:function(){
+  this._lc=(this._lc||0)+1;
+  var y=new Date().getFullYear();
+  var prefix=DB.config.docPrefix||"JE";
+  var pad=DB.config.docPad||4;
+  var n=DB.entries.length+this._lc;
+  return prefix+"-"+y+"-"+String(n).padStart(pad,"0");
+},
+openModal:function(id){
+  var mTitle=document.getElementById("modal-title");
+  var mBody=document.querySelector("#modal .mbody");
+  var mFoot=document.querySelector("#modal .mfoot");
+  if(!mTitle||!mBody||!mFoot)return;
+  this._editId=id||null;
+  var e=id?DB.entries.find(function(x){return x.id===id;}):null;
+  var newId=e?e.id:this.genId();
+  var depts=["corp","ops","brand","store","all"];
+  var dOpts=depts.map(function(d){return'<option value="'+d+'"'+(e&&e.dept===d?" selected":"")+'>'+deptLabel(d)+'<\/option>';}).join("");
+  var aOpts=COA.map(function(a){return'<option value="'+a.code+'">'+a.code+" · "+a.name+'<\/option>';}).join("");
+  var initialLines=e?e.lines:[{acc:"",desc:"",dr:0,cr:0},{acc:"",desc:"",dr:0,cr:0},{acc:"",desc:"",dr:0,cr:0}];
+  mTitle.textContent=(e?"Edit ":"FB50 · Ghi sổ — ")+newId;
+  mBody.innerHTML='<div class="fg c3"><div class="field"><label>Ngày<\/label><input type="date" id="je-date" value="'+(e?e.date:new Date().toISOString().slice(0,10))+'"><\/div><div class="field"><label>Mô tả<\/label><input type="text" id="je-desc" placeholder="Diễn giải..." value="'+(e?e.desc:"")+'"><\/div><div class="field"><label>Số CT<\/label><input type="text" id="je-ref" placeholder="REF-001" value="'+(e?e.ref||"":"")+'"><\/div><\/div>'
+    +'<div class="fg c2"><div class="field"><label>Bộ phận<\/label><select id="je-dept">'+dOpts+'<\/select><\/div><div class="field"><label>Nguồn<\/label><input type="text" id="je-src" placeholder="manual" value="'+(e?e.src:"manual")+'"><\/div><\/div>'
+    +'<div class="je-lh"><span>TK<\/span><span>Diễn giải<\/span><span>Nợ<\/span><span>Có<\/span><span><\/span><\/div>'
+    +'<div id="je-lines">'
+    +initialLines.map(function(l){return APP.mkLine(l.acc,l.desc,l.dr,l.cr,aOpts);}).join("")
+    +'<\/div>'
+    +'<div class="jefoot"><span><\/span><span><\/span>'
+    +'<div class="jefv" id="je-tot-dr">—<\/div>'
+    +'<div class="jefv" id="je-tot-cr">—<\/div>'
+    +'<span><\/span><\/div>';
+  mFoot.innerHTML='<button class="btn sm" onclick="APP.addLine()">+ Dòng<\/button><div style="flex:1"><\/div><button class="btn" onclick="APP.closeModal()">Hủy<\/button><button class="btn warn" onclick="APP.saveDraft()">Nháp<\/button><button class="btn p" onclick="APP.postEntry()">✓ Ghi sổ<\/button>';
+  this.updTotals();
+  document.getElementById("ov").classList.add("show");
+},
+mkLine:function(acc,desc,dr,cr,aOpts){
+  if(!aOpts)aOpts=COA.map(function(a){return'<option value="'+a.code+'">'+a.code+" · "+a.name+'<\/option>';}).join("");
+  return '<div class="jeline"><select class="je-acc" onchange="APP.updTotals()" oninput="APP.updTotals()"><option value="">— TK —<\/option>'+aOpts.replace('value="'+acc+'"','value="'+acc+'" selected')+'<\/select><input class="je-ldesc" type="text" placeholder="Diễn giải..." value="'+( desc||"")+'"><input class="je-dr" type="number" placeholder="0" value="'+(dr||"")+'" oninput="APP.updTotals()"><input class="je-cr" type="number" placeholder="0" value="'+(cr||"")+'" oninput="APP.updTotals()"><button class="rm" onclick="this.closest(\'.jeline\').remove();APP.updTotals()">×<\/button><\/div>';
+},
+addLine:function(){
+  var aOpts=COA.map(function(a){return'<option value="'+a.code+'">'+a.code+" · "+a.name+'<\/option>';}).join("");
+  var container=document.getElementById("je-lines");
+  if(!container)return;
+  var div=document.createElement("div");div.innerHTML=this.mkLine("","",0,0,aOpts);
+  container.appendChild(div.firstChild);this.updTotals();
+},
+updTotals:function(){
+  var drs=document.querySelectorAll(".je-dr");var crs=document.querySelectorAll(".je-cr");
+  var tDr=0,tCr=0;
+  drs.forEach(function(el){tDr+=parseFloat(el.value)||0;});
+  crs.forEach(function(el){tCr+=parseFloat(el.value)||0;});
+  var ok=Math.abs(tDr-tCr)<1;
+  var elDr=document.getElementById("je-tot-dr");var elCr=document.getElementById("je-tot-cr");
+  if(elDr){elDr.textContent=N(tDr);elDr.className="jefv "+(ok?"ok":"bad");}
+  if(elCr){elCr.textContent=N(tCr);elCr.className="jefv "+(ok?"ok":"bad");}
+},
+getLines:function(){
+  var accs=document.querySelectorAll(".je-acc");
+  var descs=document.querySelectorAll(".je-ldesc");
+  var drs=document.querySelectorAll(".je-dr");
+  var crs=document.querySelectorAll(".je-cr");
+  var lines=[];
+  for(var i=0;i<accs.length;i++){
+    var acc=accs[i].value;var dr=parseFloat(drs[i].value)||0;var cr=parseFloat(crs[i].value)||0;
+    if(!acc&&dr===0&&cr===0)continue;
+    if(acc)lines.push({acc:acc,desc:descs[i].value||"",dr:dr,cr:cr});
+  }
+  return lines;
+},
+postEntry:function(draft){
+  var date=document.getElementById("je-date").value;
+  var desc=document.getElementById("je-desc").value;
+  var ref=document.getElementById("je-ref").value||"";
+  var dept=document.getElementById("je-dept").value;
+  var src=document.getElementById("je-src").value||"manual";
+  var lines=this.getLines();
+  if(!date||!desc){toast("Thiếu ngày hoặc mô tả","err");return;}
+  if(lines.length<2){toast("Cần ít nhất 2 dòng","err");return;}
+  var tDr=lines.reduce(function(s,l){return s+(l.dr||0);},0);
+  var tCr=lines.reduce(function(s,l){return s+(l.cr||0);},0);
+  if(Math.abs(tDr-tCr)>1&&!draft){toast("Mất cân đối: Dr≠Cr","err");return;}
+  var status=draft?"draft":"posted";
+  if(status==="posted"&&!(DB.config.openPeriods||[]).includes(date.substring(0,7))){toast("Kỳ đóng","err");return;}
+  var eid=this._editId;
+  if(eid){
+    var e=DB.entries.find(function(x){return x.id===eid;});
+    if(e){e.date=date;e.desc=desc;e.ref=ref;e.dept=dept;e.src=src;e.lines=lines;e.status=status;}
+  }else{
+    var newE={id:this.genId(),date:date,desc:desc,ref:ref,dept:dept,status:status,src:src,lines:lines};
+    DB.entries.push(newE);
+  }
+  this._editId=null;dbSave();this.closeModal();this.renderKPI();this.renderSection(this.S.section);
+  toast("✓ "+(status==="posted"?"Ghi sổ":"Nháp")+" — "+(eid||DB.entries[DB.entries.length-1].id));
+},
+saveDraft:function(){this.postEntry(true);},
+closeModal:function(){
+  var ov=document.getElementById("ov");if(ov)ov.classList.remove("show");
+  this._editId=null;
+},
+// ─── INIT ───
+init:function(){
+  dbLoad();this.renderKPI();this.renderSection("cockpit");
+  var ov=document.getElementById("ov");
+  if(ov)ov.addEventListener("click",function(e){if(e.target===ov)APP.closeModal();});
+  var sp=document.getElementById("sb-period");if(sp)sp.textContent=this.S.period;
+  var pst=document.getElementById("sb-period-status");
+  if(pst)pst.textContent=(DB.config.openPeriods||[]).includes(this.S.period)?"Mở":"Đóng";
+  var tp=document.getElementById("tb-period");
+  if(tp){tp.value=this.S.period;tp.addEventListener("change",function(){APP.setPeriod(this.value);});}
+}
+}; // end APP
+
+
+APP.init();
+</script>
+</body>
+</html>
